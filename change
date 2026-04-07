@@ -1,0 +1,281 @@
+============================================================================================
+
+VPN AUTOMATION PLATFORM – FULL UPDATE FLOW (WEB MODE)
+======================================================
+
+PROJECT STRUCTURE OVERVIEW
+--------------------------
+Frontend:
+  - frontend/login.html
+  - frontend/dashboard.html
+  - frontend/app.js
+  - frontend/style.css
+
+Backend:
+  - backend/main.py
+  - backend/projects/vpn_automation/asa/web_wrapper.py
+  - backend/projects/vpn_automation/asa/update.py
+  - backend/projects/vpn_automation/asa/reset.py
+  - backend/projects/vpn_automation/asa/client.py
+
+======================================================
+UPDATE FLOW  SUMMARY
+======================================================
+login.html
+    ↓
+Project View
+    ↓
+dashboard.html   ← 🔥 MAIN CONTROL PAGE
+    ↓
+    -User selects project:
+        -VPN Automation
+            ↓
+            -ASA
+             ↓
+            -User clicks:Update
+            <button onclick="runASA('update')">
+               ↓
+app.js → fetch("/api/asa")
+  ↓
+main.py route
+  ↓
+web_wrapper.py → run_web()
+  ↓
+connect_asa()
+  ↓
+update_vpn()
+  ↓
+ASA show commands
+  ↓
+User selects option
+  ↓
+ASA config commands
+  ↓
+save_config()
+  ↓
+Verification show commands
+  ↓
+disconnect_asa()
+  ↓
+Response returned to UI
+
+======================================================
+STEP 1 – USER LOGIN
+======================================================
+File: frontend/login.html
+
+User enters username & password.
+After successful login:
+  → Select Project (Project View)
+        → VPN Automation
+             → ASA View
+             → PaloAlto View
+
+In ASA View:
+  Button:
+    <button onclick="runASA('update')">Update</button>
+
+======================================================
+STEP 2 – BUTTON CLICK (FRONTEND JS)
+======================================================
+File: frontend/app.js
+
+Function triggered:
+  runASA("update")
+
+JS sends API request:
+
+  fetch("/api/asa", {
+      method: "POST",
+      body: JSON.stringify({ task: "update" })
+  })
+
+======================================================
+STEP 3 – BACKEND API ROUTE
+======================================================
+File: backend/main.py
+
+Route example:
+  @app.post("/api/asa")
+  def asa_api(data: dict):
+      return run_web(data["task"], ...)
+
+======================================================
+STEP 4 – WEB WRAPPER EXECUTION
+======================================================
+File: backend/projects/vpn_automation/asa/web_wrapper.py
+
+Function:
+  run_web(task, seq=None, payload=None)
+
+Inside:
+
+  conn = connect_asa()
+  tunnels = discover_tunnels(conn)
+
+  if task == "update":
+      update_vpn(conn, payload)
+
+======================================================
+STEP 5 – UPDATE LOGIC START
+======================================================
+File: backend/projects/vpn_automation/asa/update.py
+
+Entry function:
+  update_vpn(conn, payload)
+
+======================================================
+STEP 6 – VALIDATION COMMANDS SENT TO ASA
+======================================================
+
+1) show run tunnel-group <peer_ip>
+2) show run crypto map
+3) show run access-list <acl_name>
+
+Purpose:
+  - Validate peer exists
+  - Find crypto map
+  - Parse ACL
+  - Display CURRENT CONFIG preview
+
+If payload["preview_only"] == True:
+  → Function returns (Preview Mode)
+
+======================================================
+STEP 7 – USER SELECTS UPDATE OPTION
+======================================================
+
+Frontend modal sends second API call with:
+
+{
+  "task": "update",
+  "peer_ip": "...",
+  "choice": "2",
+  "new_local_ip": "...",
+  "new_local_mask": "..."
+}
+
+======================================================
+STEP 8 – CONFIGURATION COMMAND EXECUTION
+======================================================
+
+Depending on choice:
+
+OPTION 1 – Update Peer IP
+  crypto map <map> <new_seq> set peer <new_ip>
+  tunnel-group <new_ip> type ipsec-l2l
+
+OPTION 2 – Update Local Subnet
+  access-list <acl> extended permit ip <local> <mask> <remote> <mask>
+
+OPTION 3 – Update Remote Subnet
+  access-list <acl> extended permit ip <local> <mask> <remote> <mask>
+
+OPTION 4 – Update Phase2
+  crypto map <map> <seq> set ikev1 transform-set <new_ts>
+
+OPTION 5 – Update PSK
+  tunnel-group <peer_ip> ipsec-attributes
+  ikev1 pre-shared-key <new_psk>
+
+Commands executed using:
+  conn.send_config_set([...])
+
+======================================================
+STEP 9 – SAVE CONFIGURATION
+======================================================
+
+conn.save_config()
+
+Internally ASA runs:
+  write memory
+
+Configuration becomes permanent.
+
+======================================================
+STEP 10 – POST-CHANGE VERIFICATION
+======================================================
+
+Commands:
+  show run crypto map
+  show run access-list
+  show run tunnel-group
+
+Before vs After output printed.
+
+======================================================
+STEP 11 – DISCONNECT
+======================================================
+
+In web_wrapper.py:
+
+  disconnect_asa(conn)
+
+======================================================
+STEP 12 – RESPONSE TO FRONTEND
+======================================================
+
+run_web() captures output using:
+  redirect_stdout()
+
+Returns full CLI output as text.
+
+Frontend:
+  asaOutput.innerText = response
+
+Output displayed in ASA terminal window.
+
+
+
+==========================================================================
+Change2):-In Update Module Added ADD/REPLACE option for “Remote Subnet”
+=========================================================================
+Step-by-step (what we did so far)
+
+1) Added ADD/REPLACE option for “Remote Subnet” in the Update modal
+   - In renderUpdateFields(), when choice "3" is selected:
+     a) Added a “Remote Subnet Action” dropdown (add / replace)
+     b) Added NEW remote subnet inputs: new_remote_ip, new_remote_mask
+     c) If “replace” is selected, show OLD subnet inputs: old_remote_ip, old_remote_mask
+
+2) Fixed instant show/hide for OLD subnet fields
+   - After setting sel.onchange, we called:
+     sel.onchange();
+     So if “replace” is already selected, the old fields appear immediately.
+
+3) Fixed submitUpdate() payload for Remote Subnet
+   - In submitUpdate(), for choice "3":
+     payload.remote_action
+     payload.new_remote_ip + payload.new_remote_mask
+     If remote_action === "replace":
+       payload.old_remote_ip + payload.old_remote_mask
+
+4) Removed wrong UI code from submitUpdate()
+   - Earlier, UI code (container.innerHTML / onchange) accidentally went into submitUpdate().
+   - We removed it and kept UI rendering only inside renderUpdateFields().
+
+5) Added/ensured closeModal() exists
+   - So Cancel works and the modal closes after success.
+   - Also resets updateChoice and clears updateDynamicFields.
+
+6) Added GUI warning + Yes/No confirmation for REPLACE
+   - Before calling fetch() for the update request:
+     show confirm() popup
+     If user clicks No -> cancel and return
+     If user clicks Yes -> set payload.user_confirmed = true
+
+7) Enforced confirmation in backend for REPLACE (safety)
+   - In update.py, before applying the replace:
+     If payload.user_confirmed is not true -> cancel and return
+
+8) Started making warning text consistent (same message)
+   - Standard warning text we decided:
+     "⚠️ WARNING: VPN traffic may be impacted if remote side is not updated. Do you want to proceed?"
+   - This can be used in both frontend confirm and backend prints.
+
+9) Added requirement for ADD to show warning BEFORE doing the change
+   - Add the same confirm() popup for remote_action === "add" before fetch().
+   - (Optional) also enforce it on backend using a flag (extra safety).
+
+10) Added/used “AFTER show run access-list” output (verification)
+   - After adding a subnet, print the ACL again so you can confirm the new subnet appears.

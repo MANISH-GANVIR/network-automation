@@ -1,0 +1,651 @@
+=================================================
+PROJECT DEPLOYMENT PLAN :-STEP-BY-STEP DEPLOYMENT
+=================================================
+
+SUMMARY:
+
+ Local dev → Git → GitHub → GitHub Actions
+                          	↓
+                 	Build + Test (automated)
+                          	↓
+                     	Deploy (automated)
+                          	↓
+                     	Azure VM
+                          	↓
+                     	Docker container
+                          	↓
+                 	Your app live! 🚀
+
+ Next time you push code:
+ $ git push origin main
+ Everything else is AUTOMATIC ✅ READY TO DEPLOY! 🚀
+================================================
+
+
+STEP 1: Prepare local
+·         $ mkdir my-project && cd my-project
+·         $ git init
+·         (Add files: web_wrapper.py, asa_vpn_ops.py, Dockerfile, requirements.txt, .gitignore)
+·         $ git add .
+·         $ git commit -m "Initial commit"
+·         $ git branch -M main
+STEP 2: Create GitHub repo
+·         GitHub → New repository → my-project
+·         Copy HTTPS URL
+STEP 3: Connect and push
+·         $ git remote add origin <GitHub-URL>
+·         $ git push -u origin main
+STEP 4: Create Azure VM
+·         Azure Portal → Virtual Machines → Create
+·         (Choose: Ubuntu 22.04, B1s, SSH key = id_rsa.pub)
+STEP 5: Get VM IP
+·         Azure Portal → VM → Public IP address
+·         Note this IP (e.g., 13.245.123.456)
+STEP 6: SSH to VM and install Docker
+·         $ ssh -i id_rsa ubuntu@13.245.123.456
+·         $ sudo apt install docker.io -y
+·         $ sudo usermod -aG docker ubuntu
+·         $ logout
+STEP 7: Prepare app directory on VM
+·         $ ssh -i id_rsa ubuntu@13.245.123.456
+·         $ mkdir /home/ubuntu/app
+·         $ cd /home/ubuntu/app
+·         $ git init
+·         $ git remote add origin https://github.com/user/my-project.git
+·         $ exit
+STEP 8: Add GitHub secrets
+·         GitHub → Settings → Secrets → Actions
+·         Add:
+·           - VM_HOST = 13.245.123.456
+·           - VM_USER = ubuntu
+·           - VM_SSH_KEY = (content of id_rsa)
+STEP 9: Create .github/workflows/deploy.yml
+·         (Use content from section 11)
+·         $ git add .github/
+·         $ git commit -m "Add workflow"
+·         $ git push origin main
+STEP 10: Add Azure NSG rules
+·         Azure Portal → VM → Networking
+·         Add 2 inbound rules (SSH port 22, HTTP port 80)
+STEP 11: Test deployment
+·         Make small code change:
+·         $ git add .
+·         $ git commit -m "Test"
+·         $ git push origin main
+
+·         Watch: GitHub → Actions tab
+·         Should see:
+·           ✅ Build job success
+·           ✅ Deploy job success
+STEP 12: Access app
+·         Open browser: http://13.245.123.456
+·         Should see your Flask app!
+
+
+13. COMMON COMMANDS
+GIT:
+·         $ git status (see changes)
+·         $ git log (see commits)
+·         $ git push origin main (upload)
+·         $ git pull origin main (download)
+DOCKER:
+·         $ docker build -t myapp . (create image)
+·         $ docker run -d -p 80:5000 myapp (start)
+·         $ docker ps (list running)
+·         $ docker logs myapp (see output)
+·         $ docker stop myapp (stop)
+SSH:
+·         $ ssh -i id_rsa ubuntu@IP (login to VM)
+·         $ scp -i id_rsa file ubuntu@IP:/path/ (copy file)
+AZURE CLI:
+·         $ az vm list (list VMs)
+·         $ az vm start -n name -g rg (start VM)
+
+
+14. TROUBLESHOOTING
+Problem: "Permission denied (publickey)"
+Check SSH secret has full key (BEGIN/END lines)
+Problem: "Docker command not found"
+sudo usermod -aG docker ubuntu, then logout/login
+Problem: "Connection refused"
+Check Azure NSG rule for port 80 is added
+Problem: "App not accessible"
+Check container running: docker ps, Check logs: docker logs myapp
+Problem: "Build fails"
+Check requirements.txt has all packages
+
+
+15. SECURITY CHECKLIST
+·         ✅ Never commit .env files
+·         ✅ Never commit private SSH key
+·         ✅ Use GitHub secrets for credentials
+·         ✅ Restrict NSG port 22 to your IP (not 0.0.0.0)
+·         ✅ Use strong SSH keys (4096-bit)
+·         ✅ Rotate secrets annually
+·         ✅ Keep system updated: apt update && apt upgrade
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===============================
+PROJECT DEPLOYMENT PLAN
+===============================
+
+Goal:
+Deploy automation application on Azure VM and make it accessible
+via URL with secure device connectivity.
+
+
+Step 1: Infrastructure Setup
+- Create Azure Linux VM (Ubuntu)
+- Open ports: 22 (SSH), 80 (HTTP), 443 (HTTPS)
+
+
+Step 2: Application Deployment
+- Clone project from GitHub to VM
+- Setup backend (Python service)
+- Deploy frontend using Nginx
+
+
+Step 3: Application Flow
+- User accesses application via browser (URL)
+- Frontend loads from Nginx
+- Frontend calls backend APIs
+- Backend executes automation tasks
+
+
+Step 4: Device Connectivity
+- Backend connects to firewall devices (ASA / Palo Alto)
+- Connection happens via VPN or internal network
+
+
+Step 5: Update Process
+- Developer pushes code to GitHub
+- VM pulls latest code
+- Backend is restarted
+- Frontend is updated
+
+
+Step 6: Security
+- Only Nginx (frontend) exposed to internet
+- Backend runs internally
+- Device communication secured via VPN
+
+
+Final Summary:
+Azure VM hosts frontend (Nginx) and backend (Python),
+users access via URL, backend securely connects to network devices,
+updates handled via Git workflow.
+
+
+===============================
+ARCHITECTURE DIAGRAM
+===============================
+
+                [ DEVELOPER / LAPTOP ]
+                         |
+                         | (git push)
+                         v
+                    [ GITHUB ]
+                         |
+                         | (git pull)
+                         v
+                [ AZURE LINUX VM ]
+                         |
+        -------------------------------------
+        |                                   |
+        v                                   v
+ [ FRONTEND (NGINX) ]            [ BACKEND (PYTHON API) ]
+        |                                   |
+        |                                   |
+        -----------[ INTERNAL API FLOW ]-----
+                         |
+                         v
+              [ VPN / INTERNAL NETWORK ]
+                         |
+                         v
+        [ FIREWALL DEVICES (ASA / PALO ALTO) ]
+
+
+===============================
+USER ACCESS FLOW
+===============================
+
+[ USER ]
+   |
+   v
+[ BROWSER ]
+   |
+   v
+[ PUBLIC URL / IP ]
+   |
+   v
+[ NGINX (FRONTEND) ]
+   |
+   v
+[ BACKEND API ]
+   |
+   v
+[ AUTOMATION EXECUTION ]
+   |
+   v
+[ NETWORK DEVICES ]
+
+
+===============================
+UPDATE FLOW
+===============================
+
+[ DEVELOPER ]
+   |
+   | code changes
+   v
+[ GITHUB ]
+   |
+   | git pull
+   v
+[ AZURE VM ]
+   |
+   | restart backend
+   | update frontend
+   v
+[ UPDATED APPLICATION LIVE ]
+
+
+===============================
+AZURE VM + DEPLOYMENT SCRIPT
+===============================
+
+
+ARCHITECTURE DIAGRAM:
+
+[ LAPTOP ]
+    |
+    | (git push)
+    v
+[ GITHUB ]
+    |
+    | (git pull)
+    v
+[ AZURE VM ]
+    |
+    |---------------------------|
+    |                           |
+    v                           v
+[ BACKEND ]              [ FRONTEND FILES ]
+ (port 5000)             (/var/www/html)
+    |                           |
+    |-----------[ NGINX ]-------|
+                |
+                v
+         [ PUBLIC IP ]
+                |
+                v
+         [ USER BROWSER ]
+
+
+===============================
+STEP 1: CREATE VM
+===============================
+Ubuntu 22.04
+Open ports: 22, 80, 443
+
+
+===============================
+STEP 2: CONNECT
+===============================
+ssh azureuser@<public-ip>
+
+
+===============================
+STEP 3: INSTALL
+===============================
+sudo apt update && sudo apt upgrade -y
+sudo apt install git python3-pip nginx -y
+
+
+===============================
+STEP 4: CLONE PROJECT
+===============================
+git clone https://github.com/manish-epicor/Automation.git
+cd Automation
+
+
+===============================
+STEP 5: BACKEND SETUP
+===============================
+cd backend
+pip3 install -r requirements.txt
+
+
+===============================
+STEP 6: RUN BACKEND
+===============================
+pip3 install gunicorn
+gunicorn -w 4 -b 0.0.0.0:5000 main:app
+
+
+===============================
+STEP 7: FRONTEND DEPLOY
+===============================
+cd ../frontend
+sudo cp -r * /var/www/html/
+
+
+===============================
+STEP 8: CONFIGURE NGINX
+===============================
+sudo nano /etc/nginx/sites-available/default
+
+Paste:
+
+server {
+    listen 80;
+    root /var/www/html;
+    index login.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:5000/;
+    }
+}
+
+
+===============================
+STEP 9: RESTART NGINX
+===============================
+sudo systemctl restart nginx
+
+
+===============================
+STEP 10: ACCESS
+===============================
+http://<public-ip>/login.html
+
+
+===============================
+UPDATE FLOW DIAGRAM
+===============================
+
+[LAPTOP] → git push → [GITHUB]
+[GITHUB] → git pull → [VM]
+[VM] → restart backend + copy frontend → [LIVE]
+
+
+===============================
+DAILY COMMANDS
+===============================
+
+Laptop:
+git add .
+git commit -m "update"
+git push
+
+VM:
+cd Automation
+git pull
+
+Restart backend:
+pkill gunicorn
+gunicorn -w 4 -b 0.0.0.0:5000 main:app
+
+Update frontend:
+cd frontend
+sudo cp -r * /var/www/html/
+
+
+===============================
+END
+===============================
+
+
+
+
+
+
+
+====================================================
+========================================
+AZURE VM + GITHUB + FULL DEPLOYMENT
+========================================
+
+----------------------------------------
+PART 1: CREATE VM IN AZURE
+----------------------------------------
+→ portal.azure.com → Virtual Machine → Create
+
+- VM Name → my-app-vm
+- OS → Windows / Linux
+- Public IP → Enabled
+- Ports:
+  → Windows → 3389
+  → Linux → 22
+
+----------------------------------------
+PART 2: CONNECT TO VM
+----------------------------------------
+Windows → RDP
+Linux → SSH
+
+----------------------------------------
+PART 3: INSTALL SOFTWARE
+----------------------------------------
+
+Windows:
+- Python
+- Git
+- IIS
+
+Linux:
+sudo apt update
+sudo apt install python3-pip nginx git -y
+
+----------------------------------------
+PART 4: CLONE FROM GITHUB
+----------------------------------------
+
+git clone https://github.com/your-username/your-project
+
+Structure:
+----------------------------------------
+your-project/
+   ├── frontend/
+   └── backend/
+
+----------------------------------------
+PART 5: RUN BACKEND (DETAILED 🔥)
+----------------------------------------
+
+cd backend
+
+Install:
+pip install -r requirements.txt
+
+----------------------------------------
+CHECK CODE (IMPORTANT)
+----------------------------------------
+
+main.py must contain:
+
+app.run(host="0.0.0.0", port=5000)
+
+----------------------------------------
+RUN BACKEND
+----------------------------------------
+
+Windows:
+python main.py
+
+Linux:
+python3 main.py
+
+----------------------------------------
+VERIFY
+----------------------------------------
+
+VM browser:
+http://localhost:5000
+
+Laptop:
+http://<Public-IP>:5000
+
+----------------------------------------
+IF NOT WORKING
+----------------------------------------
+
+- Open NSG port 5000
+- Allow firewall
+
+----------------------------------------
+PART 6: OPEN PORTS
+----------------------------------------
+
+- 80 → Frontend
+- 5000 → Backend
+
+----------------------------------------
+PART 7: DEPLOY FRONTEND
+----------------------------------------
+
+Windows (IIS):
+→ Copy frontend → C:\inetpub\wwwroot
+
+Linux (NGINX):
+→ Copy frontend → /var/www/html/
+
+----------------------------------------
+PART 8: INTEGRATION
+----------------------------------------
+
+In frontend JS:
+
+Replace:
+http://localhost:5000
+
+With:
+http://<Public-IP>:5000
+
+----------------------------------------
+PART 9: USER ACCESS
+----------------------------------------
+
+User Browser:
+http://<Public-IP>
+
+→ Frontend loads
+→ Calls backend API
+
+----------------------------------------
+FINAL FLOW
+----------------------------------------
+
+User
+ ↓
+Frontend (IIS / NGINX)
+ ↓ API call
+Backend (Python - port 5000)
+ ↓
+Response
+
+========================================
+----------------------------------------
+FINAL DEPLOYMENT FLOW (REAL-WORLD)
+----------------------------------------
+
+STEP 1: LOCAL MACHINE
+----------------------------------------
+- Pull latest code:
+  → git pull
+
+- Make code changes (frontend/backend)
+
+----------------------------------------
+
+STEP 2: PUSH TO GITHUB
+----------------------------------------
+git add .
+git commit -m "update changes"
+git push
+
+----------------------------------------
+
+STEP 3: AZURE VM (SERVER)
+----------------------------------------
+- Login to VM
+
+cd your-project
+
+- Pull latest code:
+  → git pull
+
+----------------------------------------
+
+STEP 4: RESTART BACKEND
+----------------------------------------
+- Stop old process
+- Start again:
+
+  python main.py
+
+----------------------------------------
+
+RESULT
+----------------------------------------
+- Updated code is now live
+- Users can see new changes
+
+----------------------------------------
+
+IMPORTANT NOTES
+----------------------------------------
+
+- Always update code on local machine
+- Do NOT edit code directly on VM
+- Restart is required to apply new changes
+
+----------------------------------------
+
+FLOW SUMMARY
+----------------------------------------
+
+Local → GitHub → VM → Restart → Live
+
+“Code is updated locally, pushed to GitHub,
+ pulled on the server, and the application is
+ restarted to reflect changes.”
+----------------------------------------

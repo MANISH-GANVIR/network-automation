@@ -1,0 +1,522 @@
+uvicorn backend.main:app
+
+Enter VPN Peer IP:4.227.229.249
+Enter ACL name:outside_cryptomap_1
+Enter Local Subnet IP:192.168.10.0
+Enter Local Subnet Mask:255.255.255.0
+Enter Remote Subnet IP:10.2.5.0
+Enter Remote Subnet Mask:255.255.255.0
+Pre-Shared Key: psk@123
+----------------------------------------------------------------------
+Change Request:-
+Not Needed===>clear crypto ikev1 sa <==need to add Peer ip
+clear crypto ikev1 sa | Peer ip
+
+Andrew Suggestion:-
+
+Update VPN tunnel
+------------------
+first need to search with existing peer ip and configuration in GUI
+
+   Peer IP of the VPN you want to update: X.X.X.X ,finally block error
+        *Display existing Configuration (
+                Peer IP,
+                Local subnet,
+                Remote subnets,
+                Encryption settings (phase 2),
+                Pre-shared key)
+            Script to prompt "What VPN setting do you want to update?"
+                *Display Options*
+                1) Peer IP (need to check duplicate)
+                2) Local subnet(need to check duplicate)
+                3) Remote subnet(need to check duplicate)
+                4) Phase 2 Encryption settings(need to check duplicate)
+                5) Pre-Shared Key(need to check duplicate)
+            If Option is selected, update only that option
+                *User selects option 1*
+                What is the new Peer IP?
+
+
+
+
+
+
+
+
+============backend ON=================================================
+uvicorn backend.main:app
+
+--------------------------------------------------------
+ERROR:    [Errno 10048] error while attempting to bind on address ('127.0.0.1', 8000): only one usage of each socket address (protocol/network address/port) is normally permitted
+netstat -ano | findstr :8000
+TCP    127.0.0.1:8000    0.0.0.0:0    LISTENING     28400
+taskkill /PID  28400 /F
+uvicorn backend.main:app
+----------------------------------------------------------
+========================================================
+Restart Backend:-
+    taskkill /F /IM python.exe
+    netstat -ano | findstr :8000
+    uvicorn backend.main:app --reload
+
+taskkill /F /IM python.exe
+# Forcefully stops all running Python processes.
+# Useful when uvicorn is stuck or port is not getting released.
+# Ensures a clean backend restart.
+netstat -ano | findstr :8000
+# Checks if port 8000 is currently in use.
+# If output shows LISTENING with a PID, that port is occupied.
+# If no output appears, port 8000 is free.
+uvicorn backend.main:app --reload
+# Starts the FastAPI backend server.
+# backend.main = path to main.py file.
+# app = FastAPI instance inside main.py.
+# --reload = auto restart server when code changes.
+# By default runs on http://127.0.0.1:8000
+uvicorn backend.main:app --reload --port 8001
+# Starts backend on port 8001 instead of default 8000.
+
+------------------------------------------------------------
+1. uvicorn backend.main:app --reload
+------------------------------------------------------------
+Purpose:
+Starts the FastAPI backend server.
+
+Breakdown:
+- uvicorn → ASGI server used to run FastAPI applications.
+- backend.main → Python module path (backend/main.py).
+- app → FastAPI instance inside main.py.
+- --reload → Automatically restarts server when code changes.
+
+Result:
+Server runs at:
+http://127.0.0.1:8000
+
+------------------------------------------------------------
+2. uvicorn backend.main:app --reload --port 8000
+------------------------------------------------------------
+Same as above, but explicitly defines port 8000.
+
+Port 8000 is commonly used for development servers.
+
+------------------------------------------------------------
+3. netstat -ano | findstr :8000
+------------------------------------------------------------
+Purpose:
+Checks whether port 8000 is already in use.
+
+Breakdown:
+- netstat -ano → Shows all active network connections and listening ports.
+- findstr :8000 → Filters output to show only port 8000.
+
+If output shows LISTENING with a PID,
+it means some process is using port 8000.
+
+------------------------------------------------------------
+4. taskkill /F /IM python.exe
+------------------------------------------------------------
+Purpose:
+Forcefully terminates all running Python processes.
+
+Useful when:
+- Uvicorn is stuck.
+- Port 8000 is not releasing.
+- Backend needs clean restart.
+
+------------------------------------------------------------
+5. taskkill /PID 12345 /F
+------------------------------------------------------------
+Purpose:
+Kills a specific process using its Process ID (PID).
+
+Used when netstat shows a PID blocking port 8000.
+
+------------------------------------------------------------
+6. fetch("/asa/update")
+------------------------------------------------------------
+Frontend JavaScript command.
+
+Purpose:
+Sends HTTP request from browser to backend API.
+
+Example:
+fetch("/asa/update", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+})
+
+This sends data to FastAPI backend for processing.
+
+------------------------------------------------------------
+7. http://127.0.0.1:8000/docs
+------------------------------------------------------------
+Swagger UI automatically generated by FastAPI.
+
+Purpose:
+- Confirms backend is running.
+- Shows available API routes.
+- Allows manual API testing.
+
+------------------------------------------------------------
+8. show run tunnel-group (ASA Command)
+------------------------------------------------------------
+Purpose:
+Displays VPN tunnel-group configuration on Cisco ASA firewall.
+
+Used during update validation phase.
+
+------------------------------------------------------------
+9. clear crypto ikev1 sa
+------------------------------------------------------------
+Purpose:
+Clears active IKEv1 Security Associations.
+
+Effect:
+Removes active VPN session (runtime only).
+Does NOT change configuration permanently.
+
+------------------------------------------------------------
+10. conn.send_config_set([...])
+------------------------------------------------------------
+Python (Netmiko) function.
+
+Purpose:
+Sends configuration mode commands to ASA firewall.
+
+Example:
+conn.send_config_set([
+    "access-list ACL_NAME extended permit ip ..."
+])
+
+------------------------------------------------------------
+11. conn.save_config()
+------------------------------------------------------------
+Purpose:
+Saves configuration permanently on ASA.
+
+Internally executes:
+write memory
+
+Without this, configuration changes are temporary.
+
+------------------------------------------------------------
+COMPLETE REQUEST FLOW
+------------------------------------------------------------
+
+Browser
+   ↓
+fetch("/asa/update")
+   ↓
+Uvicorn Server (Port 8000)
+   ↓
+FastAPI Route
+   ↓
+update_vpn()
+   ↓
+conn.send_config_set()
+   ↓
+ASA Firewall
+   ↓
+save_config()
+   ↓
+Response back to Browser
+
+------------------------------------------------------------
+SUMMARY
+------------------------------------------------------------
+
+Uvicorn → Runs backend server.
+Port 8000 → Communication channel for backend.
+Netstat → Checks port usage.
+Taskkill → Stops processes.
+Fetch → Sends frontend requests.
+save_config → Makes ASA changes permanent.
+-----------------------------------------------------------
+Restart Backend:-
+1)Check VPN Connection
+2)Restart Backend if needed
+    taskkill /F /IM python.exe
+    netstat -ano | findstr :8000
+    uvicorn backend.main:app --reload
+
+ 3)uvicorn backend.main:app --host 127.0.0.1 --port 8001
+===========================================================
+LOGIN:-
+'''
+ssh -oKexAlgorithms=+diffie-hellman-group14-sha1 -oHostKeyAlgorithms=+ssh-rsa -oMACs=+hmac-sha1 asaadmin@10.63.66.10
+AsA#Net@4519!
+
+The Cisco ASA device supports older SSH algorithms such as diffie-hellman-group14-sha1, ssh-rsa, and hmac-sha1. Modern OpenSSH clients disable these algorithms by default due to security concerns.
+Therefore, we explicitly enabled those algorithms in the SSH command to successfully negotiate the connection.
+'''
+========commit and push========================================================
+
+cd project-folder                      # Move into your project folder (where the Git repository exists)
+
+(panenv) PS C:\Users\manish.ganvir\PycharmProjects\Automation>  # Terminal prompt:
+                                        # - (panenv) = your active Python virtual environment
+                                        # - PS = PowerShell
+                                        # - Path = current working directory (project root)
+
+Working Directory ➝ Staging Area ➝ local Repository->Remote Repository
+git status   → Checks "current working directory" and "staging state".
+git add .    → Moves all changes to staging area.
+             → temporary holding space where you decide
+               which changes will be included in the next commit.
+
+git commit -m "message"  → Creates a versioned snapshot in local repository.
+git push     → Uploads local commits to remote repository.
+
+
+======>cmd==========================================================================
+show access-list
+-------------------------
+conf t
+no access-list outside_cryptomap_1 extended permit ip 192.168.60.0 255.255.255.0 10.2.5.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.50.0 255.255.255.0 10.2.5.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.40.0 255.255.255.0 10.2.5.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.70.0 255.255.255.0 10.2.5.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.80.0 255.255.255.0 10.2.5.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.90.0 255.255.255.0 10.2.5.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.2.6.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.40.0 255.255.255.0 10.2.6.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.50.0 255.255.255.0 10.2.6.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.60.0 255.255.255.0 10.2.6.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.70.0 255.255.255.0 10.2.6.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.80.0 255.255.255.0 10.2.6.0 255.255.255.0
+no access-list outside_cryptomap_1 extended permit ip 192.168.90.0 255.255.255.0 10.2.6.0 255.255.255.0
+
+end
+write memory
+--------------------------------------------------------------------------------
+
+------------------------------------------------------------
+1. Transform-Set
+------------------------------------------------------------
+A transform-set defines the encryption and integrity algorithms
+used during IPsec Phase-2 of a VPN tunnel.
+
+It determines how actual VPN traffic is protected.
+
+------------------------------------------------------------
+2. Transform-Set Syntax
+------------------------------------------------------------
+
+crypto ipsec ikev1 transform-set <NAME> <ENCRYPTION> <HASH>
+
+------------------------------------------------------------
+3. Example
+------------------------------------------------------------
+
+crypto ipsec ikev1 transform-set ESP-AES-256-SHA esp-aes-256 esp-sha-hmac
+
+Meaning:
+- ESP → Security protocol
+- AES-256 → Encryption algorithm
+- SHA → Integrity (hash) algorithm
+
+------------------------------------------------------------
+4. Where It Is Applied
+------------------------------------------------------------
+
+crypto map <MAP_NAME> <SEQ> set ikev1 transform-set <NAME>
+
+Example:
+
+crypto map outside_map 1 set ikev1 transform-set ESP-AES-256-SHA
+
+------------------------------------------------------------
+5. How Your Code Detects Transform-Set
+------------------------------------------------------------
+
+Command Used:
+    show run crypto map
+
+Python Code:
+    crypto_map_run = _show(conn, "show run crypto map")
+
+Logic:
+    if parts[5].lower() == "ikev1" and parts[6].lower() == "transform-set":
+        transform_set = parts[7]
+
+This extracts the currently configured transform-set.
+
+------------------------------------------------------------
+6. How Your Code Updates Transform-Set
+------------------------------------------------------------
+
+Python Code:
+    conn.send_config_set([
+        f"crypto map {map_name} {seq} set ikev1 transform-set {new_transform_set}"
+    ])
+
+Then saved permanently using:
+
+    conn.save_config()
+
+(Internally executes: write memory)
+
+------------------------------------------------------------
+7. Important Notes
+------------------------------------------------------------
+
+✔ Detects current
+✔ Detects current transform-set
+✔ Compares before updating
+✔ Updates if different
+✘ Does NOT validate if transform-set exists on ASA
+✘ Does NOT list available transform-sets
+
+
+BLR-LAB-FW1# show run crypto map
+crypto map outside_map 1 match address outside_cryptomap_1
+# Sequence 1 uses ACL "outside_cryptomap_1" to define interesting traffic (encryption domain)
+
+crypto map outside_map 1 set pfs group5
+# Enables Perfect Forward Secrecy using DH group 5 for Phase-2
+
+crypto map outside_map 1 set peer 4.227.229.249
+# Defines the remote VPN peer IP address
+
+crypto map outside_map 1 set ikev1 transform-set ESP-AES-256-SHA
+# Sets Phase-2 encryption policy (AES-256 encryption + SHA integrity)
+
+crypto map outside_map 1 set security-association lifetime kilobytes unlimited
+# Sets IPsec SA lifetime in kilobytes to unlimited
+
+crypto map outside_map 1 set reverse-route
+# Automatically injects remote subnet route into routing table
+
+crypto map outside_map 2 match address 2
+# Sequence 2 uses ACL named "2" for interesting traffic
+
+crypto map outside_map 2 set pfs group14
+# Enables PFS using stronger DH group 14
+
+crypto map outside_map 2 set peer 220.233.151.246
+# Defines second VPN peer IP
+
+crypto map outside_map 2 set ikev1 transform-set ESP-AES-256-SHA
+# Sets Phase-2 encryption policy for second tunnel
+
+crypto map outside_map 2 set security-association lifetime kilobytes unlimited
+# Unlimited data lifetime for IPsec SA
+
+crypto map outside_map 2 set reverse-route
+# Automatically adds remote route for this peer
+
+crypto map outside_map interface outside
+# Applies crypto map "outside_map" to the outside interface
+
+
+
+
+
+
+
+
+
+
+=========.gitignore============================================================
+git rm -r --cached **/__pycache__/
+git rm --cached **/*.pyc
+git commit -m "remove python cache files"
+git push
+
+
+
+
+
+
+
+
+
+=============================================================
+COMMAND: uvicorn backend.main:app --reload
+
+==================================================
+WHAT THIS COMMAND DOES
+==================================================
+
+1) This command starts the BACKEND SERVER.
+
+2) Backend means:
+   - FastAPI application
+   - Login API
+   - ASA automation APIs
+
+3) uvicorn:
+   - Python web server
+   - Runs FastAPI app
+
+4) backend.main:
+   - backend = folder name
+   - main = main.py file
+
+5) :app:
+   - app = FastAPI object inside main.py
+
+6) --reload:
+   - Auto-restart server on code change
+   - Used only in development
+
+==================================================
+SUCCESSFUL START OUTPUT (EXPLAINED)
+==================================================
+
+INFO:     Started server process [9912]
+→ Backend server process started successfully
+
+INFO:     Waiting for application startup.
+→ FastAPI is initializing routes and middleware
+
+INFO:     Application startup complete.
+→ Backend is READY to accept requests
+
+INFO:     Uvicorn running on http://127.0.0.1:8000
+→ Backend is LIVE on port 8000
+
+==================================================
+FRONTEND → BACKEND REQUESTS (RUNTIME OUTPUT)
+==================================================
+
+INFO:     127.0.0.1:60583 - "OPTIONS /login HTTP/1.1" 200 OK
+→ Browser preflight request (CORS check)
+→ Server allowed the request
+
+INFO:     127.0.0.1:60583 - "POST /login HTTP/1.1" 200 OK
+→ Login API called from frontend
+→ Username & password accepted
+→ Login SUCCESS
+
+INFO:     127.0.0.1:50493 - "POST /asa/discovery HTTP/1.1" 200 OK
+→ ASA Discovery button clicked
+→ Backend executed ASA automation
+→ Command SUCCESS
+
+==================================================
+WHAT "200 OK" MEANS
+==================================================
+
+200 OK =
+- Request reached backend
+- Backend processed it
+- No error occurred
+- Everything worked correctly
+
+==================================================
+IMPORTANT RULES
+==================================================
+
+1) If you do NOT see "Uvicorn running on http://127.0.0.1:8000"
+   → Backend is OFF
+
+2) If backend is OFF:
+   - Login fails
+   - ASA buttons do not work
+   - Frontend shows error
+
+3) Always run this command BEFORE opening frontend UI
+
+=============================================================

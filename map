@@ -1,0 +1,63 @@
+
+Frontend (app.js / UI Layer)
+    ↓
+FastAPI Route (main.py)
+    Function: asa_task()
+    Endpoint: POST /asa/{task}
+    ↓
+Task Dispatcher (web_wrapper.py)
+    Function: run_web()
+    ↓
+Connection Manager (client.py)
+    Function: connect_asa()
+    - Establish SSH using Netmiko
+    - Detect hostname
+    - Detect outside interface
+    ↓
+Netmiko Library (External Module)
+    Function: send_command()
+    - Executes ASA CLI commands:
+
+        show hostname
+        show run interface | include nameif
+        show route
+        show interface outside
+        show crypto ikev1 sa
+        show crypto ipsec sa
+        show run crypto map
+
+    ↓
+Discovery Logic (discovery.py)
+    Function: discover_tunnels()
+    - Parse CLI output using regex
+    - Extract:
+        * Crypto map name
+        * Sequence number
+        * Peer IP
+    - Determine tunnel status (UP/DOWN)
+    ↓
+Generate Tunnel Table
+    - CLI formatted output (print table)
+    - OR return stdout to Web UI
+
+
+===============================================================
+SIMPLE FLOW VIEW
+===============================================================
+
+Frontend (JS)
+      ↓
+FastAPI (/asa/{task})
+      ↓
+run_web()
+      ↓
+connect_asa()
+      ↓
+send_command("show route")
+send_command("show crypto ikev1 sa")
+send_command("show crypto ipsec sa")
+send_command("show run crypto map")
+      ↓
+Regex Parsing
+      ↓
+Tunnel Table Generation

@@ -1,0 +1,74 @@
+
+======================
+VPN Project Design:-
+======================
+ASA – INDIA
+│
+├── Site-to-Site VPN → Palo Alto (Peer: 4.227.229.249)
+│
+└── Host-to-Host VPN → External Cloud / App Server
+     Peer: 220.233.151.246
+
+=========================================================================================
+ASA-PA VPN Topology Overview:-
+
+                            🌍 INTERNET / WAN (UNDERLAY)
+  ASA-Firewall-INDIA<============IPsec VPN===================>PA-Firewall-USA
+---------------------------------------------------------------------------------------
+        ASA – INDIA (Bangalore)                         PA – USA (Cloud)
+        -----------------------                         -----------------
+
+        Outside (Public)                                Untrust (NATed Public)
+        Gig0/0 : 159.66.72.50 (Peer A)                   eth1/1 : 4.227.229.249(Peer B)
+                                                         (Unknown: 220.233.151.246)
+
+                     |                                          |
+                     |          IKE / IPsec (Phase 1 & 2)       |
+                     |==========================================|
+                     |                                          |
+        ======================= VPN OVERLAY (LOGICAL) ================================
+
+        ASA VPN (Policy-based)                       PA VPN (Route-based)
+        Crypto-map based                             Tunnel Interface
+        (No tunnel IP)                               tunnel.1 : 172.16.16.1/30
+
+        ==============================================================================
+                     |                                          |
+                     |                                          |
+        Inside Interface                               Trust Interface
+        Gig0/1 : 192.168.10.1/24                       eth1/2 : 10.2.2.4/32
+                     |                                          |
+                     |                                          |
+        INDIA LAN                                      USA LAN
+        192.168.10.0/24                                10.2.5.0/24
+        [Users / Servers]                              [Apps / Servers]
+
+
+-------------------------
+Physical interfaces:-
+-------------------------
+
+| Device     | Interface              | Zone / Role | IP Address     | Purpose                          |
+|------------|------------------------|-------------|----------------|----------------------------------|
+| ASA        | GigabitEthernet0/0     | Outside     | 159.66.72.50   | Internet / WAN (IPsec underlay)  |
+| Palo Alto  | ethernet1/1            | Untrust     | 10.2.1.4       | Internet-facing interface        |
+| ASA        | GigabitEthernet0/1     | Inside      | 192.168.10.1   | India LAN gateway                |
+| Palo Alto  | ethernet1/2            | Trust       | 10.2.2.4       | USA LAN gateway
+
+
+-------------------------
+Logical interfaces:-
+-------------------------
+
+| Device     | Interface        | IP Address        | VPN Type        | Purpose                                   |
+|------------|------------------|-------------------|-----------------|-------------------------------------------|
+| ASA        | Crypto-map VPN   | N/A               | Policy-based    | Encrypts traffic matching crypto ACL      |
+| Palo Alto  | tunnel.1         | 172.16.16.1/30    | Route-based     | Decrypted VPN overlay for r
+
+------------------------
+Summary:-
+------------------------
+- Physical interfaces carry encrypted VPN traffic over the Internet (underlay).
+- Logical interfaces represent the VPN tunnel where traffic is decrypted (overlay).
+- ASA uses policy-based VPN (crypto-map).
+- Palo Alto uses route-based VPN (tunnel interface).

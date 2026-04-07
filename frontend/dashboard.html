@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Page title shown in browser tab -->
+  <title>Automation Dashboard</title>
+
+  <!-- External CSS file for styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Main container for dashboard UI -->
+
+  <div class="container">
+
+    <!-- Dashboard heading -->
+    <h2>Dashboard</h2>
+
+    <!-- Project selection label -->
+    <label>Select Project</label>
+
+    <!--
+      Project dropdown
+      onchange="loadFirewalls()"
+      → Calls JS function when project is selected
+    -->
+    <select
+      id="projectSelect"
+      onchange="loadFirewalls()"
+      style="width:100%; padding:8px;"
+    >
+      <!-- Default option -->
+      <option value="">-- Select Project --</option>
+
+      <!-- Existing project -->
+      <option value="vpn_automation">VPN Automation</option>
+
+      <!-- Future option -->
+      <option value="add_project">+ Add Project</option>
+    </select>
+
+    <!--
+      Firewall menu (filled dynamically by JavaScript)
+      Example: ASA, Palo Alto
+    -->
+    <div id="firewallMenu" class="menu"></div>
+
+    <!--
+      ASA operations menu
+      Example: Build, Update, Reset, Troubleshoot
+    -->
+    <div id="asaMenu" class="menu"></div>
+
+  </div>
+
+  <!-- JavaScript file that handles UI logic -->
+  <script src="app.js"></script>
+<!-- ================= VPN PREVIEW MODAL ================= -->
+<div id="vpnModal" class="vpn-modal">
+  <div class="vpn-modal-content">
+    <span id="vpnModalClose">&times;</span>
+    <pre id="vpnModalText"></pre>
+  </div>
+</div>
+
+</body>
+</html>
+
+<!--
+  Output terminal for ASA automation
+  Initially hidden, shown when ASA task runs
+-->
+<pre id="asaOutput" class="asa-output" style="display:none"></pre>

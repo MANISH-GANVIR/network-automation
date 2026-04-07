@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Automation Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- FULL SCREEN WINDOW ROOT -->
+<div class="win-root" id="winRoot">
+
+  <!-- TOP WINDOW BAR -->
+  <div class="win-bar">
+    <div class="win-title">Automation Platform</div>
+    <div class="win-btns">
+      <button class="wbtn wmin" title="Minimize" onclick="winMin()"></button>
+      <button class="wbtn wmax" title="Maximize" onclick="winMax()"></button>
+      <button class="wbtn wclose" title="Close" onclick="winClose()"></button>
+    </div>
+  </div>
+<!-- ROTATING DIGITAL MESSAGE BAR -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>
+      👋😊 — WELCOME TO VPN AUTOMATION PORTAL ⚡🤖⚡
+      &nbsp;—&nbsp;
+      (✨ Make Your VPN Operations Easy & Fast! 😎)
+      &nbsp;—&nbsp;
+    </span>
+  </div>
+</div>
+
+  <!-- WINDOW CONTENT -->
+  <div class="win-content">
+
+    <div class="bg-overlay"></div>
+
+
+    <!-- ================= LOGIN VIEW ================= -->
+    <div id="loginView" class="page-center">
+      <div class="container">
+        <img src="assets/logo.png" class="logo">
+        <h2>Automation Login</h2>
+
+        <label>Username</label>
+        <input id="username" type="text">
+
+        <label>Password</label>
+        <input id="password" type="password">
+
+        <button onclick="login()">Login</button>
+        <div id="msg" class="error"></div>
+      </div>
+    </div>
+<!-- Background watermark -->
+<div class="watermark-name">
+  ✨ manish.ganvir@epicor.com
+</div>
+
+    <!-- ================= PROJECT VIEW ================= -->
+    <div id="projectView" class="page-center" style="display:none">
+      <div class="container">
+        <h2>Select Project</h2>
+        <button onclick="selectProject('vpn_automation')">VPN Automation</button>
+        <button disabled>+ Add Project</button>
+
+        <div class="footer-nav">
+          <button onclick="goBack()">Back</button>
+          <button class="exit" onclick="exitApp()">Exit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= FIREWALL VIEW ================= -->
+    <div id="firewallView" class="page-center" style="display:none">
+      <div class="container">
+        <h2>Select Firewall</h2>
+        <button onclick="selectFirewall('ASA')">ASA</button>
+        <button disabled>Palo Alto (Coming Soon)</button>
+
+        <div class="footer-nav">
+          <button onclick="goBack()">Back</button>
+          <button class="exit" onclick="exitApp()">Exit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ASA VIEW ================= -->
+    <div id="asaView" class="page-center" style="display:none">
+      <div class="asa-layout">
+
+        <div class="container asa-card">
+          <h2>Select VPN Operation</h2>
+            <button onclick="runASA('discovery')">Discovery</button>
+            <button onclick="runASA('reset')">Reset</button>
+            <button onclick="runASA('update')">Update</button>
+            <button onclick="runASA('build')">Build</button>
+            <button onclick="runASA('troubleshoot')">Troubleshoot</button>
+
+
+          <div class="footer-nav">
+            <button onclick="goBack()">Back</button>
+            <button class="exit" onclick="exitApp()">Exit</button>
+          </div>
+        </div>
+
+        <div class="asa-terminal-wrapper" id="asaTerminal">
+
+  <div class="terminal-bar">
+    <span>ASA CLI Output</span>
+    <div class="terminal-btns">
+      <span class="tbtn tmin" onclick="termMin()"></span>
+      <span class="tbtn tmax" onclick="termMax()"></span>
+      <span class="tbtn tclose" onclick="termClose()"></span>
+    </div>
+  </div>
+
+  <pre id="asaOutput" class="asa-output"></pre>
+
+</div>
+
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- 🔥 PROCESSING MODAL SCRIPT (PEHLE) -->
+<script src="processing-modal.js"></script>
+<!-- APP SCRIPT (BAAD MEIN) -->
+<script src="app.js"></script>
+
+<!-- ===== UPDATE MODAL ===== -->
+<div id="updateModal" class="modal-overlay">
+  <div class="modal-box big-modal">
+
+    <!-- 🔥 WINDOW CONTROLS -->
+    <div class="modal-bar">
+      <span class="modal-title">Select Update Option</span>
+      <div class="modal-btns">
+        <span class="mbtn mmin" onclick="modalMin()"></span>
+        <span class="mbtn mmax" onclick="modalMax()"></span>
+        <span class="mbtn mclose" onclick="closeModal()"></span>
+      </div>
+    </div>
+
+    <!-- CURRENT CONFIG (SCROLL + COPY ENABLED) -->
+    <div id="modalCurrentConfig" class="modal-config-box"></div>
+
+    <!-- 🔥 RESIZABLE DIVIDER -->
+    <div class="config-resizer" id="configResizer"></div>
+
+    <!-- UPDATE OPTION DROPDOWN -->
+    <select id="updateChoice" onchange="renderUpdateFields()">
+      <option value="">-- Select Option --</option>
+      <option value="1">Update Peer IP</option>
+      <option value="2">Update Local Subnet</option>
+      <option value="3">Update Remote Subnet</option>
+      <option value="4">Update Phase-2 Encryption</option>
+      <option value="5">Update Pre-Shared Key</option>
+    </select>
+
+    <!-- 🔥 Dynamic input fields yaha render honge -->
+    <div id="updateDynamicFields" style="margin-top:15px;"></div>
+
+    <div class="modal-buttons">
+      <button onclick="submitUpdate()">Continue</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+</body>
+</html>

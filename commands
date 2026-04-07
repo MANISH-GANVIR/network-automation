@@ -1,0 +1,603 @@
+============ASA Modules=====================================
+
+========MODULE-1:-DISCOVERY=================================
+------------------------------------------------------------
+PART 1 - CONNECTION & INTERFACE DISCOVERY
+------------------------------------------------------------
+-show route (used to detect outside interface)
+   ↓
+-show run interface | include nameif  (Used to validate interface name ex:inside,outside,DMZ)
+   ↓
+-show interface outside (confirm interface and extract IP)
+
+
+
+
+1) #show hostname
+ - Purpose: Retrieve firewall hostname
+
+2) #show run interface | include nameif
+   - Purpose: to check configured interfaces names and roles
+    nameif outside
+    nameif inside
+    nameif DMZ
+   -it can be Used to confirm that 'outside' interface exists.
+
+3) #show interface <interface_logical_name>
+   - Example: show interface outside
+     Interface GigabitEthernet0/0 "outside", is up, line protocol is up
+     MAC address bc16.65b4.9431, MTU 1500
+     IP address 159.66.72.50, subnet mask 255.255.255.0
+   - Purpose:
+       - Verify interface operational state
+       - Extract outside IP address
+       - Validate correct interface detection
+
+3) #show route
+   - Purpose: To Check the default route (S* 0.0.0.0/0).
+   - And to validate internet-facing (outside) interface name.
+
+
+
+------------------------------------------------------------
+PART 2 - VPN TUNNEL DISCOVERY
+------------------------------------------------------------
+
+5) show crypto ikev1 sa
+   - Purpose: Check Phase 1 (IKE) Security Associations.
+   - If peer IP is present → Phase 1 is UP.
+
+6) show crypto ipsec sa
+   - Purpose: Check Phase 2 (IPsec) Security Associations.
+   - If peer IP is present → Phase 2 is UP (traffic flowing).
+
+7) show run crypto map
+   - Purpose:used to verify VPN policy configuration on Cisco ASA.
+       - Extract crypto map name
+       - Extract sequence number
+       - Extract peer IP address
+   - Used to build tunnel inventory.
+
+------------------------------------------------------------
+TUNNEL STATUS LOGIC (UP/DOWN)
+------------------------------------------------------------
+
+If peer IP found in:
+    show crypto ikev1 sa
+    OR
+    show crypto ipsec sa
+
+→ Tunnel Status = UP
+Else
+→ Tunnel Status = DOWN
+=============================================================
+
+=============================================================
+        MODULE-2:-RESET
+=============================================================
+The VPN reset process identifies the peer IP from the crypto
+map configuration and terminates the active session using
+
+'vpn-sessiondb logoff tunnel-group <peer-ip>'.
+
+The tunnel status is verified using
+    'show crypto ikev1 sa'
+    and
+    'show crypto ipsec sa'.
+===========================================================
+STEP 1 - CHECK EXISTING VPN STATUS
+-----------------------------------------------------------
+Command:show crypto ikev1 sa
+Purpose:Check Phase-1 (IKE) Security Associations.
+If a peer IP is present → Phase-1 tunnel is active.
+
+Command:show crypto ipsec sa
+Purpose:Check Phase-2 (IPsec) Security Associations.
+If the peer IP appears → IPsec tunnel is passing traffic.
+-----------------------------------------------------------
+STEP 2 - IDENTIFY VPN CONFIGURATION
+-----------------------------------------------------------
+Command:show run crypto map
+Purpose:Used to read the VPN crypto map configuration.
+Extracts:
+- Crypto map name
+- Sequence number
+- Peer IP address
+This information is used to identify the correct VPN tunnel
+that needs to be reset.
+-----------------------------------------------------------
+STEP 3 - RESET / TERMINATE VPN SESSION
+-----------------------------------------------------------
+Command:vpn-sessiondb logoff tunnel-group <peer-ip>
+Example:vpn-sessiondb logoff tunnel-group 4.227.229.249
+Purpose:Terminates the existing VPN session associated with the
+specified tunnel-group (peer IP).
+Effect:
+- Clears the active VPN session
+- Forces the tunnel to renegotiate when traffic starts again
+-----------------------------------------------------------
+STEP 4 - POST RESET VERIFICATION
+-----------------------------------------------------------
+Command:
+show crypto ikev1 sa
+show crypto ipsec sa
+Purpose:
+Verify that the existing VPN sessions have been cleared.
+-----------------------------------------------------------
+RESET WORKFLOW (AUTOMATION LOGIC)
+
+-----------------------------------------------------------
+
+show crypto ikev1 sa
+show crypto ipsec sa
+        ↓
+Identify peer IP from crypto map
+        ↓
+vpn-sessiondb logoff tunnel-group <peer-ip>
+        ↓
+Terminate VPN session
+        ↓
+show crypto ikev1 sa
+show crypto ipsec sa
+        ↓
+Verify reset result
+
+"""
+==================================================================
+Module-03:-Update
+==================================================================
+
+CISCO ASA VPN AUTOMATION – REAL PRODUCTION WORKFLOW
+
+This module handles VPN configuration updates on Cisco ASA.
+
+Workflow Overview:
+
+1.  Netmiko establishes SSH connection to ASA Firewall to read the current configuration and apply
+
+from netmiko import ConnectHandler   #  from Netmiko library we aare importing ConnectHandler class
+connect_handler = ConnectHandler(
+    device_type="cisco_asa", #(Syntax:parameter=value)
+    host="159.66.72.50",, #(Syntax:parameter=value)
+    username="admin",, #(Syntax:parameter=value)
+    password="password", #(Syntax:parameter=value)
+)
+
+2. Disable Pagination
+
+   -Command: terminal pager 0 #To disable pagination
+
+   -Cisco ASA normally pauses long command outputs with "--More--".
+    Automation requires full command output without interruption,
+    so pagination is disabled.
+
+3. Verify VPN Peer Exists
+   Syntax:show run tunnel-group <peer_ip>
+   Command:show run tunnel-group 4.227.229.249
+
+
+4. Identify Crypto Map to check current VPN configuration
+   Command:show run crypto map
+
+    The crypto map defines the core VPN configuration including:
+    • Crypto map name
+    • Sequence number
+    • Peer IP
+    • Transform set
+    • Encryption domain ACL
+
+5. Identify Encryption Domain
+-An encryption domain defines which local and remote networks are allowed
+ to communicate through the IPsec VPN tunnel.
+
+-Command:show run access-list <acl_name>
+-Example:show run access-list outside_cryptomap_1
+-Output:
+access-list outside_cryptomap_1 extended permit ip
+192.168.10.0 255.255.255.0
+10.2.5.0 255.255.255.0
+
+
+6. Parse Object Networks:- To Extract real subnet from object network
+-Command:show run
+
+Command
+--------------------------------------------------
+show run  (to find IP and subnet mask for object network)
+--------------------------------------------------
+Syntax
+--------------------------------------------------
+object network <object_name>
+ subnet <ip_address> <subnet_mask>
+
+Example Output
+--------------------------------------------------
+object network 10.2.5.0_24
+ subnet 10.2.5.0 255.255.255.0
+
+object network 10.2.6.0_24
+ subnet 10.2.6.0 255.255.255.0
+
+How Automation Extracts It
+--------------------------------------------------
+The automation runs "show run" and reads the output
+line-by-line. When it finds the keyword "object network",
+it stores the object name. When it finds the "subnet"
+line below it, it extracts the IP and subnet mask.
+
+Code with Comment
+--------------------------------------------------
+show_run = connection.send_command("show run")
+
+
+objects = {} # dictionary to store object → subnet mapping
+
+current_object = None
+
+for line in show_run.splitlines():
+
+    # detect object network
+    if line.startswith("object network"):
+        current_object = line.split()[2]
+
+    # detect subnet inside object
+    elif line.strip().startswith("subnet") and current_object:
+
+        parts = line.strip().split()
+
+        ip = parts[1]       # subnet IP
+        mask = parts[2]     # subnet mask
+
+        objects[current_object] = (ip, mask)
+
+        current_object = None
+
+
+
+==================================================================
+STEP 7 – Find Object Groups
+==================================================================
+Object groups allow multiple networks to be grouped
+together. The VPN ACL may reference an object group
+instead of individual networks.
+
+Automation reads the object group to identify which
+object networks are used in the VPN.
+
+
+Command:show run object-group id <group_name>
+--------------------------------------------------
+
+
+Syntax
+--------------------------------------------------
+object-group network <group_name>
+ network-object object <object_name>
+
+Example
+--------------------------------------------------
+show run object-group id AZURE_PA_NET
+
+Example Output
+--------------------------------------------------
+object-group network AZURE_PA_NET
+ network-object object 10.2.5.0_24
+ network-object object 10.2.6.0_24
+
+==================================================================
+Dynamic Object-Group Detection
+==================================================================
+
+Why
+--------------------------------------------------
+In production environments, the object-group name
+is not fixed. Different VPN configurations may use
+different object-group names.
+
+Example:
+AZURE_PA_NET
+AWS_REMOTE_NET
+REMOTE_SUBNETS
+
+Therefore automation must dynamically identify the
+object-group name from the VPN ACL configuration.
+
+
+Step 1 – Read VPN ACL
+--------------------------------------------------
+Command
+
+show run access-list <acl_name>
+
+Example
+
+show run access-list outside_cryptomap_1
+
+
+Example Output
+
+access-list outside_cryptomap_1 extended permit ip
+192.168.10.0 255.255.255.0
+object-group AZURE_PA_NET
+
+
+From this ACL line automation detects:
+
+object-group AZURE_PA_NET
+
+
+Step 2 – Extract Object Group Name
+--------------------------------------------------
+Python code parses the ACL line and extracts the
+object-group name.
+
+
+Code Example with Comment
+--------------------------------------------------
+
+acl_output = connection.send_command(
+    "show run access-list outside_cryptomap_1"
+)
+
+group_name = None
+
+for line in acl_output.splitlines():
+
+    if "object-group" in line:
+
+        parts = line.split()
+
+        group_name = parts[-1]   # extract object-group name
+
+
+Result
+
+group_name = AZURE_PA_NET
+
+
+Step 3 – Run Object Group Command Dynamically
+--------------------------------------------------
+
+command = f"show run object-group id {group_name}"
+
+output = connection.send_command(command)
+
+
+Final Command Executed
+
+show run object-group id AZURE_PA_NET
+
+
+==================================================================
+Summary
+==================================================================
+
+1. Automation first finds the ACL used in the VPN
+   from the crypto map.
+
+   Command:show run crypto map
+
+
+2. It reads the ACL to check if an object-group
+   is used instead of direct subnets.
+
+   Command:show run access-list <acl_name>
+
+
+3. If an object-group is found, the automation
+   extracts the object-group name dynamically.
+
+   Example:object-group AZURE_PA_NET
+
+
+4. Then it reads the object-group configuration
+   to get all object names.
+
+   Command:
+   show run object-group id <group_name>
+
+
+5. Finally, it reads the object network definitions
+   from the running configuration to convert object
+   names into real subnet values.
+
+   Command:
+   show run
+
+
+Result:Automation identifies the actual remote subnets
+used in the VPN configuration.
+Object-group name is NOT hardcoded.
+
+Automation flow:
+
+show run crypto map
+        │
+        ▼
+Find ACL name
+        │
+        ▼
+show run access-list <ACL>
+        │
+        ▼
+Detect object-group
+        │
+        ▼
+show run object-group id <group_name>
+        │
+        ▼
+Get object names
+        │
+        ▼
+show run
+        │
+        ▼
+Get real subnet
+=============================================================================
+8. Display Current VPN Configuration
+==================================================================
+STEP 8 – Display Current VPN Configuration
+==================================================================
+
+Why:Before making any changes, the script displays the
+current VPN configuration so the network engineer
+can review the existing settings and verify that
+the correct VPN is being updated.
+This helps prevent accidental changes in a
+production environment.
+
+
+Commands Used
+--------------------------------------------------
+
+1. Verify Peer
+
+show run tunnel-group <peer_ip>
+
+Example
+show run tunnel-group 4.227.229.249
+
+
+2. Identify Crypto Map and Phase-2 Encryption
+
+show run crypto map
+
+
+3. Identify Encryption Domain (ACL)
+
+show run access-list <acl_name>
+
+
+Example
+show run access-list outside_cryptomap_1
+
+
+Example Output
+--------------------------------------------------
+
+Peer IP
+4.227.229.249
+
+Local Subnets
+192.168.10.0 255.255.255.0
+
+Remote Subnets
+10.2.5.0 255.255.255.0
+10.2.6.0 255.255.255.0
+
+Phase-2 Encryption
+ESP-AES-256-SHA
+
+
+Backend Code with Comments
+--------------------------------------------------
+
+# Get tunnel-group configuration
+tg_output = connection.send_command(
+    f"show run tunnel-group {peer_ip}"
+)
+
+# Get crypto map configuration
+crypto_output = connection.send_command(
+    "show run crypto map"
+)
+
+# Get encryption domain ACL
+acl_output = connection.send_command(
+    f"show run access-list {acl_name}"
+)
+
+
+# Display current VPN configuration
+print("\n================ CURRENT VPN CONFIG ================\n")
+
+print("Peer IP")
+print(peer_ip)
+
+print("\nLocal Subnets")
+for local in local_subnets:
+    print(local)
+
+print("\nRemote Subnets")
+for remote in remote_subnets:
+    print(remote)
+
+print("\nPhase-2 Encryption")
+print(transform_set)
+
+print("\n====================================================")
+
+
+Summary
+--------------------------------------------------
+The script collects VPN information using multiple
+ASA commands and displays the current configuration
+to the engineer before any update operation is
+performed.
+
+9. User Selects Update Operation
+   1 Update Peer IP
+   2 Update Local Subnet
+   3 Update Remote Subnet
+   4 Update Phase2 Encryption
+   5 Update PSK
+
+10. Apply Configuration Changes
+
+
+Example Commands:-
+-Add Peer
+crypto map outside_map 3 set peer 5.5.5.5 tunnel-group 5.5.5.5 type ipsec-l2l
+
+-Add Local Subnet
+access-list outside_cryptomap_1 extended permit ip
+192.168.70.0 255.255.255.0
+10.2.5.0 255.255.255.0
+
+-Replace Remote Subnet
+no access-list outside_cryptomap_1 extended permit ip
+192.168.10.0 255.255.255.0
+10.2.5.0 255.255.255.0
+
+access-list outside_cryptomap_1 extended permit ip
+192.168.10.0 255.255.255.0
+10.2.20.0 255.255.255.0
+
+-Update Encryption
+crypto map outside_map 1 set ikev1 transform-set TEST_4
+
+-Update PSK
+tunnel-group 4.227.229.249 ipsec-attributes ikev1 pre-shared-key NewSecretKey
+
+11. Save Configuration
+
+write memory
+----------------------------------------------
+Architecture
+
+User
+ ↓
+Python Automation
+ ↓
+Netmiko SSH
+ ↓
+Cisco ASA
+ ↓
+Configuration Update
+--------------------
+1 Connect to ASA
+2 Disable pager
+3 Verify tunnel-group
+4 Read crypto map
+5 Read ACL
+6 Parse objects
+7 Show current config
+8 User menu
+9 Select operation
+10 Apply configuration changes
+    ├─ Update Local Subnet
+    │    ├─ Add
+    │    └─ Replace
+    └─ Update Remote Subnet
+         ├─ Add
+         └─ Replace

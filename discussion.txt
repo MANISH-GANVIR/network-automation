@@ -1,0 +1,280 @@
+Enter VPN Peer IP:4.227.229.249
+Enter ACL name:outside_cryptomap_1
+Enter Local Subnet IP:192.168.10.0
+Enter Local Subnet Mask:255.255.255.0
+Enter Remote Subnet IP:10.2.5.0
+Enter Remote Subnet Mask:255.255.255.0
+Pre-Shared Key: psk@123
+----------------------------------------------------------------------
+
+
+Change Suggestions:-
+===================
+1)need to add Peer ip
+clear crypto ikev1 sa | Peer ip
+
+
+
+2)Update VPN tunnel
+------------------
+first need to search with existing peer ip and configuration in GUI
+
+   Peer IP of the VPN you want to update: X.X.X.X ,finally block error
+        *Display existing Configuration (
+                Peer IP,
+                Local subnet,
+                Remote subnets,
+                Encryption settings (phase 2),
+                Pre-shared key)
+            Script to prompt "What VPN setting do you want to update?"
+                *Display Options*
+                1) Peer IP (need to check duplicate)
+                2) Local subnet(need to check duplicate)
+                3) Remote subnet(need to check duplicate)
+                4) Phase 2 Encryption settings(need to check duplicate)
+                5) Pre-Shared Key(need to check duplicate)
+            If Option is selected, update only that option
+                *User selects option 1*
+                What is the new Peer IP?
+
+======================================================================
+
+-----------
+change 1:-Reset commands
+From:
+clear crypto ikev1 sa X.X.X.X
+clear crypto ipsec sa peer X.X.X.X
+
+Move to:
+vpn-sessiondb logoff tunnel-group X.X.X.X
+
+change 2:-discovery:
+-instead of sequence number we need to enter peer ip Address
+--------------------------------------------
+
+change 3:-Update
+
+ Option 3: Update Remote subnet
+    Sub-prompt
+        1) Add New Remote subnet
+        2) Replace Existing Remote subnet
+
+        If Option 2
+            Which remote subnet would you like to replace?
+                *List existing remote subnets*
+                Example:
+                    1) 10.2.5.0 255.255.255.0
+                    2) 10.2.6.0 255.255.255.0
+                If they select option 1
+                    What is the new remote subnet?
+                    *User inputted subnet* 10.2.7.0 255.255.255.0
+
+                     (Script prompts user) :-Please confirm that you want
+                     to replace remote subnet 10.2.5.0 255.255.255.0 with
+                     10.2.7.0 255.255.255.0
+                        *User has to select Yes or No*
+                     if yes then in backend the script will do the following:
+                        -Delete existing proxy-id with new remote subnet
+
+On the confirmation box, add something like:
+"Be sure to coordinate with the customer to make the same change on their side"
+                 After Update  need to display this prompt
+                 "Update is successfully completed please Be sure to coordinate with the customer to make the same change on their side"
+===============================================================================
+On hold for now,
+for reset:would like to see "appears to be functional" AND/OR Encaps no decaps etc
+
+NO  -troubleshoot
+NO  -build
+======================================
+
+
+19/03/ 2026
+========================================
+Over all change and Conclusion  Summary :-
+“For now, we’ll keep both the frontend and backend on the same Azure VM to simplify deployment,
+ and focus on implementing and validating the VPN operation logic before moving to a more scalable architecture.”
+
+Next Plan:-“We will deploy our application on an Azure Linux VM or Windows VM
+and implement AAA (Authentication, Authorization, and Accounting) to ensure
+secure user access,role-based control, and proper activity tracking.
+
+
+1)change Display message in output from " Running ASA reset " to
+  ==>Running ASA Tunnel Reset <==Mike Suggestion,To Avoid confusion
+     and to make it more specific to our VPN tunnel reset.
+
+2) Deployment (VM on Azure)
+- Hosting the application on an Azure Linux VM with a public IP
+  to make it accessible over the internet.
+
+-Linux is preferred because it offers a more efficient environment for
+ automation and application hosting better performance, and lower cost.
+
+
+----------------------------------------
+        ==AAA==
+----------------------------------------
+3) Authentication
+- Verifying user identity using login credentials such as username and password.
+or
+- Integrating with Active Directory for centralized user authentication and management.
+or
+- Implementing multi-factor authentication (MFA) using OTP, biometrics, or other verification methods.
+
+----------------------------------------
+
+4) Authorization (AAA)
+- User Mode and Expert(or Admin) Mode
+- Providing role-based access control to define what actions a user is
+  allowed to perform.
+
+
+----------------------------------------
+
+5) Accounting (AAA)
+- Logging and tracking user activities for auditing, monitoring, and security purposes.
+
+----------------------------------------
+
+=============================================================================
+PROJECT DEPLOYMENT PLAN – AZURE VM (VPN AUTOMATION PORTAL)
+=============================================================================
+
+1. CURRENT STATE (What is happening now)
+
+- The application is currently running on localhost (e.g., http://localhost:63342)
+- It is only accessible from the developer’s local machine
+- Other users or team members cannot access the application
+- This is only a development/testing setup and not suitable for production use
+
+
+==================================================
+
+2. TARGET STATE (What we want to achieve)
+
+- The application will be deployed on an Azure Virtual Machine (VM)
+- The VM will have a Public IP address
+- The application will be accessible over the internet
+- Multiple users will be able to access it through a browser
+
+Example:
+http://<public-ip>
+OR
+http://yourdomain.com
+
+
+==================================================
+
+3. SIMPLE FLOW (Architecture Overview)
+
+User (Internet)
+      ↓
+Public IP / Domain
+      ↓
+Azure VM (Linux)
+      ↓
+Application (Backend + Frontend)
+
+
+==================================================
+
+4. LINUX vs WINDOWS
+
+- Automation Friendly:
+  Linux provides native support for Python, APIs, and SSH which are required for our project
+
+- Better Networking Tools:
+  Tools like curl, tcpdump, ip route are built-in and useful for VPN and network troubleshooting
+
+- Lightweight & High Performance:
+  Linux consumes fewer resources and performs better than Windows
+
+- Cost Effective:
+  Linux VM does not require additional licensing cost on Azure
+
+- DevOps Friendly:
+  Easy integration with Git, Docker, and CI/CD pipelines
+
+- Industry Standard:
+  Most production servers and cloud deployments use Linux
+
+- No GUI Dependency:
+  Our project is CLI and automation-based, so GUI is not required
+
+
+==================================================
+
+5. STEP-BY-STEP IMPLEMENTATION PLAN
+
+Step 1: Create Azure VM
+- Create an Ubuntu 22.04 Virtual Machine
+- Assign a Public IP address
+
+Step 2: Configure Networking (NSG Rules)
+- Allow the following ports:
+  - 22 (SSH)
+  - 80 (HTTP)
+  - 443 (HTTPS)
+  - 8000 (for testing, optional)
+
+Step 3: Connect to VM
+- Use SSH to connect:
+  ssh azureuser@<public-ip>
+
+Step 4: Deploy Application Code
+- Clone the repository:
+  git clone <your-repository-url>
+- Navigate to project folder:
+  cd <project-folder>
+
+Step 5: Install Dependencies
+- Install Python and required packages:
+  sudo apt update
+  sudo apt install python3-pip -y
+  pip3 install -r requirements.txt
+
+Step 6: Run the Application
+- Start the application using:
+  uvicorn main:app --host 0.0.0.0 --port 8000
+
+IMPORTANT:
+-We use 0.0.0.0 to make the app accessible externally and port 8000
+ to allow users to connect to the application.Step 7: Test Application Access
+- Open in browser:
+  http://<public-ip>:8000
+
+Step 8 (Optional – Production Setup)
+- Install Nginx
+- Configure reverse proxy
+- Enable HTTPS using SSL certificate
+
+
+==================================================
+
+6. FINAL OUTPUT
+
+Before Deployment:
+http://localhost:63342
+- Application runs on local machine
+- Accessible only within the same system (localhost)
+- Not available to external users
+
+After Deployment:
+
+Option 1 (Direct Access):
+http://<public-ip>:8000
+- Application hosted on Azure VM
+- Accessible over the internet using public IP and port
+- Available to all users
+
+Option 2 (With Nginx / Domain - Production):
+http://<public-ip>  OR  http://yourdomain.com
+- Application exposed via standard ports (80/443)
+- Port is hidden using reverse proxy (Nginx)
+- Clean and user-friendly access for all users
+
+==================================================
+
+
+

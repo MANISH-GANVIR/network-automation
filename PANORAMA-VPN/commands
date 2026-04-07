@@ -1,0 +1,43 @@
+# ==== CRYPTO PROFILES ====
+ set template <TEMPLATE_NAME> config network ike crypto-profiles ike-crypto-profiles IKE-PROF encryption aes-256-gcm sha256
+ set template <TEMPLATE_NAME> config network ike crypto-profiles ike-crypto-profiles IKE-PROF dh-group group14
+ set template <TEMPLATE_NAME> config network ike crypto-profiles ike-crypto-profiles IKE-PROF lifetime hours 8
+
+set template <TEMPLATE_NAME> config network ike crypto-profiles ipsec-crypto-profiles IPSEC-PROF esp encryption aes-256-gcm
+ set template <TEMPLATE_NAME> config network ike crypto-profiles ipsec-crypto-profiles IPSEC-PROF esp authentication sha256
+ set template <TEMPLATE_NAME> config network ike crypto-profiles ipsec-crypto-profiles IPSEC-PROF dh-group group14
+ set template <TEMPLATE_NAME> config network ike crypto-profiles ipsec-crypto-profiles IPSEC-PROF lifetime hours 8
+
+# ==== TUNNEL INTERFACE / ZONE / VR ====
+ set template <TEMPLATE_NAME> config network interface tunnel units tunnel.10 comment "S2S to <PEER_NAME>"
+ set template <TEMPLATE_NAME> config vsys vsys1 zone VPN-ZONE network layer3 [ tunnel.10 ]
+ set template <TEMPLATE_NAME> config network virtual-router default interface [ tunnel.10 ]
+
+# ==== IKE GATEWAY ====
+ set template <TEMPLATE_NAME> config network ike gateway GW-<PEER_NAME> authentication pre-shared-key key <YOUR_PSK>
+ set template <TEMPLATE_NAME> config network ike gateway GW-<PEER_NAME> protocol ikev2 ike-crypto-profile IKE-PROF
+ set template <TEMPLATE_NAME> config network ike gateway GW-<PEER_NAME> local-address interface <WAN_EGRESS_IF>
+ set template <TEMPLATE_NAME> config network ike gateway GW-<PEER_NAME> peer-address ip <PEER_PUBLIC_IP>
+
+# ==== IPSEC TUNNEL ====
+ set template <TEMPLATE_NAME> config network tunnel ipsec TUN-<PEER_NAME> tunnel-interface tunnel.10
+ set template <TEMPLATE_NAME> config network tunnel ipsec TUN-<PEER_NAME> anti-replay yes
+ set template <TEMPLATE_NAME> config network tunnel ipsec TUN-<PEER_NAME> auto-key ike-gateway GW-<PEER_NAME>
+ set template <TEMPLATE_NAME> config network tunnel ipsec TUN-<PEER_NAME> auto-key ipsec-crypto-profile IPSEC-PROF
+
+# (Optional) Proxy-ID if peer is policy-based
+ # set template <TEMPLATE_NAME> config network tunnel ipsec TUN-<PEER_NAME> auto-key proxy-id RFC1918-1 local <LOCAL_SUBNET> remote <REMOTE_SUBNET> protocol any
+
+# ==== ROUTING ====
+ set template <TEMPLATE_NAME> config network virtual-router default routing-table ip static-route RT-to-<PEER_NAME>-1 destination <REMOTE_SUBNET> interface tunnel.10 metric 10
+
+# ==== SECURITY POLICY (DEVICE GROUP) ====
+ set device-group <DEVICE_GROUP> pre-rulebase security rules S2S-OUT from [ <SOURCE_ZONE> ] to [ VPN-ZONE ] source any destination <REMOTE_SUBNET> application any service application-default action allow
+ set device-group <DEVICE_GROUP> pre-rulebase security rules S2S-IN from [ VPN-ZONE ] to [ <DEST_ZONE> ] source <REMOTE_SUBNET> destination any application any service application-default action allow
+
+# ==== COMMIT & PUSH ====
+ commit
+ exit
+ configure
+ commit-all template <TEMPLATE_NAME>
+ commit-all device-group <DEVICE_GROUP>

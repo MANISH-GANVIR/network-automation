@@ -1,0 +1,1033 @@
+APIs Used:
+-fetch() Web API is used to send HTTP requests from the browser (frontend) to the backend.
+-REST APIs built with FastAPI are used to handle backend VPN operations.
+-Middleware APIs (web_wrapper) are used to route requests to the correct firewall  and logic .
+-Device APIs are used to execute the actual VPN automation on firewall devices.
+
+
+
+                         ┌───────────────────────┐
+                         │        USER           │
+                         └──────────┬────────────┘
+                                    │
+                    ┌───────────────┴───────────────┐
+                    │                               │
+                    ▼                               ▼
+
+           🌐 WEB FLOW                         💻 CLI FLOW
+   ─────────────────────────           ─────────────────────────
+
+login.html / dashboard.html           run_asa.py (Launcher)
+(Button click / form submit)                  │
+        │                                     ▼
+        ▼                            subprocess.run()  ← 🔥
+app.js (Fetch API call)                       │
+        │                                     ▼
+        ▼                      backend.projects.vpn_automation.asa.main
+FastAPI Backend (backend/main.py)             │
+        │                                     │
+        └───────────────┬─────────────────────┘
+                        ▼
+        web_wrapper.py (Middleware - run_web())
+                        │
+                        ▼
+        client.py (connect_asa → ConnectHandler)
+                        │
+                        ▼
+        Automation Layer:
+        - build.py
+        - update.py
+        - reset.py
+        - troubleshoot.py
+                        │
+                        ▼
+        Firewall (Cisco ASA / Palo Alto)
+                        │
+                        ▼
+        Output Generated (CLI response)
+                        │
+                        ▼
+        web_wrapper.py (capture via StringIO)
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+            ▼                       ▼
+
+FastAPI Response (JSON)        CLI Output (Terminal)
+            │
+            ▼
+app.js (DOM update)
+            │
+            ▼
+dashboard.html (Output Display)
+
+1) Browser Click Event API (onclick)
+------------------------------------
+Purpose: To capture user actions in the UI
+Used In: HTML (login.html)
+Example: <button onclick="runASA('reset')">Reset</button>
+
+2) Fetch Web API (fetch)
+------------------------
+Purpose: To send HTTP/HTTPS requests from frontend to backend
+Used In: JavaScript (app.js)
+Example: fetch("http://127.0.0.1:8000/api/asa/reset", { method: "POST" })
+
+3) REST API (POST /api/asa/{task})
+----------------------------------
+Purpose: To expose VPN operations over HTTP
+Used In: Backend (FastAPI / Flask)
+Examples: POST /api/asa/reset, POST /api/asa/build, POST /api/asa/update
+
+4) Middleware API (web_wrapper.run_web)
+---------------------------------------
+Purpose: To separate web logic from automation logic and decide firewall type
+and operation
+Used In: Backend internal layer
+
+5) Automation Function APIs
+---------------------------
+Purpose: To execute actual VPN automation logic
+Examples: reset_vpn(), build_vpn(), update_vpn(), troubleshoot_vpn(), discovery_vpn()
+
+6) Device APIs (Firewall Communication)
+---------------------------------------
+Cisco ASA: SSH CLI using Netmiko
+Palo Alto: XML / REST API using pan-os-python
+Purpose: To communicate securely with firewall devices and execute real VPN commands
+
+7) DOM API (document.getElementById)
+------------------------------------
+Purpose: To display backend output in the UI
+Used In: JavaScript (app.js)
+Example: document.getElementById("asaOutput").innerText = data;
+
+
+SUMMARY
+-------
+User actions are captured using browser events,
+frontend communicates with backend using fetch and REST APIs,
+backend routes logic through middleware, automation functions
+perform VPN tasks using firewall device APIs, and results are
+displayed in the UI using the DOM API.
+
+====================================================
+END OF FILE
+====================================================
+
+
+
+
+
+====================================================
+VPN AUTOMATION – PROJECT API & FUNCTION FLOW
+====================================================
+
+                            ALL Project API LIST:-
+                         -------------------------------
+
+FRONTEND / BROWSER APIs
+-------------------------------
+• Browser Click Event API        (onclick)
+  - Detects user button clicks and triggers JavaScript functions
+
+• Fetch Web API                  (fetch)
+  - Sends HTTP/HTTPS requests from the browser to the backend
+
+• Promise API                    (.then)
+  - Handles asynchronous backend responses returned by fetch()
+
+• Browser DOM API                (document.getElementById)
+  - Updates the HTML UI to display backend output in the browser
+
+
+-------------------------------
+BACKEND APIs
+-------------------------------
+• REST API                       (POST /api/asa/{task})
+  - Exposes VPN operations over HTTP for the frontend to call
+
+• FastAPI Web Framework API
+  - Receives HTTP requests and routes them to backend logic
+
+• Flask Web Framework API
+  - Alternative backend framework to handle REST requests
+
+-------------------------------
+MIDDLEWARE / INTERNAL APIs
+-------------------------------
+• Middleware Function API        (web_wrapper.run_web)
+  - Acts as a bridge between backend routes and automation logic
+
+-------------------------------
+AUTOMATION FUNCTION APIs
+-------------------------------
+• asa_runner()
+  - Main dispatcher for ASA automation tasks
+
+• reset_vpn()
+  - Resets VPN tunnels and security associations
+
+• build_vpn()
+  - Builds new VPN configuration
+
+• update_vpn()
+  - Updates existing VPN configuration
+
+• troubleshoot_vpn()
+  - Diagnoses VPN issues
+
+• discovery_vpn()
+  - Discovers existing VPN tunnels
+
+-------------------------------
+DEVICE / FIREWALL APIs
+-------------------------------
+• Cisco ASA SSH CLI API          (Netmiko)
+  - Sends CLI commands to Cisco ASA over SSH
+
+• Palo Alto XML API
+  - Executes firewall operations using XML-based API calls
+
+• Palo Alto REST API             (pan-os-python)
+  - Performs firewall automation using Palo Alto’s REST interface
+
+=====================================================================
+
+Explaination of API usage in each layer:
+
+1) FRONTEND LAYER
+====================================================
+
+HTML (login.html)
+----------------
+Purpose:
+- Defines UI structure (buttons, screens, terminal)
+- Triggers JavaScript functions on user actions
+
+APIs Used:
+- Browser Click Event API (onclick)
+
+Why this API:
+- The browser needs an event system to detect user clicks
+
+Example:
+<button onclick="runASA('reset')">Reset</button>
+
+Functions Triggered:
+- login()
+- selectProject()
+- selectFirewall()
+- runASA(task)
+
+----------------------------------------------------
+
+JavaScript (app.js)
+------------------
+Purpose:
+- Controls frontend logic
+- Sends requests to backend
+- Displays backend output in UI
+
+APIs Used:
+1) fetch() Web API (HTTP POST)
+   - To send HTTP/HTTPS requests from browser to backend
+
+2) Browser DOM API
+   - To update UI with backend response
+
+Main Functions:
+- login()
+- selectProject()
+- selectFirewall()
+- runASA(task)
+
+Example Backend Call:
+function runASA(task) {
+  fetch(`http://127.0.0.1:5000/api/asa/${task}`, {
+    method: "POST"
+  })
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("asaOutput").innerText = data;
+  });
+}
+
+DOM Usage:
+- document.getElementById("asaOutput").innerText
+
+Why DOM API:
+- To insert backend output into an HTML element
+- So the user can see firewall results in the browser
+
+----------------------------------------------------
+
+CSS (style.css)
+---------------
+Purpose:
+- UI look and feel only (colors, layout, terminal style)
+
+APIs Used:
+- NONE
+
+Why CSS:
+- Visual presentation only
+- No logic
+- No backend interaction
+
+====================================================
+2) BACKEND LAYER (REST API)
+====================================================
+
+Backend Framework:
+- FastAPI (or Flask)
+
+Purpose:
+- Receive HTTP requests from frontend
+- Expose VPN operations as REST APIs
+- Act as entry point for automation
+
+REST API Endpoint:
+POST /api/asa/{task}
+
+Accepted task values:
+- discovery
+- reset
+- update
+- build
+- troubleshoot
+
+Example:
+POST /api/asa/reset
+
+What this means:
+- Frontend JavaScript sends an HTTP request
+- Backend receives it and starts VPN automation
+
+----------------------------------------------------
+
+Backend Route Function (main.py)
+--------------------------------
+Function:
+- asa_task(task)
+
+Purpose:
+- Receive frontend request
+- Extract task from URL
+- Pass control to middleware
+
+Flow:
+fetch()
+ → FastAPI / Flask route
+ → Middleware API
+
+====================================================
+3) MIDDLEWARE LAYER (INTERNAL BACKEND API)
+====================================================
+
+File:
+- web_wrapper.py
+
+Function:
+- run_web(task)
+
+Purpose:
+- Separate web logic from automation logic
+- Decide which firewall and which operation to run
+
+Responsibilities:
+- Select firewall type:
+  - Cisco ASA
+  - Palo Alto
+- Select operation:
+  - reset / build / update / troubleshoot / discovery
+
+Why middleware:
+- Keeps backend clean
+- Makes project scalable
+- Easy to add new firewall vendors
+
+Flow:
+Backend route
+ → web_wrapper.run_web()
+ → Automation functions
+
+====================================================
+4) AUTOMATION FUNCTION APIs
+====================================================
+
+Firewall: Cisco ASA
+
+Functions:
+- asa_runner(task)
+- reset_vpn()
+- build_vpn()
+- update_vpn()
+- troubleshoot_vpn()
+- discovery_vpn()
+
+Purpose:
+- Perform actual VPN operations
+- Execute firewall commands
+- Generate CLI output
+
+Why automation layer:
+- Contains real VPN logic
+- Independent from web/UI code
+- Reusable existing scripts
+
+====================================================
+5) DEVICE / FIREWALL APIs
+====================================================
+
+Cisco ASA
+---------
+API:
+- SSH CLI
+
+Library:
+- Netmiko
+
+Why:
+- Cisco ASA does not provide native REST APIs
+- SSH CLI is the supported automation method
+
+----------------------------------------------------
+
+Palo Alto
+---------
+API:
+- XML / REST API
+
+Library:
+- pan-os-python
+
+Why:
+- Palo Alto provides official XML/REST APIs
+- Secure, supported, and programmatic firewall automation
+- No SSH CLI required
+
+====================================================
+6) RESPONSE HANDLING (REVERSE FLOW)
+====================================================
+
+Flow:
+Firewall Output
+ → Automation Functions
+ → web_wrapper.run_web()
+ → FastAPI / Flask Response
+ → fetch().then()
+ → Browser DOM API
+ → UI Terminal Display
+
+JavaScript APIs Used:
+- Promise API (fetch().then())
+- Browser DOM API
+
+Purpose:
+- Receive backend output
+- Display results to the user in real time
+
+====================================================
+FINAL ONE-LINE SUMMARY
+====================================================
+
+HTML triggers JavaScript using browser click events,
+JavaScript uses the fetch Web API to send HTTP requests,
+FastAPI/Flask exposes REST APIs to receive those requests,
+middleware selects the correct firewall and operation,
+automation functions execute VPN logic,
+device APIs communicate with the firewall,
+and the result is returned and displayed in the UI using the DOM API.
+
+====================================================
+====================================================
+PALO ALTO FIREWALL – XML / REST API (BASIC )
+====================================================
+
+ABBREVIATIONS
+-------------
+XML  = eXtensible Markup Language
+REST = Representational State Transfer
+
+----------------------------------------------------
+
+WHY PALO ALTO USES XML / REST API
+--------------------------------
+Palo Alto firewalls use XML / REST APIs to:
+- Manage firewall configuration programmatically
+- Perform VPN operations without logging in via CLI
+- Allow secure automation over HTTP/HTTPS
+
+----------------------------------------------------
+
+HOW PALO ALTO API IS CALLED
+---------------------------
+Palo Alto API is called using HTTP or HTTPS requests.
+
+General API URL format:
+
+https://<firewall-ip>/api/?type=<action>&key=<api-key>&cmd=<xml-command>
+
+----------------------------------------------------
+
+EXAMPLE 1: XML API CALL (OPERATIONAL COMMAND)
+---------------------------------------------
+This example shows how to run a VPN-related command.
+
+URL:
+
+https://192.168.1.1/api/?type=op&key=API_KEY&cmd=<show><vpn><tunnel></tunnel></vpn></show>
+
+Explanation:
+- type=op          → Operational command
+- key=API_KEY      → Authentication key
+- cmd=<xml>...</xml> → XML formatted command
+- Response comes back in XML format
+
+----------------------------------------------------
+
+EXAMPLE 2: PYTHON API CALL USING pan-os-python
+----------------------------------------------
+Using Palo Alto official Python library:
+
+from panos.firewall import Firewall
+
+fw = Firewall("192.168.1.1", api_key="API_KEY")
+fw.op("<show><vpn><tunnel></tunnel></vpn></show>")
+
+Explanation:
+- Uses Palo Alto official SDK
+- Internally sends XML/REST API request
+- No SSH or CLI required
+- Response is returned in structured XML
+
+----------------------------------------------------
+
+API CALL FLOW (SIMPLE)
+----------------------
+Automation Script
+ → XML / REST API request (HTTP/HTTPS)
+ → Palo Alto Firewall
+ → XML Response
+ → Script parses output
+
+----------------------------------------------------
+
+ONE-LINE SUMMARY
+----------------
+Palo Alto uses XML/REST APIs over HTTP/HTTPS to perform firewall
+and VPN operations programmatically, returning structured XML responses
+instead of CLI output.
+
+====================================================
+====================================================
+PALO ALTO FIREWALL – API KEY GENERATION (SIMPLE)
+====================================================
+
+WHAT IS AN API KEY
+------------------
+An API key is a secure authentication token.
+It is used instead of username/password when calling
+Palo Alto XML / REST APIs.
+
+----------------------------------------------------
+
+WHY API KEY IS NEEDED
+--------------------
+- To authenticate API requests
+- To avoid sending username/password every time
+- To allow secure automation
+
+----------------------------------------------------
+
+METHOD 1: API KEY GENERATION USING BROWSER (MOST COMMON)
+--------------------------------------------------------
+
+STEP 1:
+Open browser and hit this URL:
+
+https://<firewall-ip>/api/?type=keygen&user=<username>&password=<password>
+
+Example:
+
+https://192.168.1.1/api/?type=keygen&user=admin&password=admin123
+
+----------------------------------------------------
+
+STEP 2:
+Firewall validates credentials and returns XML response:
+
+<response status="success">
+  <result>
+    <key>LUFRPT1aX2Zs...</key>
+  </result>
+</response>
+
+----------------------------------------------------
+
+STEP 3:
+Copy the value inside <key> </key>
+This is your API KEY.
+
+----------------------------------------------------
+
+METHOD 2: API KEY GENERATION USING CURL
+--------------------------------------
+
+Command:
+
+curl -k "https://<firewall-ip>/api/?type=keygen&user=<username>&password=<password>"
+
+Example:
+
+curl -k "https://192.168.1.1/api/?type=keygen&user=admin&password=admin123"
+
+----------------------------------------------------
+
+METHOD 3: USING API KEY IN FUTURE CALLS
+--------------------------------------
+
+Once API key is generated,
+you DO NOT use username/password again.
+
+Example API call:
+
+https://192.168.1.1/api/?type=op&key=API_KEY&cmd=<show><vpn></vpn></show>
+
+----------------------------------------------------
+
+USING API KEY IN PYTHON (pan-os-python)
+--------------------------------------
+
+from panos.firewall import Firewall
+
+fw = Firewall("192.168.1.1", api_key="API_KEY")
+
+----------------------------------------------------
+
+SECURITY NOTE (IMPORTANT)
+------------------------
+- API key is as powerful as admin password
+- Do NOT hardcode in source code
+- Store it in:
+  - Environment variable
+  - Vault
+  - Encrypted config file
+
+----------------------------------------------------
+
+ONE-LINE SUMMARY
+----------------
+An API key is generated by sending username and password once
+to the Palo Alto firewall, and the returned key is used for all
+future XML/REST API authentication.
+
+
+    ====================================================
+    ====================================================
+    ====================================================
+    ====================================================
+
+
+
+
+
+====================================================
+VPN AUTOMATION – FRONTEND TO BACKEND  Detailed Explaination
+====================================================
+
+This document explains how the VPN Automation system works
+from frontend (browser) to backend (automation scripts),
+including which APIs are used, where they are used, and why.
+
+====================================================
+1. FRONTEND LOADING (STATIC STAGE)
+====================================================
+
+User opens the application in the browser:
+http://localhost:63342/Automation/frontend/login.html
+
+At this stage:
+- Only static frontend files are loaded
+- Backend (Python / FastAPI) is NOT involved
+- No API calls are made
+
+Files loaded by the browser:
+- login.html  → page structure
+- style.css   → UI design
+- app.js      → frontend logic
+
+----------------------------------------------------
+
+HTML (login.html)
+-----------------
+Purpose:
+- Defines page structure (buttons, inputs, views)
+- Triggers JavaScript functions on user actions
+
+HTML does NOT:
+- Call backend APIs
+- Execute business logic
+
+----------------------------------------------------
+
+CSS (style.css)
+---------------
+Purpose:
+- Controls UI appearance only
+- Colors, fonts, layout, terminal look
+
+CSS does NOT:
+- Run logic
+- Call APIs
+- Communicate with backend
+
+----------------------------------------------------
+
+JavaScript (app.js)
+-------------------
+Purpose:
+- Handles user interaction
+- Calls backend APIs
+- Displays backend output
+
+====================================================
+2. USER INTERACTION (EVENT STAGE)
+====================================================
+
+Example button in login.html:
+<button onclick="runASA('reset')">Reset</button>
+
+Browser behavior:
+- The browser uses its built-in Click Event API (onclick)
+- When the user clicks the button, the browser calls the
+  JavaScript function defined in app.js
+
+API USED:
+- Browser Click Event API (onclick)
+
+====================================================
+3. FRONTEND TO BACKEND COMMUNICATION
+====================================================
+
+JavaScript function (app.js):
+
+function runASA(task) {
+  fetch(`http://127.0.0.1:5000/api/asa/${task}`, {
+    method: "POST"
+  })
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("asaOutput").innerText = data;
+  });
+}
+
+Purpose:
+- JavaScript uses the browser’s fetch() Web API
+- fetch() sends an HTTP POST request to the backend
+
+API USED:
+- Browser Web API: fetch() (HTTP POST)
+
+====================================================
+4. BACKEND ENTRY POINT (REST API)
+====================================================
+
+Backend REST API (FastAPI):
+
+POST /api/asa/{task}
+
+Example backend code:
+
+@app.post("/api/asa/{task}")
+def asa_task(task: str):
+    return web_wrapper.run_web(task)
+
+Purpose:
+- Receives requests from frontend
+- Extracts the task name (reset / build / update / troubleshoot)
+- Acts as the single entry point for VPN operations
+
+API USED:
+- REST API (FastAPI)
+
+====================================================
+5. MIDDLEWARE LAYER
+====================================================
+
+Middleware function (web_wrapper.py):
+
+def run_web(task):
+    if FIREWALL == "ASA":
+        return asa_runner(task)
+
+Purpose:
+- Separates web logic from automation logic
+- Decides:
+  - Which firewall vendor (ASA / Palo Alto)
+  - Which operation to execute
+
+API USED:
+- Internal Python Function API (middleware)
+
+====================================================
+6. AUTOMATION LOGIC
+====================================================
+
+Automation functions:
+
+def asa_runner(task):
+    if task == "reset":
+        return reset_vpn()
+
+def reset_vpn():
+    output = []
+    output.append("clear crypto ikev1")
+    output.append("clear crypto ipsec sa")
+    return "\n".join(output)
+
+Purpose:
+- Executes actual VPN operations
+- Collects full CLI output
+
+API USED:
+- Internal Automation Function APIs
+
+====================================================
+7. DEVICE COMMUNICATION
+====================================================
+
+Firewall communication APIs:
+
+Cisco ASA:
+- SSH CLI using Netmiko
+
+Palo Alto:
+- XML / REST API using pan-os-python
+
+Purpose:
+- Communicate securely with firewall devices
+- Execute real VPN commands
+
+API USED:
+- Device APIs
+
+====================================================
+8. RESPONSE FLOW (BACK TO UI)
+====================================================
+
+Response travels back in reverse order:
+
+Firewall Output
+ → Automation Functions
+ → web_wrapper.run_web()
+ → FastAPI REST Response
+ → fetch().then()
+ → Browser DOM API
+
+JavaScript updates UI using:
+document.getElementById("asaOutput").innerText
+
+API USED:
+- Browser DOM API
+
+====================================================
+9. END-TO-END FLOW (SIMPLE DIAGRAM)
+====================================================
+
+User
+ ↓
+Browser Click Event API (onclick)
+ ↓
+JavaScript (app.js)
+ ↓
+fetch() Web API (HTTP POST)
+ ↓
+FastAPI REST API  /api/asa/{task}
+ ↓
+Middleware  web_wrapper.run_web()
+ ↓
+Automation Functions
+ ↓
+Firewall Device APIs
+ ↓
+Firewall Device
+ ↓
+Response returns via same path
+ ↓
+Browser DOM API (UI output)
+
+====================================================
+FINAL ONE-LINE SUMMARY
+====================================================
+
+A browser click event triggers JavaScript,
+JavaScript uses the fetch Web API to call a FastAPI REST endpoint,
+FastAPI routes the request through a middleware layer,
+the middleware runs automation functions,
+automation communicates with firewalls using device APIs,
+and the browser DOM API displays the result in the UI.
+
+====================================================
+END OF DOCUMENT
+====================================================
+
+============================================================
+VPN AUTOMATION – FRONTEND TO BACKEND INTEGRATION GUIDE
+============================================================
+
+GOAL:
+Integrate any frontend module (example: UPDATE) with backend
+automation logic safely without breaking existing configuration.
+
+------------------------------------------------------------
+STEP 1 → HTML BUTTON
+Navigator: frontend → login.html → asaView
+------------------------------------------------------------
+
+Add button:
+
+<button onclick="runASA('update')">Update</button>
+
+Purpose:
+User click triggers JavaScript function runASA('update').
+
+------------------------------------------------------------
+STEP 2 → JAVASCRIPT LOGIC
+Navigator: frontend → app.js → runASA()
+------------------------------------------------------------
+
+Inside runASA(task):
+
+if (task === "update") {
+    payload = {
+        peer_ip: prompt("Enter Peer IP to update:"),
+        choice: prompt("Select update type:\n1-Peer\n2-Local\n3-Remote\n4-Phase2\n5-PSK"),
+        new_value: prompt("Enter new value:")
+    };
+}
+
+fetch(API + "/asa/" + task, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+})
+.then(r => r.json())
+.then(d => {
+    document.getElementById("asaOutput").innerText =
+        d.stdout || d.error;
+});
+
+Purpose:
+- Collect user input
+- Convert to JSON
+- Send POST request to backend
+- Display response in UI
+
+------------------------------------------------------------
+STEP 3 → BACKEND ROUTE
+Navigator: backend → main.py
+------------------------------------------------------------
+
+@app.post("/asa/{task}")
+def asa_task(task: str, payload: dict = Body(default={})):
+    stdout = run_web(task=task, payload=payload)
+    return {"stdout": stdout}
+
+Purpose:
+- Receive task and payload from frontend
+- Pass both to middleware
+
+------------------------------------------------------------
+STEP 4 → MIDDLEWARE ROUTING
+Navigator: backend → projects → vpn_automation → asa → web_wrapper.py
+------------------------------------------------------------
+
+elif task == "update":
+    update_vpn(conn, payload)
+
+Purpose:
+- Route update request to correct automation function
+- Keep web logic separate from device logic
+
+------------------------------------------------------------
+STEP 5 → AUTOMATION FUNCTION
+Navigator: backend → projects → vpn_automation → asa → update.py
+------------------------------------------------------------
+
+def update_vpn(conn, payload):
+
+    peer_ip = payload.get("peer_ip")
+    choice = payload.get("choice")
+    new_value = payload.get("new_value")
+
+    if choice == "5":
+        conn.send_config_set([
+            f"tunnel-group {peer_ip} ipsec-attributes",
+            f"ikev1 pre-shared-key {new_value}"
+        ])
+
+    return "Update completed successfully"
+
+Important:
+- Do NOT use input() in web mode
+- Always use payload values
+- Always return string output
+
+------------------------------------------------------------
+STEP 6 → DEVICE COMMUNICATION
+Navigator: update.py → Netmiko → ASA
+------------------------------------------------------------
+
+conn.send_config_set([...])
+
+Netmiko → SSH → ASA Firewall
+Firewall executes configuration.
+
+------------------------------------------------------------
+STEP 7 → RESPONSE FLOW
+Navigator: ASA → backend → frontend
+------------------------------------------------------------
+
+ASA
+→ update_vpn()
+→ web_wrapper.py
+→ main.py
+→ FastAPI JSON response
+→ fetch().then()
+→ DOM API
+→ Output displayed in UI
+
+------------------------------------------------------------
+COMPLETE END-TO-END FLOW
+------------------------------------------------------------
+
+User Click
+→ Browser Click Event API
+→ JavaScript runASA()
+→ fetch() POST /asa/update
+→ FastAPI Route
+→ Middleware run_web()
+→ update_vpn(conn, payload)
+→ Netmiko SSH
+→ ASA Firewall
+→ Response returns same path
+→ document.getElementById().innerText
+
+------------------------------------------------------------
+UNIVERSAL RULE FOR FUTURE MODULES
+------------------------------------------------------------
+
+1. Add button in HTML
+2. Collect input in JS
+3. Send JSON using fetch()
+4. Accept payload in main.py
+5. Route task in middleware
+6. Execute logic in automation file
+7. Return string output
+8. Display using DOM API
+
+============================================================
+END OF GUIDE
+========================================================

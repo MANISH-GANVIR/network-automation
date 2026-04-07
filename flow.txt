@@ -1,0 +1,1202 @@
+=====================================================
+=====================================================
+SOFTWARE DEVELOPMENT LIFE CYCLE (SDLC)
+VPN AUTOMATION PROJECT
+=====================================================
+
+Plan
+→ Identify the problem to solve
+→ Automate manual VPN operations to reduce errors and effort
+
+-----------------------------------------------------
+
+Assign
+→ Decide who will do what
+→ Backend: VPN automation logic (Python)
+→ Frontend: Web UI and user interaction (HTML, CSS, JS)
+
+-----------------------------------------------------
+
+Code
+→ Develop the solution
+→ Write automation scripts and UI logic
+→ Python for ASA/Palo Alto automation
+→ JavaScript for frontend interaction
+
+-----------------------------------------------------
+
+Build
+→ Make the code ready to run (NOT exe creation)
+→ Prepare runtime environment
+
+Includes:
+- Create Python virtual environment
+- Install required libraries (Netmiko, FastAPI, etc.)
+- Configure project structure and settings
+
+NOTE:
+- No EXE file is created
+- Application is run directly using Python
+- Build = environment + dependencies ready
+
+-----------------------------------------------------
+
+Test
+→ Verify that everything works correctly
+→ Test VPN build, reset, update, and troubleshoot workflows
+→ Validate CLI and Web UI outputs
+
+-----------------------------------------------------
+
+Deploy
+→ Make the system available to users
+→ Run automation on a server
+→ Backend and frontend accessible to network team
+
+-----------------------------------------------------
+
+Staging
+→ Final testing in a production-like environment
+→ Trial run on customer / staging firewall
+→ Catch last issues before production
+
+-----------------------------------------------------
+
+Production
+→ Actual daily usage
+→ Network team uses automation for day-to-day VPN management
+→ Monitoring and support continue
+
+===============================================================================================================
+                                #################ASA VPN AUTOMATION  SDLC FLOW####################
+===============================================================================================================
+=====================================================
+CLI MODE (Terminal Based Execution)
+=====================================================
+
+User starts automation from terminal
+↓
+run_asa.py
+- Acts as CLI bootstrapper
+- Sets project root directory
+- Launches ASA automation module
+
+↓
+main.py
+- Entry point of ASA VPN automation
+- Prints application banner
+- Calls connect_asa()
+- Calls run_asa_vpn_ops(conn)
+- Ensures disconnect_asa() in finally block
+
+↓
+client.py
+- Reads ASA_DEVICE from config.py
+- Establishes SSH connection using Netmiko
+- Enters enable mode
+- Returns active ASA connection object
+
+↓
+asa_vpn_ops.py
+- Acts as controller / orchestrator
+- Calls discover_tunnels(conn)
+- Enters infinite menu loop
+- Routes user choice to workflow modules
+
+↓
+discovery.py
+- Runs ASA show commands
+- Discovers existing VPN tunnels
+- Determines tunnel UP/DOWN status
+- Prints tunnel summary table
+
+↓
+menu.py
+- Displays CLI menu
+- Accepts user input (1–5)
+- Returns selected option
+
+↓
+Workflow Modules (Based on Menu Selection)
+
+1) reset.py
+   - Clears IKEv1 and IPsec SAs
+   - Verifies tunnel status post reset
+
+2) update.py
+   - Captures PRE-change state
+   - Optional PSK update
+   - Optional ACL update
+   - Captures POST-change state
+   - Prints change summary
+
+3) build.py
+   - Takes VPN parameters
+   - Builds encryption ACL
+   - Configures tunnel-group
+   - Saves ASA configuration
+
+4) troubleshoot.py
+   - Displays IKE status
+   - Displays IPsec status
+   - Shows crypto-related logs
+
+5) Exit
+   - Breaks menu loop
+
+↓
+disconnect_asa()
+- Gracefully closes ASA SSH connection
+- Ends CLI automation
+
+-----------------------------------------------------------------------------------------
+=====================================================
+ASA VPN AUTOMATION – WEB MODE FLOW
+=====================================================
+run_asa.py → main.py → client.py → asa_vpn_ops.py
+→ (menu & feature modules) → client.py disconnect
+
+User runs (CLI)
+└── run_asa.py
+    └── launches module: backend.projects.vpn_automation.asa.main
+        └── main.py
+            ├── connect_asa()  -> client.py
+            │   └── ConnectHandler + hostname + enable
+            ├── run_asa_vpn_ops() -> asa_vpn_ops.py
+            │   ├── discover_tunnels() -> discovery.py
+            │   └── loop:
+            │       ├── show_menu() -> menu.py
+            │       ├── reset_vpn() -> reset.py
+            │       ├── update_vpn() -> update.py
+            │       ├── build_vpn() -> build.py
+            │       └── troubleshoot_vpn() -> troubleshoot.py
+            └── disconnect_asa() -> client.py
+
+## A) CLI FLOW (Direct Terminal Run → ASA → Menu Loop)
+
+```
+User runs CLI (local machine / jump server)
+↓
+run_asa.py
+  - Switches to project root directory (BASE_DIR)
+  - Executes module: backend.projects.vpn_automation.asa.main
+↓
+main.py
+  - Prints CLI banner
+  - connect_asa()  -> client.py
+  - run_asa_vpn_ops(conn) -> asa_vpn_ops.py
+  - finally: disconnect_asa(conn) -> client.py
+↓
+asa_vpn_ops.py
+  - discover_tunnels(conn) -> discovery.py  (first)
+  - while True:
+      show_menu() -> menu.py
+      user selects:
+        1 → reset_vpn(conn, tunnels)       -> reset.py
+        2 → update_vpn(conn)               -> update.py
+        3 → build_vpn(conn)                -> build.py
+        4 → troubleshoot_vpn(conn)         -> troubleshoot.py
+        5 → Exit (break)
+↓
+disconnect_asa() -> client.py
+END (CLI flow)
+```
+
+### Benefit of CLI Flow
+- Best for developers / network engineers
+- Full guided menu, interactive inputs
+- Fast troubleshooting and operations without browser dependencies
+
+
+---
+
+## C) Shared Core Modules (Used by BOTH Web and CLI)
+
+- config.py
+  - Stores ASA connection settings (host, username, password, timeout)
+
+- client.py
+  - connect_asa(): makes SSH connection + enable mode
+  - disconnect_asa(): clean logout
+
+- discovery.py
+  - Finds existing tunnels + prints summary + status (UP/DOWN)
+
+- reset.py
+  - Clears IKEv1/IPsec SAs for selected peer, shows verification output
+
+- build.py
+  - Builds tunnel config (ACL + tunnel-group + PSK) and saves config
+
+- update.py
+  - Safe update of PSK and ACL with before/after capture summary
+
+- troubleshoot.py
+  - Shows ike/ipsec status + crypto logs for debugging
+=================================================
+
+## B) WEB APPLICATION FLOW (Browser → Frontend → Backend → ASA → Output)
+
+```
+User opens application URL in browser
+↓
+login.html
+  - First page loaded (frontend entry point)
+  - Contains login UI
+  - Loads style.css + app.js
+↓
+style.css
+  - Only UI styling (background, cards, buttons, terminal)
+↓
+app.js
+  - Registers all JS functions (login, navigation, runASA)
+  - Initializes UI:
+      hideAll()
+      show loginView by default
+↓
+User enters username & password
+↓
+Login button click
+↓
+login()  [app.js]
+  - Sends POST request to backend:  /login
+  - Reads username/password from inputs
+↓
+Backend validates credentials
+↓
+If login SUCCESS
+  - loginView hidden
+  - projectView shown
+↓
+User selects project: "VPN Automation"
+↓
+selectProject("vpn_automation")  [app.js]
+  - Navigates to firewallView
+↓
+User selects firewall: "ASA"
+↓
+selectFirewall("ASA")  [app.js]
+  - Navigates to asaView
+  - Shows ASA action buttons (Build/Update/Reset/Discovery/Troubleshoot)
+↓
+User clicks an ASA operation button
+↓
+runASA("<task>")  [app.js]
+  - Shows terminal output area (<pre id="asaOutput">)
+  - Sends POST request to backend: /asa/<task>
+  - Example: /asa/build, /asa/reset, /asa/update etc.
+↓
+FastAPI endpoint receives /asa/<task>
+  - Calls middleware runner: web_wrapper.run_web(task)
+↓
+web_wrapper.py  (WEB MODE runner)
+  - Sets WEB_MODE=1 (disable CLI spinners)
+  - Captures print() output into a memory buffer (redirect_stdout)
+  - Creates ASA connection
+↓
+connect_asa()  [client.py]
+  - Uses ASA_DEVICE from config.py
+  - Netmiko SSH connect to ASA
+  - Fetch hostname
+  - Enter enable mode
+  - Returns conn object
+↓
+discover_tunnels()  [discovery.py]  (always runs first in web mode)
+  - show interface ip brief  (find outside IP)
+  - show crypto ikev1 sa     (Phase 1)
+  - show crypto ipsec sa     (Phase 2)
+  - show run crypto map      (configured peers)
+  - Builds tunnel list + prints summary table into buffer
+↓
+Execute task (NO MENU LOOP in Web Mode)
+  - if task == "reset"        → reset_vpn()
+  - if task == "build"        → build_vpn()
+  - if task == "update"       → update_vpn()
+  - if task == "troubleshoot" → troubleshoot_vpn()
+  - if task == "discovery"    → discovery only
+↓
+disconnect_asa()  [client.py]
+  - Gracefully closes SSH session
+��
+web_wrapper.py
+  - Collects full printed output from buffer
+  - Returns output string to FastAPI response
+↓
+FastAPI response → app.js
+  - app.js writes stdout into <pre id="asaOutput">
+↓
+Browser shows output in UI terminal
+END (Web flow)
+```
+
+### Benefit of Web Flow
+- Same ASA automation logic becomes usable by multiple business units through a web portal
+- No need for CLI access for every user
+- Output is visible in a terminal-like UI, easy to consume
+
+
+---
+
+
+
+
+VPN AUTOMATION PLATFORM – ARCHITECTURE
+=================================================
+
+-This project a uses simple layered architecture, where each layer has a
+clear responsibility and communicates only with the adjacent layer.
+-It uses a FastAPI backend along with a wrapper layer
+ to reuse existing Python CLI automation and provide a web-based VPN automation solution.
+-------------------------------------------------
+1. FRONTEND LAYER:- Provides a simple web UI for users
+-------------------------------------------------
+Technology:
+- HTML → Defines the structure of the web pages
+- CSS  → Styles the UI and controls layout and appearance
+- JavaScript → Handles user actions, navigation, and sends API requests to the backend
+
+Purpose:
+- Provides a simple web UI for users
+- Users can select:
+  - Project
+  - Firewall (ASA / Palo Alto)
+  - VPN action (Reset / Build / Update / Troubleshoot)
+
+Function:
+- Collects user input
+- Sends HTTP requests to backend using fetch()
+- Displays output and logs to the user
+
+-------------------------------------------------
+2. BACKEND API LAYER
+-------------------------------------------------
+Technology:
+- FastAPI (Python)
+- File: backend/main.py
+
+Purpose:
+- Acts as the main backend entry point
+- Exposes REST APIs like:
+  - /login
+  - /projects
+  - /firewalls
+  - /asa/{task}
+
+Function:
+- Receives HTTP requests from UI
+- Validates input data (task name, optional parameters)
+- Uses {task} to identify which VPN action to run
+- Forwards requests to the wrapper layer
+
+Note:
+- This layer does NOT contain firewall CLI or API logic
+
+-------------------------------------------------
+3. WRAPPER LAYER
+-------------------------------------------------
+Technology:
+- Python
+- File: backend/projects/vpn_automation/asa/web_wrapper.py
+
+Purpose:
+- Connects FastAPI backend with existing automation scripts
+- Acts as a bridge between web requests and CLI automation
+
+Function:
+- Receives task name from backend
+- Calls the correct automation workflow (reset, build, update, etc.)
+- Manages firewall connection (connect / disconnect)
+- Captures full CLI output and returns it to backend
+
+Key Benefit:
+- Existing CLI code is reused without rewriting
+
+-------------------------------------------------
+4. AUTOMATION LOGIC LAYER
+-------------------------------------------------
+Technology:
+- Python (.py files)
+
+Location:
+- backend/projects/vpn_automation/asa/
+
+Purpose:
+- Contains actual VPN automation logic
+
+Functions:
+- Discover VPN tunnels
+- Reset VPN tunnels
+- Build new VPN tunnels
+- Update VPN configuration
+- Troubleshoot VPN issues
+
+-------------------------------------------------
+5. DEVICE COMMUNICATION LAYER
+-------------------------------------------------
+Technology:
+- Netmiko (Python library)
+
+Purpose:
+- Provides SSH-based CLI communication with Cisco ASA firewalls
+- Sends commands and receives output securely
+
+Vendor Support:
+- Cisco ASA → CLI over SSH (Netmiko)
+- Palo Alto → API-based support (planned)
+
+-------------------------------------------------
+6. FIREWALL / INFRASTRUCTURE LAYER
+-------------------------------------------------
+Devices:
+- Cisco ASA firewall (current)
+- Palo Alto firewall (future)
+
+Function:
+- Executes actual VPN operations on the device
+- Applies configuration and operational commands
+
+-------------------------------------------------
+END-TO-END FLOW (SIMPLE)
+-------------------------------------------------
+
+User clicks button in UI
+↓
+Frontend sends HTTP request (fetch)
+↓
+FastAPI backend receives and validates request
+↓
+{task} identifies VPN action (reset / build / update / troubleshoot)
+↓
+web_wrapper.py triggers automation scripts
+↓
+Python automation scripts run CLI logic
+↓
+Netmiko sends commands over SSH
+↓
+Firewall executes VPN operation
+↓
+CLI output returned to backend
+↓
+Backend sends result to UI
+↓
+User sees output and logs
+
+-------------------------------------------------
+KEY DESIGN POINTS
+-------------------------------------------------
+- Clean separation of layers
+- Reuse of existing CLI automation
+- Simple and modular design
+- Easy to extend for new firewall vendors
+- Suitable for UI-driven and API-driven automation
+
+
+
+
+
+
+
+======================
+VPN Project Design:-
+======================
+ASA – INDIA
+│
+├── Site-to-Site VPN → Palo Alto (Peer: 4.227.229.249)
+│
+└── Host-to-Host VPN → External Cloud / App Server
+     Peer: 220.233.151.246
+
+=========================================================================================
+ASA-PA VPN Topology Overview:-
+
+                            🌍 INTERNET / WAN (UNDERLAY)
+  ASA-Firewall-INDIA<============IPsec VPN===================>PA-Firewall-USA
+---------------------------------------------------------------------------------------
+        ASA – INDIA (Bangalore)                         PA – USA (Cloud)
+        -----------------------                         -----------------
+
+        Outside (Public)                                Untrust (NATed Public)
+        Gig0/0 : 159.66.72.50 (Peer A)                   eth1/1 : 4.227.229.249(Peer B)
+                                                         (Unknown: 220.233.151.246)
+
+                     |                                          |
+                     |          IKE / IPsec (Phase 1 & 2)       |
+                     |==========================================|
+                     |                                          |
+        ======================= VPN OVERLAY (LOGICAL) ================================
+
+        ASA VPN (Policy-based)                       PA VPN (Route-based)
+        Crypto-map based                             Tunnel Interface
+        (No tunnel IP)                               tunnel.1 : 172.16.16.1/30
+
+        ==============================================================================
+                     |                                          |
+                     |                                          |
+        Inside Interface                               Trust Interface
+        Gig0/1 : 192.168.10.1/24                       eth1/2 : 10.2.2.4/32
+                     |                                          |
+                     |                                          |
+        INDIA LAN                                      USA LAN
+        192.168.10.0/24                                10.2.5.0/24
+        [Users / Servers]                              [Apps / Servers]
+
+
+-------------------------
+Physical interfaces:-
+-------------------------
+
+| Device     | Interface              | Zone / Role | IP Address     | Purpose                          |
+|------------|------------------------|-------------|----------------|----------------------------------|
+| ASA        | GigabitEthernet0/0     | Outside     | 159.66.72.50   | Internet / WAN (IPsec underlay)  |
+| Palo Alto  | ethernet1/1            | Untrust     | 10.2.1.4       | Internet-facing interface        |
+| ASA        | GigabitEthernet0/1     | Inside      | 192.168.10.1   | India LAN gateway                |
+| Palo Alto  | ethernet1/2            | Trust       | 10.2.2.4       | USA LAN gateway
+
+
+-------------------------
+Logical interfaces:-
+-------------------------
+
+| Device     | Interface        | IP Address        | VPN Type        | Purpose                                   |
+|------------|------------------|-------------------|-----------------|-------------------------------------------|
+| ASA        | Crypto-map VPN   | N/A               | Policy-based    | Encrypts traffic matching crypto ACL      |
+| Palo Alto  | tunnel.1         | 172.16.16.1/30    | Route-based     | Decrypted VPN overlay for r
+
+------------------------
+Summary:-
+------------------------
+- Physical interfaces carry encrypted VPN traffic over the Internet (underlay).
+- Logical interfaces represent the VPN tunnel where traffic is decrypted (overlay).
+- ASA uses policy-based VPN (crypto-map).
+- Palo Alto uses route-based VPN (tunnel interface).
+
+
+=========================================================================================
+
+WorkFlow for VPN Automation Tool
+---------------------------------
+Frontend (buttons)
+   ↓ fetch()
+FastAPI (/asa/{task})
+   ↓
+web_wrapper.run_web()
+   ↓
+Existing CLI .py files (reset.py, build.py, etc)
+   ↓
+FULL CLI OUTPUT → Web UI
+----------------------------------
+================= Workflow Explanation ==================
+User
+↓
+Initiates VPN request (Reset / Update / Build / Troubleshoot)
+
+UI (HTML / CSS / JavaScript)
+↓    Function: Collects user input and sends HTTP request
+↓
+Backend (Python)
+ ├─ FastAPI (main.py)→ Acts as the entry point for all backend operations
+ |
+ ├─ web_wrapper.py  →  Connects the backend to automation logic
+ └─ Automation scripts (.py) → Perform actual VPN operations
+
+	1)FastAPI (main.py)→ FastAPI is a backend framework that receives HTTP requests
+	from the UI, validates input (such as optional payloads like seq),
+	extracts the task name (reset, build, update, troubleshoot),
+	and dynamically executes the corresponding VPN operation using
+	the {task} path parameter.
+
+	2)web_wrapper.py
+		→ Acts as a bridge between FastAPI backend and automation logic
+	    → Identifies firewall vendor (Cisco ASA / Palo Alto)
+		→ Routes request to the correct automation workflow(ASA / Palo Alto)
+	3)Python Automation Scripts (.py modules)
+		→Perform actual VPN operations
+		-Execute VPN logic (discover, reset, update, build, troubleshoot)
+↓
+API / SSH Layer
+↓
+		- Used to Communicates with firewall
+        - Palo Alto → XML/REST API (pan-os-python)
+        - Cisco ASA → SSH CLI (Netmiko)
+
+Firewall Device
+↓
+	- Applies configuration changes and perfor VPN operations
+	- like Reset / Update / Build / Troubleshoot
+↓
+UI(Result:Returns status, logs, and output to the user)
+
+
+============================================================================================
+
+VPN AUTOMATION PLATFORM – FULL UPDATE FLOW (WEB MODE)
+======================================================
+
+PROJECT STRUCTURE OVERVIEW
+--------------------------
+Frontend:
+  - frontend/login.html
+  - frontend/dashboard.html
+  - frontend/app.js
+  - frontend/style.css
+
+Backend:
+  - backend/main.py
+  - backend/projects/vpn_automation/asa/web_wrapper.py
+  - backend/projects/vpn_automation/asa/update.py
+  - backend/projects/vpn_automation/asa/reset.py
+  - backend/projects/vpn_automation/asa/client.py
+
+======================================================
+UPDATE FLOW  SUMMARY
+======================================================
+login.html
+    ↓
+Project View
+    ↓
+dashboard.html   ← 🔥 MAIN CONTROL PAGE
+    ↓
+    -User selects project:
+        -VPN Automation
+            ↓
+            -ASA
+             ↓
+            -User clicks:Update
+            <button onclick="runASA('update')">
+               ↓
+app.js → fetch("/api/asa")
+  ↓
+main.py route
+  ↓
+web_wrapper.py → run_web()
+  ↓
+connect_asa()
+  ↓
+update_vpn()
+  ↓
+ASA show commands
+  ↓
+User selects option
+  ↓
+ASA config commands
+  ↓
+save_config()
+  ↓
+Verification show commands
+  ↓
+disconnect_asa()
+  ↓
+Response returned to UI
+
+======================================================
+STEP 1 – USER LOGIN
+======================================================
+File: frontend/login.html
+
+User enters username & password.
+After successful login:
+  → Select Project (Project View)
+        → VPN Automation
+             → ASA View
+             → PaloAlto View
+
+In ASA View:
+  Button:
+    <button onclick="runASA('update')">Update</button>
+
+======================================================
+STEP 2 – BUTTON CLICK (FRONTEND JS)
+======================================================
+File: frontend/app.js
+
+Function triggered:
+  runASA("update")
+
+JS sends API request:
+
+  fetch("/api/asa", {
+      method: "POST",
+      body: JSON.stringify({ task: "update" })
+  })
+
+======================================================
+STEP 3 – BACKEND API ROUTE
+======================================================
+File: backend/main.py
+
+Route example:
+  @app.post("/api/asa")
+  def asa_api(data: dict):
+      return run_web(data["task"], ...)
+
+======================================================
+STEP 4 – WEB WRAPPER EXECUTION
+======================================================
+File: backend/projects/vpn_automation/asa/web_wrapper.py
+
+Function:
+  run_web(task, seq=None, payload=None)
+
+Inside:
+
+  conn = connect_asa()
+  tunnels = discover_tunnels(conn)
+
+  if task == "update":
+      update_vpn(conn, payload)
+
+======================================================
+STEP 5 – UPDATE LOGIC START
+======================================================
+File: backend/projects/vpn_automation/asa/update.py
+
+Entry function:
+  update_vpn(conn, payload)
+
+======================================================
+STEP 6 – VALIDATION COMMANDS SENT TO ASA
+======================================================
+
+1) show run tunnel-group <peer_ip>
+2) show run crypto map
+3) show run access-list <acl_name>
+
+Purpose:
+  - Validate peer exists
+  - Find crypto map
+  - Parse ACL
+  - Display CURRENT CONFIG preview
+
+If payload["preview_only"] == True:
+  → Function returns (Preview Mode)
+
+======================================================
+STEP 7 – USER SELECTS UPDATE OPTION
+======================================================
+
+Frontend modal sends second API call with:
+
+{
+  "task": "update",
+  "peer_ip": "...",
+  "choice": "2",
+  "new_local_ip": "...",
+  "new_local_mask": "..."
+}
+
+======================================================
+STEP 8 – CONFIGURATION COMMAND EXECUTION
+======================================================
+
+Depending on choice:
+
+OPTION 1 – Update Peer IP
+  crypto map <map> <new_seq> set peer <new_ip>
+  tunnel-group <new_ip> type ipsec-l2l
+
+OPTION 2 – Update Local Subnet
+  access-list <acl> extended permit ip <local> <mask> <remote> <mask>
+
+OPTION 3 – Update Remote Subnet
+  access-list <acl> extended permit ip <local> <mask> <remote> <mask>
+
+OPTION 4 – Update Phase2
+  crypto map <map> <seq> set ikev1 transform-set <new_ts>
+
+OPTION 5 – Update PSK
+  tunnel-group <peer_ip> ipsec-attributes
+  ikev1 pre-shared-key <new_psk>
+
+Commands executed using:
+  conn.send_config_set([...])
+
+======================================================
+STEP 9 – SAVE CONFIGURATION
+======================================================
+
+conn.save_config()
+
+Internally ASA runs:
+  write memory
+
+Configuration becomes permanent.
+
+======================================================
+STEP 10 – POST-CHANGE VERIFICATION
+======================================================
+
+Commands:
+  show run crypto map
+  show run access-list
+  show run tunnel-group
+
+Before vs After output printed.
+
+======================================================
+STEP 11 – DISCONNECT
+======================================================
+
+In web_wrapper.py:
+
+  disconnect_asa(conn)
+
+======================================================
+STEP 12 – RESPONSE TO FRONTEND
+======================================================
+
+run_web() captures output using:
+  redirect_stdout()
+
+Returns full CLI output as text.
+
+Frontend:
+  asaOutput.innerText = response
+
+Output displayed in ASA terminal window.
+
+
+
+
+
+================================================================================
+UPDATE AUTOMATION - COMMAND REFERENCE WITH CODE
+================================================================================
+
+--------------------------------------------------------------------------------
+1) UPDATE PEER IP (ADD NEW PEER; KEEP OLD)
+--------------------------------------------------------------------------------
+
+SHOW COMMANDS (Lines 439, 464, 359):
+  show run crypto map
+  show run tunnel-group <existing_peer_ip>
+  show run tunnel-group <new_peer_ip>
+
+CONFIGURATION COMMANDS (Lines 472-487):
+  configure terminal
+  crypto map <map_name> <new_seq> match address <acl_name>
+  crypto map <map_name> <new_seq> set peer <new_peer_ip>
+  crypto map <map_name> <new_seq> set pfs <group>
+  crypto map <map_name> <new_seq> set ikev1 transform-set <transform_set>
+  crypto map <map_name> <new_seq> set security-association lifetime kilobytes unlimited
+  crypto map <map_name> <new_seq> set reverse-route
+  tunnel-group <new_peer_ip> type ipsec-l2l
+  tunnel-group <new_peer_ip> general-attributes
+  default-group-policy <policy_name>
+  exit
+  write memory
+
+PYTHON CODE:
+  cmds = []
+  if acl_name:
+      cmds.append(f"crypto map {map_name} {new_seq} match address {acl_name}")
+  cmds.append(f"crypto map {map_name} {new_seq} set peer {new_peer_ip}")
+  if pfs:
+      cmds.append(f"crypto map {map_name} {new_seq} set pfs {pfs}")
+  if ts:
+      cmds.append(f"crypto map {map_name} {new_seq} set ikev1 transform-set {ts}")
+  if lifetime_unlimited:
+      cmds.append(f"crypto map {map_name} {new_seq} set security-association lifetime kilobytes unlimited")
+  if reverse_route:
+      cmds.append(f"crypto map {map_name} {new_seq} set reverse-route")
+  cmds.append(f"tunnel-group {new_peer_ip} type ipsec-l2l")
+  cmds.append(f"tunnel-group {new_peer_ip} general-attributes")
+  if gp_line:
+      cmds.append(gp_line)
+  conn.send_config_set(cmds)
+  conn.save_config()
+
+EXAMPLE:
+  crypto map outside_map 11 match address outside_cryptomap_1
+  crypto map outside_map 11 set peer 5.6.7.8
+  crypto map outside_map 11 set pfs group5
+  crypto map outside_map 11 set ikev1 transform-set ESP-AES-256-SHA
+  tunnel-group 5.6.7.8 type ipsec-l2l
+
+BEFORE/AFTER CHECK:
+  before_full = _show(conn, "show run crypto map")
+  # ... config commands ...
+  after_full = _show(conn, "show run crypto map")
+
+
+--------------------------------------------------------------------------------
+2) UPDATE LOCAL SUBNET (ADD)
+--------------------------------------------------------------------------------
+
+SHOW COMMANDS (Lines 507, 647, 663):
+  show run crypto map
+  show run access-list <acl_name>
+
+CONFIGURATION COMMANDS (Lines 520-523):
+  configure terminal
+  access-list <acl_name> extended permit ip <new_local_ip> <new_local_mask> <remote_ip> <remote_mask>
+  exit
+  write memory
+
+PYTHON CODE:
+  before_full = _show(conn, f"show run access-list {acl_name}")
+
+  local_exists = any(l_ip == new_local_ip and l_mask == new_local_mask
+                     for (l_ip, l_mask, _, _) in acl_pairs)
+  if local_exists:
+      print("[WARNING] Local subnet already configured.")
+      if not _confirm("Do you still want to continue? (y/n): "):
+          return False
+
+  remotes = sorted({(r_ip, r_mask) for (_, _, r_ip, r_mask) in acl_pairs})
+  existing_full = set(acl_pairs)
+
+  cmds = []
+  for r_ip, r_mask in remotes:
+      if (new_local_ip, new_local_mask, r_ip, r_mask) in existing_full:
+          continue
+      cmds.append(f"access-list {acl_name} extended permit ip {new_local_ip} {new_local_mask} {r_ip} {r_mask}")
+
+  if cmds:
+      conn.send_config_set(cmds)
+      conn.save_config()
+
+  after_full = _show(conn, f"show run access-list {acl_name}")
+
+EXAMPLE:
+  access-list outside_cryptomap_1 extended permit ip 192.168.100.0 255.255.255.0 10.2.5.0 255.255.255.0
+
+BEFORE:
+  access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.2.5.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.20.0 255.255.255.0 10.2.5.0 255.255.255.0
+
+AFTER:
+  access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.2.5.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.20.0 255.255.255.0 10.2.5.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.100.0 255.255.255.0 10.2.5.0 255.255.255.0
+
+
+--------------------------------------------------------------------------------
+3) UPDATE REMOTE SUBNET (ADD)
+--------------------------------------------------------------------------------
+
+SHOW COMMANDS (Lines 543, 647, 695):
+  show run crypto map
+  show run access-list <acl_name>
+
+CONFIGURATION COMMANDS (Lines 556-559):
+  configure terminal
+  access-list <acl_name> extended permit ip <local_ip> <local_mask> <new_remote_ip> <new_remote_mask>
+  exit
+  write memory
+
+PYTHON CODE:
+  before_full = _show(conn, f"show run access-list {acl_name}")
+
+  remote_exists = any(r_ip == new_remote_ip and r_mask == new_remote_mask
+                      for (_, _, r_ip, r_mask) in acl_pairs)
+  if remote_exists:
+      print("[WARNING] Remote subnet already configured.")
+      if not _confirm("Do you still want to continue? (y/n): "):
+          return False
+
+  locals_ = sorted({(l_ip, l_mask) for (l_ip, l_mask, _, _) in acl_pairs})
+  existing_full = set(acl_pairs)
+
+  cmds = []
+  for l_ip, l_mask in locals_:
+      if (l_ip, l_mask, new_remote_ip, new_remote_mask) in existing_full:
+          continue
+      cmds.append(f"access-list {acl_name} extended permit ip {l_ip} {l_mask} {new_remote_ip} {new_remote_mask}")
+
+  if cmds:
+      conn.send_config_set(cmds)
+      conn.save_config()
+
+  after_full = _show(conn, f"show run access-list {acl_name}")
+
+EXAMPLE:
+  access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.5.20.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.20.0 255.255.255.0 10.5.20.0 255.255.255.0
+
+BEFORE:
+  access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.2.5.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.20.0 255.255.255.0 10.2.5.0 255.255.255.0
+
+AFTER:
+  access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.2.5.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.20.0 255.255.255.0 10.2.5.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.10.0 255.255.255.0 10.5.20.0 255.255.255.0
+  access-list outside_cryptomap_1 extended permit ip 192.168.20.0 255.255.255.0 10.5.20.0 255.255.255.0
+
+
+--------------------------------------------------------------------------------
+4) UPDATE PHASE-2 ENCRYPTION (MODIFY)
+--------------------------------------------------------------------------------
+
+SHOW COMMANDS (Lines 577, 585):
+  show run crypto map
+
+CONFIGURATION COMMANDS (Line 587):
+  configure terminal
+  crypto map <map_name> <seq> set ikev1 transform-set <new_transform_set>
+  exit
+  write memory
+
+PYTHON CODE:
+  crypto_map_run = _show(conn, "show run crypto map")
+
+  current_ts = _get_transform_set_for_map_seq(crypto_map_run, map_name, seq)
+  if current_ts and current_ts.strip() == new_transform_set.strip():
+      print("[INFO] Phase-2 encryption already configured.")
+      return False
+
+  before_full = _show(conn, "show run crypto map")
+
+  conn.send_config_set([f"crypto map {map_name} {seq} set ikev1 transform-set {new_transform_set}"])
+  conn.save_config()
+
+  after_full = _show(conn, "show run crypto map")
+
+EXAMPLE:
+  crypto map outside_map 10 set ikev1 transform-set ESP-AES-256-SHA256
+
+BEFORE:
+  crypto map outside_map 10 match address outside_cryptomap_1
+  crypto map outside_map 10 set peer 4.227.229.249
+  crypto map outside_map 10 set ikev1 transform-set ESP-AES-256-SHA
+  crypto map outside_map 10 set pfs group5
+
+AFTER:
+  crypto map outside_map 10 match address outside_cryptomap_1
+  crypto map outside_map 10 set peer 4.227.229.249
+  crypto map outside_map 10 set ikev1 transform-set ESP-AES-256-SHA256
+  crypto map outside_map 10 set pfs group5
+
+
+--------------------------------------------------------------------------------
+5) UPDATE PRE-SHARED KEY (MODIFY)
+--------------------------------------------------------------------------------
+
+SHOW COMMANDS (Line 607):
+  show run tunnel-group <peer_ip>
+
+CONFIGURATION COMMANDS (Lines 609-612):
+  configure terminal
+  tunnel-group <peer_ip> ipsec-attributes
+  ikev1 pre-shared-key <new_psk>
+  exit
+  write memory
+
+PYTHON CODE:
+  print("[WARNING] Pre-Shared Key will be updated.")
+  if not _confirm("Do you want to continue? (y/n): "):
+      print("[INFO] Update cancelled.")
+      return False
+
+  before_full = _show(conn, f"show run tunnel-group {peer_ip}")
+
+  conn.send_config_set([
+      f"tunnel-group {peer_ip} ipsec-attributes",
+      f"ikev1 pre-shared-key {new_psk}",
+  ])
+  conn.save_config()
+
+  after_full = _show(conn, f"show run tunnel-group {peer_ip}")
+
+EXAMPLE:
+  tunnel-group 4.227.229.249 ipsec-attributes
+  ikev1 pre-shared-key MyNewSecretKey@2025!
+
+BEFORE:
+  tunnel-group 4.227.229.249 type ipsec-l2l
+  tunnel-group 4.227.229.249 general-attributes
+   default-group-policy DfltGrpPolicy
+  tunnel-group 4.227.229.249 ipsec-attributes
+   ikev1 pre-shared-key *****
+
+AFTER:
+  tunnel-group 4.227.229.249 type ipsec-l2l
+  tunnel-group 4.227.229.249 general-attributes
+   default-group-policy DfltGrpPolicy
+  tunnel-group 4.227.229.249 ipsec-attributes
+   ikev1 pre-shared-key *****
+
+
+--------------------------------------------------------------------------------
+HELPER FUNCTIONS USED (ALL OPTIONS)
+--------------------------------------------------------------------------------
+
+SESSION INIT (Line 11):
+  def _session_init(conn):
+      conn.send_command("terminal pager 0")
+
+SHOW WRAPPER (Lines 20-29):
+  def _show(conn, cmd: str) -> str:
+      last_exc = None
+      for attempt in (1, 2):
+          try:
+              out = conn.send_command(cmd)
+              return out if out is not None else ""
+          except Exception as e:
+              last_exc = e
+              if attempt == 1:
+                  time.sleep(0.35)
+      return f"__ERROR__:{last_exc}"
+
+CONFIRM PROMPT (Lines 94-108):
+  def _confirm(prompt: str) -> bool:
+      import os
+      if os.getenv("WEB_MODE") == "1":
+          print("[WEB_MODE] Auto-continuing (override enabled)")
+          return True
+      while True:
+          ans = input(prompt).strip().lower()
+          if ans in ("y", "yes"):
+              return True
+          if ans in ("n", "no"):
+              return False
+          print("[INFO] Please enter 'y' or 'n'.")
+
+SAVE CONFIG:
+  conn.save_config()  # Executes: write memory
+
+
+--------------------------------------------------------------------------------
+KEY FEATURES
+--------------------------------------------------------------------------------
+
+✅ NON-DESTRUCTIVE: All operations preserve existing configuration
+✅ CHANGE CONTROL: BEFORE/AFTER snapshots for every change
+✅ VALIDATION: Input validation for IPs, netmasks, existing configs
+✅ ROLLBACK SAFE: Failed configs don't break existing VPN
+✅ IDEMPOTENT: Running same command twice is safe
+✅ WEB MODE: Auto-confirms prompts when WEB_MODE=1
+
+
+--------------------------------------------------------------------------------
+TOTAL AUTOMATION STATS
+--------------------------------------------------------------------------------
+
+Total Show Commands Automated: 8 unique commands
+Total Config Commands Automated: 17 unique commands
+Total Options: 5
+Total Functions: 15
+Lines of Code: ~750
+Supported Scenarios: 5 major VPN update operations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
