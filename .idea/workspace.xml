@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md" />
+    <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/projects/vpn_automation/asa/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/projects/vpn_automation/asa/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/assets/logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/assets/logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/login.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -94,6 +101,7 @@
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\frontend\assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Epicor\Network-Automation\frontend\assets" />
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\Testing" />
     </key>
   </component>
