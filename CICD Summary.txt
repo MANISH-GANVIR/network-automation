@@ -1,0 +1,123 @@
+GITHUB ACTIONS
+===============
+
+1️⃣ WHAT IS GITHUB ACTIONS?
+   → Workflow Automation Service by GitHub
+   → Automates repository processes
+
+2️⃣ REPOSITORY?
+   → Container/bucket for code (apps, packages, websites)
+
+3️⃣ TWO MAIN AUTOMATION AREAS:
+
+   A) CI/CD (Most Important)
+      CI = Continuous Integration
+      CD = Continuous Delivery/Deployment
+
+      Flow: Build → Test → Merge → Deploy
+
+   B) Code Management
+      → Code reviews, issue management
+
+4️⃣ CI/CD EXPLAINED:
+
+   Continuous Integration:
+   • Auto-build code
+   • Auto-test code
+   • Auto-merge into codebase
+
+   Continuous Delivery/Deployment:
+   • Auto-publish new versions after testing
+
+   DIAGRAM:
+   Code Change → Build → Test → Merge → Deploy → Live ✅
+
+5️⃣ REAL EXAMPLE:
+   You change website code
+   → GitHub Actions automatically tests it
+   → If pass → Automatically publishes new version
+   → Website updated! 🚀
+
+6️⃣ OTHER AUTOMATIONS:
+   ✓ Automated code reviews
+   ✓ Issue management
+   ✓ Repository maintenance
+
+KEY POINT: GitHub Actions = Robot that automates build, test,
+           deploy without manual work
+
+GIT & GITHUB -
+==============
+1️⃣ WHAT IS GIT?
+   → Free version control system tool
+   → Download & install locally (Windows/macOS/Linux)
+   → Manage source code changes for any language/app
+
+    Note:-> "VCS = A System use to track & manage code changes"
+
+2️⃣ GIT KEY FEATURES:
+   • Commits = Snapshots of code at any point
+   • Branches = Work on multiple versions simultaneously
+   • Checkout = Switch between branches/snapshots
+   • Rollback = Go back to older code if needed
+
+3️⃣ GIT BENEFITS:
+   ✓ Track code changes
+   ✓ Recover from mistakes
+   ✓ Develop features without breaking existing code
+
+4️⃣ WHAT IS GITHUB?
+   → Company offering cloud Git repositories
+   → Cloud storage for your code + related services
+
+   DIAGRAM:
+   Local Git Repo ←→ GitHub Cloud Repo
+   (Your machine)    (Cloud storage)
+
+5️⃣ GITHUB FEATURES:
+   • Public/Private repositories
+   • Access control (who can modify)
+   • Issues = Track bugs
+   • Projects = Organize work
+   • Pull Requests = Suggest code changes
+   • Collaborative development tools
+
+6️⃣ GITHUB vs GIT:
+   GIT = Tool for version control (local)
+   GITHUB = Cloud platform + collaboration features
+
+7️⃣ GITHUB ACTIONS (in this context):
+   → Automation service by GitHub
+   → Automates repository & code processes
+   → Enables CI/CD workflows
+
+KEY POINT: Git manages code locally | GitHub stores +
+           collaborates in cloud | GitHub Actions automates
+===========================================================
+GIT REPOSITORY -
+1️⃣ WHAT IS GIT REPOSITORY?
+   → Folder that Git uses to track code changes
+   → Stores snapshots & metadata
+   → Must exist to use Git commands
+
+2️⃣ HOW TO CREATE?
+   Command: git init
+   → Run once per project
+   → Creates hidden .git folder
+   → Project now under Git control
+
+3️⃣ BEFORE vs AFTER GIT INIT:
+
+   BEFORE:
+   Regular folder → Git commands don't work
+
+   AFTER:
+   git init runs → .git folder created → Git commands work ✓
+
+4️⃣ KEY POINT:
+   No Repository = Can't use Git
+   Repository Created = Can use all Git features
+
+5️⃣ AUTO-INITIALIZED PROJECTS:
+   Some tools (React CLI, etc.) auto-create repo
+   → Don't need git init again

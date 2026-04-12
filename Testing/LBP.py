@@ -1,19 +1,6 @@
-# Take size
-n = int(input())
+list=[1,2,3,4,2,3,5,5,6]
+set_list=set(list)
 
-# Take elements
-L = [int(i) for i in input().split() ]
-
-
-# Create empty list for unique elements
-LL = []
-
-# Store unique elements
-for i in L:
-    if i not in LL:
-        LL.append(i)
-
-# Print result
-for i in LL:
-    print(i, end=' ')
-
+for ele in set_list:
+    if list.count(ele)>1:
+        print(ele,list.count(ele))
