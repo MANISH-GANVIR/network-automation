@@ -5,9 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md">
-      <change afterPath="$PROJECT_DIR$/CICD Summary.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Testing/LBP.py" beforeDir="false" afterPath="$PROJECT_DIR$/Testing/LBP.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CICD Summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CICD Summary.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,49 +48,50 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.AS2dryrun.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ASA_SHOW LOGGING.executor&quot;: &quot;Run&quot;,
-    &quot;Python.ASA_SHOW RUN.executor&quot;: &quot;Run&quot;,
-    &quot;Python.LBP.executor&quot;: &quot;Run&quot;,
-    &quot;Python.VPN.executor&quot;: &quot;Run&quot;,
-    &quot;Python.as2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.as2nat.executor&quot;: &quot;Run&quot;,
-    &quot;Python.asa_vpn_ops.executor&quot;: &quot;Run&quot;,
-    &quot;Python.build.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client.executor&quot;: &quot;Run&quot;,
-    &quot;Python.commands.executor&quot;: &quot;Run&quot;,
-    &quot;Python.config.executor&quot;: &quot;Run&quot;,
-    &quot;Python.discovery.executor&quot;: &quot;Run&quot;,
-    &quot;Python.gen_api.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.menu.executor&quot;: &quot;Run&quot;,
-    &quot;Python.run_asa.executor&quot;: &quot;Run&quot;,
-    &quot;Python.sh run cli.executor&quot;: &quot;Run&quot;,
-    &quot;Python.sh run pandevice.executor&quot;: &quot;Run&quot;,
-    &quot;Python.sh run panos.executor&quot;: &quot;Run&quot;,
-    &quot;Python.sh run.executor&quot;: &quot;Run&quot;,
-    &quot;Python.transformset.executor&quot;: &quot;Run&quot;,
-    &quot;Python.update.executor&quot;: &quot;Run&quot;,
-    &quot;Python.vpn.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;ToolWindow.Run.ShowToolbar&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Epicor/Network-Automation/.venv&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.AS2dryrun.executor": "Run",
+    "Python.ASA_SHOW LOGGING.executor": "Run",
+    "Python.ASA_SHOW RUN.executor": "Run",
+    "Python.LBP.executor": "Run",
+    "Python.VPN.executor": "Run",
+    "Python.as2.executor": "Run",
+    "Python.as2nat.executor": "Run",
+    "Python.asa_vpn_ops.executor": "Run",
+    "Python.build.executor": "Run",
+    "Python.client.executor": "Run",
+    "Python.commands.executor": "Run",
+    "Python.config.executor": "Run",
+    "Python.discovery.executor": "Run",
+    "Python.gen_api.executor": "Run",
+    "Python.main (1).executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.menu.executor": "Run",
+    "Python.run_asa.executor": "Run",
+    "Python.sh run cli.executor": "Run",
+    "Python.sh run pandevice.executor": "Run",
+    "Python.sh run panos.executor": "Run",
+    "Python.sh run.executor": "Run",
+    "Python.transformset.executor": "Run",
+    "Python.update.executor": "Run",
+    "Python.vpn.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "ToolWindow.Run.ShowToolbar": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "D:/Epicor/Network-Automation/.venv",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;TEXT&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\backend\utils" />

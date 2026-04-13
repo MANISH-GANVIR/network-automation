@@ -95,6 +95,7 @@ KEY POINT: Git manages code locally | GitHub stores +
            collaborates in cloud | GitHub Actions automates
 ===========================================================
 GIT REPOSITORY -
+--------------
 1️⃣ WHAT IS GIT REPOSITORY?
    → Folder that Git uses to track code changes
    → Stores snapshots & metadata
@@ -121,3 +122,1979 @@ GIT REPOSITORY -
 5️⃣ AUTO-INITIALIZED PROJECTS:
    Some tools (React CLI, etc.) auto-create repo
    → Don't need git init again
+==========================================================
+GIT COMMITS -
+-------------
+1️⃣ WHAT IS A COMMIT?
+   → Code snapshot at a specific point in time
+   → Created after meaningful changes
+   → Has unique ID & message
+
+2️⃣ TWO-STEP PROCESS:
+
+   STEP 1: git add <filename>
+   → Stage files you want in snapshot
+   → Choose which changes to include
+
+   STEP 2: git commit -m "message"
+   → Create snapshot from staged changes
+   → Requires descriptive message
+
+3️⃣ WHY TWO STEPS?
+   → Control which files go in which commit
+   → Don't have to commit everything at once
+
+4️⃣ COMMON COMMANDS:
+
+   git add index.html          → Stage file
+   git status                  → Check staged files
+   git commit -m "msg"         → Create commit
+   git log                     → View all commits
+
+5️⃣ WORKFLOW:
+
+   Code Changes → git add → git commit → Snapshot Created ✓
+
+6️⃣ COMMIT MESSAGE:
+   → Short & descriptive
+   → Example: "initial commit", "fix bug"
+
+7️⃣ GIT LOG:
+   → Shows all commits in order
+   → Displays commit ID & message
+   → Lets you go back to any commit
+
+KEY POINT: Commits = Project history | Can rollback anytime
+============================================================
+GIT HEAD & CHECKOUT -
+---------------------
+
+1️⃣ WHAT IS HEAD?
+   → Pointer to currently loaded commit
+   → Always points to latest by default
+
+2️⃣ GIT CHECKOUT:
+
+   git checkout <commit-id>
+   → Load old commit temporarily
+   → Safe - nothing deleted
+
+   git checkout <branch-name>
+   → Return to branch with all commits
+
+3️⃣ WORKFLOW:
+   Make Changes → git add → git commit
+                                 ↓
+                            HEAD moves to
+                            new commit
+
+4️⃣ WHY CHECKOUT OLD COMMITS?
+   • Debug/Find bugs
+   • Revert mistakes
+   • Review code changes
+   • Restore deleted files
+
+5️⃣ COMPLETE TIMELINE:
+
+   Commit-1 → Commit-2 → Commit-3
+   (v1)       (v2)       (v3 - Latest)
+                          HEAD ↑
+
+   AFTER: git checkout Commit-1-ID
+
+   Commit-1 ← Commit-2 → Commit-3
+   HEAD ↑     (Hidden)   (Still safe)
+
+   AFTER: git checkout main
+
+   Commit-1 → Commit-2 → Commit-3
+                         HEAD ↑
+
+6️⃣ USE CASE DIAGRAM:
+
+   Bug Found in v3
+        │
+        ▼
+   Checkout v1 (Working) ✓
+        │
+        ▼
+   Compare & Find Issue
+        │
+        ▼
+   git checkout main
+        │
+        ▼
+   Create Fix (New Commit)
+
+KEY POINT: Checkout = Time travel for debugging | Safe always
+--------------------------------------------------------------
+DIAGRAM:
+
+   Website Working ✓ → Bug Introduced ✗
+   (Commit 1)        (Commit 2)
+        ↑                  │
+        └──────────────────┘
+
+   Checkout Commit 1 → Find where bug started
+   Fix it → New commit
+
+KEY POINT: Go back to old commits = Debug, Review, Restore
+--------------------------------------------------------------
+==============================================================
+GIT REVERT:-Create new undo commit | History preserved
+----------
+
+1️⃣ WHAT IS GIT REVERT?
+   → Undo changes from specific commit
+   → Creates NEW commit (doesn't delete old one)
+   → Safe way to undo mistakes
+
+2️⃣ COMMAND:
+
+   git revert <commit-id>
+   → Reverts that specific commit
+   → Prompts for commit message
+   → Creates undo commit automatically
+
+3️⃣ KEY DIFFERENCE:
+
+   MANUAL UNDO:
+   Remove paragraph → Edit files → git add → git commit
+   (More work)
+
+   GIT REVERT:
+   git revert <id> → Done ✓
+   (Automatic)
+
+4️⃣ HOW IT WORKS:
+
+   Commit-1 (initial) → Commit-2 (added link) → Commit-3 (reverted)
+   (paragraph gone)
+
+   Old commits still exist, new undo commit created
+
+5️⃣ TIMELINE DIAGRAM:
+
+   BEFORE REVERT:
+
+   Commit-1 → Commit-2 (paragraph added) → HEAD
+
+   AFTER: git revert Commit-2-ID
+
+   Commit-1 → Commit-2 → Commit-3 (paragraph removed)
+                         HEAD ↑
+
+6️⃣ BENEFITS:
+   ✓ Automatic undo (no manual editing)
+   ✓ Complex changes handled easily
+   ✓ History preserved (can see what happened)
+   ✓ Safe rollback
+
+7️⃣ WORKFLOW:
+
+   Made Mistake ✗
+        │
+        ▼
+   git revert <commit-id>
+        │
+        ▼
+   Enter message
+        │
+        ▼
+   Undo commit created ✓
+   (Original still visible in history)
+
+KEY POINT: Revert = Create new undo commit | History preserved
+================================================================
+GIT RESET --HARD - INTERVIEW NOTES
+
+1️⃣ WHAT IS GIT RESET --HARD?
+   → Delete commits permanently
+   → Go back to specific commit
+   → All commits after that are GONE
+   → Rewrites history
+
+2️⃣ COMMAND:
+
+   git reset --hard <commit-id>
+   → Deletes all commits after specified commit
+   → Cannot undo (data loss possible)
+   → USE WITH CAUTION
+
+3️⃣ REVERT vs RESET:
+
+   GIT REVERT:
+   • Creates new undo commit
+   • Keeps history
+   • Safe ✓
+
+   GIT RESET --HARD:
+   • Deletes commits permanently
+   • Rewrites history
+   • Risky ✗
+
+4️⃣ TIMELINE DIAGRAM:
+
+   BEFORE RESET:
+
+   Commit-1 → Commit-2 → Commit-3 → Commit-4 → HEAD
+
+   AFTER: git reset --hard Commit-1-ID
+
+   Commit-1 → (Deleted) → (Deleted) → (Deleted)
+   HEAD ↑
+
+5️⃣ COMPLETE GIT COMMANDS SUMMARY:
+
+   git init
+   → Initialize repository
+
+   git add <file>
+   → Stage changes
+
+   git commit -m "msg"
+   → Create commit
+
+   git status
+   → Check staged files
+
+   git log
+   → View all commits
+
+   git checkout <id>
+   → Load old commit temporarily
+
+   git revert <id>
+   → Create undo commit (safe)
+
+   git reset --hard <id>
+   → Delete commits (dangerous)
+
+6️⃣ WHEN TO USE:
+
+   ✓ REVERT = Default choice (safe, keeps history)
+   ✗ RESET --HARD = Only if absolutely sure
+
+7️⃣ RISK DIAGRAM:
+
+   Safe Route:
+   git revert → New commit → History kept ✓
+
+   Dangerous Route:
+   git reset --hard → Data loss → Can't undo ✗
+
+KEY POINT: Use REVERT by default | RESET only with caution
+================================================================
+GIT & .GITIGNORE - COMPLETE LEARNING GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY POINTS TO REMEMBER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ .gitignore location = Project ROOT
+✓ .gitignore purpose = Exclude auto-generated files
+✓ Once added = Auto-excluded from ALL commits forever
+✓ Use "git add ." = Respects .gitignore automatically
+✓ Check "git status" = Before every commit
+✓ Add comments = Explain why files are ignored
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 1: UNDERSTAND .GITIGNORE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ WHAT IS .GITIGNORE?
+   → Special file to exclude files/folders from commits
+   → Keeps repository clean
+   → Prevents auto-generated/personal files being shared
+
+2️⃣ WHY DO YOU NEED IT?
+
+   Example: Your project creates these files:
+
+   __pycache__/
+   └─ Function: Python auto-creates cache for faster imports
+   └─ Use Case: Speed up code execution on same machine
+   └─ Ignore? YES ✗ (recreated automatically on other machines)
+
+   .idea/
+   └─ Function: IDE stores editor settings, layout, plugins
+   └─ Use Case: Personal editor configuration
+   └─ Ignore? YES ✗ (don't share personal preferences)
+
+   *.pyc
+   └─ Function: Compiled Python bytecode files
+   └─ Use Case: Machine-specific compiled version of .py
+   └─ Ignore? YES ✗ (original .py file is sufficient)
+
+   These are AUTO-GENERATED:
+   ✗ Not needed in repository
+   ✗ Clutters shared codebase
+   ✗ Wastes storage space
+
+3️⃣ HOW TO CREATE .GITIGNORE?
+
+   Step 1: In project root, create file named:
+           .gitignore
+
+   Step 2: Add files to ignore:
+
+           # Python cache directory
+           # Auto-created by Python when imports run
+           # Stores compiled bytecode for faster loading
+           __pycache__/
+
+           # IntelliJ IDEA IDE settings folder
+           # Contains editor configuration, layout, plugins
+           # Personal to each developer's machine
+           .idea/
+
+           # Python compiled bytecode files
+           # Auto-generated from .py source files
+           # Machine-specific, recreated automatically
+           *.pyc
+
+   Step 3: Save file
+
+4️⃣ .GITIGNORE LOCATION:
+
+   Network-Automation/
+   │
+   ├── .gitignore ← ALWAYS IN ROOT (top level)
+   ├── update.py
+   ├── VPN.py
+   └── API_FLOW.txt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 2: YOUR PROJECT EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+YOUR REPO: Network-Automation
+
+FILES IN YOUR PROJECT:
+
+   CODE:
+   ✓ update.py          → Automation script
+   ✓ VPN.py             → VPN script
+
+   DOCUMENTATION:
+   ✓ API_FLOW.txt       → API documentation
+   ✓ CICD.txt           → CI/CD notes
+   ✓ CICD Summary.txt   → Summary
+   ✓ commands           → Command notes
+   ✓ Diagram            → Visual diagram
+   ✓ discussion.txt     → Discussion
+   ✓ flow.txt           → Flow notes
+   ✓ change             → Change log
+
+   CONFIGURATION:
+   ✓ .gitignore         → Ignore file
+
+   ASSETS:
+   ✓ bg2.jpg            → Image
+
+   AUTO-GENERATED (IN .GITIGNORE):
+   ✗ __pycache__/       → Python cache
+   ✗ .idea/             → IDE settings
+   ✗ *.pyc              → Compiled Python
+
+YOUR .GITIGNORE CONTENT WITH EXPLANATION:
+
+   # Python cache directory
+   # Function: Stores compiled bytecode for faster imports
+   # Use Case: Speeds up code execution
+   # Why ignore: Recreated automatically on any machine
+   __pycache__/
+
+   # IntelliJ IDEA IDE settings folder
+   # Function: Stores editor layout, plugins, configuration
+   # Use Case: Personal editor preferences
+   # Why ignore: Each developer has different editor setup
+   .idea/
+
+   # Python compiled bytecode files
+   # Function: Machine-specific compiled version of .py files
+   # Use Case: Faster execution (Python uses these)
+   # Why ignore: Original .py file is sufficient, recreated on import
+   *.pyc
+
+PROJECT STRUCTURE:
+
+   Network-Automation/
+   │
+   ├── .gitignore ← Ignore config (root)
+   │
+   ├── update.py ✓ (committed)
+   ├── VPN.py ✓ (committed)
+   ├── API_FLOW.txt ✓ (committed)
+   ├── CICD.txt ✓ (committed)
+   ├── bg2.jpg ✓ (committed)
+   │
+   ├── __pycache__/ ✗ (ignored - NOT committed)
+   ├── .idea/ ✗ (ignored - NOT committed)
+   └── *.pyc ✗ (ignored - NOT committed)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 3: HOW .GITIGNORE WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WORKFLOW:
+
+   Step 1: You modify files
+           update.py (changed)
+           VPN.py (changed)
+
+   Step 2: Python auto-creates:
+           __pycache__/ (cache for speed)
+           .idea/ (IDE settings)
+           *.pyc (compiled files)
+
+   Step 3: .gitignore says "Ignore these 3!"
+           __pycache__/
+           .idea/
+           *.pyc
+
+   Step 4: Run command:
+           git add .
+           (Stages ALL files EXCEPT ignored ones)
+
+   Step 5: Staged files:
+           ✓ update.py
+           ✓ VPN.py
+           (Auto-generated files NOT staged)
+
+   Step 6: Create commit:
+           git commit -m "message"
+
+   RESULT: Only code files committed ✓
+           Auto-generated files excluded ✓
+
+DIAGRAM:
+
+   Your Changes + Auto-Generated Files
+            │
+            ├─ update.py ✓
+            ├─ VPN.py ✓
+            ├─ __pycache__/ ✗ (in .gitignore)
+            ├─ .idea/ ✗ (in .gitignore)
+            └─ *.pyc ✗ (in .gitignore)
+            │
+            ▼
+   git add .
+   (Git checks .gitignore)
+            │
+            ▼
+   Staged:
+   ✓ update.py
+   ✓ VPN.py
+   (Ignored files excluded automatically)
+            │
+            ▼
+   git commit
+            │
+            ▼
+   Clean Commit ✓
+   (Only relevant files)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 4: GIT COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INITIALIZE:
+
+   git init
+   → Create Git repository (do once per project)
+
+CHECK STATUS:
+
+   git status
+   → See what changed/staged
+   Output shows: Staged files, Unstaged files, Ignored files
+
+STAGE FILES:
+
+   git add <file>
+   → Stage single file
+
+   git add file1 file2 file3
+   → Stage multiple files
+
+   git add .
+   → Stage ALL files (respects .gitignore) ← RECOMMENDED
+
+   git add <folder>
+   → Stage all files in folder
+
+CREATE COMMIT:
+
+   git commit -m "message"
+   → Create snapshot with description
+
+   Examples:
+   git commit -m "initial commit"
+   git commit -m "update VPN configuration"
+   git commit -m "fix bug in update.py"
+
+VIEW HISTORY:
+
+   git log
+   → Show all commits (newest first)
+
+   git log --oneline
+   → Show short version
+
+NAVIGATE COMMITS:
+
+   git checkout <commit-id>
+   → Load old commit (temporary/debug)
+
+   git checkout main
+   → Return to latest commit
+
+UNDO COMMITS:
+
+   git revert <commit-id>
+   → Create new undo commit (SAFE) ← USE THIS
+
+   git reset --hard <commit-id>
+   → Delete commits permanently (RISKY)
+
+BRANCHES:
+
+   git branch
+   → List all branches
+
+   git branch <name>
+   → Create new branch
+
+   git checkout -b <name>
+   → Create & switch to new branch
+
+   git checkout <name>
+   → Switch to existing branch
+
+   git merge <name>
+   → Merge branch into current branch
+
+GITHUB SYNC:
+
+   git push origin <branch>
+   → Send commits to GitHub
+
+   git pull origin <branch>
+   → Get commits from GitHub
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 5: YOUR PROJECT WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP-BY-STEP FOR Network-Automation:
+
+1. Initialize:
+   $ git init
+
+2. Create .gitignore (in project root):
+   Create file: .gitignore
+
+   Add:
+   # Python cache
+   __pycache__/
+
+   # IDE settings
+   .idea/
+
+   # Compiled Python
+   *.pyc
+
+3. Check status:
+   $ git status
+
+4. Stage files:
+   $ git add .
+
+5. Verify staged:
+   $ git status
+
+6. First commit:
+   $ git commit -m "initial commit: add Python scripts and docs"
+
+7. Make changes (edit update.py, VPN.py):
+   $ git status
+
+8. Stage changes:
+   $ git add .
+
+9. Second commit:
+   $ git commit -m "update: VPN configuration and API flow"
+
+10. View history:
+    $ git log
+
+11. Send to GitHub:
+    $ git push origin main
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 6: COMMON GITIGNORE PATTERNS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For Python Projects:
+
+   # Python cache (auto-created during imports)
+   __pycache__/
+
+   # Compiled Python bytecode
+   *.pyc
+   *.pyo
+
+   # Environment variables (API keys, passwords)
+   .env
+
+   # Virtual environment folder
+   venv/
+
+For JavaScript/Node:
+
+   # Dependencies (large, reinstalled via npm)
+   node_modules/
+
+   # Environment secrets
+   .env
+
+   # macOS system file
+   .DS_Store
+
+For IDEs:
+
+   # VS Code settings (personal editor config)
+   .vscode/
+
+   # IntelliJ IDEA settings
+   .idea/
+
+   # Vim swap files
+   *.swp
+
+General:
+
+   # Log files (debug output)
+   *.log
+
+   # Backup files
+   *.bak
+   *.backup
+
+   # Temporary files
+   *.tmp
+   temp/
+
+COMMAND SHORTCUTS:
+
+git init              → Initialize repo
+git add .             → Stage all (respects .gitignore)
+git commit -m ""      → Create commit
+git status            → Check status
+git log               → View history
+git push              → Send to GitHub
+git pull              → Get from GitHub
+
+===============================================================
+GIT BRANCHES - COMPLETE NOTES (ORGANIZED)
+-----------------------------------------
+Question: What are Git branches?
+
+Answer:
+-"A branch is a pointer to a sequence of commits.
+Git branches allow parallel development by creating
+separate lines of commits that can later be merged
+into the main branch.
+
+-By default, a 'main' branch exists automatically
+when you initialize a repository. The main branch
+is typically developed by the core team and contains
+stable, production-ready code.
+
+-You can create new branches (like feature-1) for
+developers to work on new features independently
+without affecting the main codebase. Each branch
+maintains its own commit history, though branches
+can share common commits at the branching point.
+
+-Multiple commits can exist in both branches, but
+each branch can have unique commits developed by
+its assigned developers. This isolation keeps the
+main branch stable while feature development happens.
+
+-When development on a branch is complete, you can
+merge it back to main using 'git merge', which
+combines all changes into a single timeline while
+preserving the complete history.
+-This enables team collaboration where different
+developer teams work on different features
+simultaneously without conflicts, keeping the main
+branch production-ready and allowing independent
+development teams to work in isolation."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BASIC CONCEPT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Commit:
+   └─ Snapshot of code at specific point in time
+   └─ Represents a version of project
+   └─ Example: C1, C2, C3, C4
+
+Branch:
+   └─ Pointer to sequence of commits
+   └─ Represents line of development
+   └─ Example: main, feature-1, bug-fix
+
+Relationship:
+   commit = building block
+   branch = container for commits
+
+Example:
+   main branch has: C1 → C2 → C3 → C4
+   (4 commits organized in 1 branch)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEFAULT BRANCH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When you create repository:
+
+   $ git init
+
+Git automatically creates:
+   └─ "main" branch (default)
+
+All commits go into main by default:
+   └─ Unless you create new branch
+   └─ No extra work needed
+   └─ Happens automatically
+
+Example timeline:
+
+   $ git init
+   └─ main branch created (empty)
+
+   $ git commit -m "C1"
+   └─ C1 added to main
+
+   $ git commit -m "C2"
+   └─ C2 added to main
+
+   $ git commit -m "C3"
+   └─ C3 added to main
+
+   $ git commit -m "C4"
+   └─ C4 added to main
+
+Result:
+   main: C1 → C2 → C3 → C4
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DIAGRAM FROM IMAGE - DETAILED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Visual diagram:
+
+                main
+                 |
+            commit1 (C1)
+                 |
+            commit2 (C2) ----------- git branch feature-1 ----------->
+                 |                                            |
+            commit3 (C3)                                  commit2
+                 |                                            |
+            commit4 (C4) <----------- git merge feature-1 ---- commit5
+                 |                                            |
+                 ↓                                            ↓
+
+UNDERSTANDING EACH PART:
+
+LEFT SIDE (main branch):
+   C1 → C2 → C3 → C4
+
+   What it represents:
+   └─ Main branch timeline
+   └─ 4 commits in order
+   └─ Stable production code
+   └─ Developed by main branch developers
+
+TOP ARROW (Create branch):
+   git branch feature-1
+
+   What it does:
+   └─ Creates new branch from C2
+   └─ feature-1 starts at C2
+   └─ Both branches share C1, C2
+   └─ Separates feature development from main
+
+RIGHT SIDE (feature-1 branch):
+   C2 → C5
+
+   What it represents:
+   └─ Feature branch timeline
+   └─ Started from C2
+   └─ Added new commit C5
+   └─ Developed by feature branch developers
+   └─ Isolated from main branch work
+
+BOTTOM ARROW (Merge branch):
+   git merge feature-1
+
+   What it does:
+   └─ Takes C5 from feature-1
+   └─ Adds to main after C4
+   └─ Combines histories
+   └─ Executed on main branch (where you want changes)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP-BY-STEP FLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Initial commits in main
+
+   main: C1 → C2 → C3 → C4
+
+   What happened:
+   └─ Project started with C1
+   └─ Added features (C2, C3)
+   └─ Fixed bugs (C4)
+   └─ All on main branch
+   └─ Developed by main branch developers
+   └─ C3, C4 are from main branch only
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 2: Create a new branch
+
+   Command:
+   $ git branch feature-1
+
+   Who uses this command:
+   └─ Developer who wants to create new feature branch
+   └─ Developer currently on main branch
+
+   What happens:
+   └─ Git looks at current position (C2 in diagram)
+   └─ Creates new pointer named "feature-1"
+   └─ Points to same commit (C2)
+
+   Result:
+   main:       C1 → C2 → C3 → C4
+               (main branch developers continue here)
+
+   feature-1:  C1 → C2
+               (feature developers will work here)
+
+   Status:
+   └─ Two branches exist
+   └─ Both at same history (C1, C2)
+   └─ Branches will diverge from C2
+   └─ main branch = original development path
+   └─ feature-1 branch = new isolated path
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 3: Two branches now exist
+
+   main:
+   C1 → C2 → C3 → C4
+   (main branch commits - developed by main developers)
+
+   feature-1:
+   C1 → C2 (and will grow here)
+   (feature branch commits - will be developed by feature developers)
+
+   What this means:
+   └─ Both share C1 and C2
+   └─ After C2, development separate
+   └─ main has C3, C4 (main branch developers work here)
+   └─ feature-1 doesn't have C3, C4 yet
+   └─ C3, C4 stay on main only
+   └─ feature-1 will add its own commits
+
+SEPARATE DEVELOPMENT DIAGRAM:
+
+Time Point: After Step 3
+
+Developer 1 (on main branch):        Developer 2 (on feature-1 branch):
+│                                    │
+├─ git checkout main                 ├─ git checkout feature-1
+├─ (working on main)                 ├─ (working on feature)
+│                                    │
+└─ C1 → C2 → C3 → C4                 └─ C1 → C2 → C5 (will be created)
+   (main branch)                        (feature branch)
+
+KEY DIFFERENCE:
+
+main branch:
+   └─ Developers: Anyone on main branch
+   └─ Commits: C1, C2, C3, C4
+   └─ Work: Bug fixes, maintenance
+   └─ Access: Everyone (production code)
+
+feature-1 branch:
+   └─ Developers: Feature team only
+   └─ Commits: C1, C2, C5, C6... (will add)
+   └─ Work: New payment feature
+   └─ Access: Feature team (isolated)
+
+SEPARATION EXPLANATION:
+
+Why separate?
+   └─ main branch = stable, tested, production ready
+   └─ feature-1 = experimental, under development
+   └─ Different developers work on different branches
+   └─ No one interferes with production code
+   └─ feature can be broken, main stays safe
+
+How it stays separate?
+   └─ Different branch pointers
+   └─ main points to C4
+   └─ feature-1 points to C2 (at this step)
+   └─ When feature developers commit, only feature-1 advances
+   └─ main branch stays at C4 until merge
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 4: Work independently
+
+   Developer 1 on main:
+   └─ Currently on main branch
+   └─ $ git checkout main (confirms on main)
+   └─ Continues normal work
+   └─ Creates C3, C4
+   └─ Stable, tested code
+   └─ Fixes bugs, adds maintenance
+
+   Developer 2 on feature-1:
+   └─ Currently on feature-1 branch
+   └─ $ git checkout feature-1 (switched to feature)
+   └─ New feature development
+   └─ Creates C5 (with new feature)
+   └─ Independent from main
+   └─ Adds payment processing
+
+   Result:
+   main:       C1 → C2 → C3 → C4
+               (main branch only)
+
+   feature-1:  C1 → C2 → C5 (new feature)
+               (feature branch only)
+
+   Status:
+   └─ Different C5s (different commits, different purposes)
+   └─ feature-1 isolated from main
+   └─ No interference between developers
+   └─ main stays stable
+   └─ feature-1 can be messy during development
+   └─ main developers don't see feature code
+   └─ feature developers don't affect production
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 5: Merge branch
+
+   Command:
+   $ git merge feature-1
+
+   Who executes this command:
+   └─ Someone on main branch (usually lead/manager)
+   └─ After feature is complete and tested
+   └─ Brings feature-1 changes into main
+
+   Prerequisites:
+   └─ Must be on main branch first
+   └─ $ git checkout main (switch to main)
+   └─ Then $ git merge feature-1 (merge happens)
+
+   What happens:
+   └─ Git compares main (C4) with feature-1 (C5)
+   └─ Finds common parent (C2)
+   └─ Takes changes from C2→C3→C4 (main path)
+   └─ Takes changes from C2→C5 (feature path)
+   └─ Combines C3, C4 from main
+   └─ Combines C5 from feature-1
+   └─ Creates unified history
+   └─ No conflicts (different areas edited)
+
+   Result:
+   main: C1 → C2 → C3 → C4 → C5 (merged)
+   (all changes on main now)
+
+   Status:
+   └─ All changes on main
+   └─ Both feature-1 and main combined
+   └─ Ready for production
+   └─ Complete codebase
+   └─ Users get payment feature
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPORTANT CONCEPTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HEAD:
+   └─ Pointer to current branch
+   └─ Shows where you are working
+   └─ Moves when you switch branches
+
+Example:
+   $ git checkout feature-1
+   └─ HEAD moves to feature-1
+   └─ You are now on feature-1 branch
+   └─ Any commits go to feature-1
+
+   $ git checkout main
+   └─ HEAD moves to main
+   └─ You are now on main branch
+   └─ Any commits go to main
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Shared commits:
+   └─ C1, C2 exist in both branches
+   └─ Same data, same ID
+   └─ Not duplicated, just referenced
+   └─ Branching point starts here
+
+Example:
+   main:       C1 → C2 → C3 → C4
+               └─────┬─────┘
+   feature-1:      C2 (same C2)
+                   └→ C5
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Independent commits:
+   └─ C5 on feature-1 ≠ C3, C4 on main
+   └─ Different code
+   └─ Separate development paths
+   └─ Different purposes
+
+Example:
+   feature-1 C5: Add payment processing
+   main C3: Add database
+   main C4: Fix login bug
+
+   (All different, no conflict)
+   (C3, C4 on main only - feature doesn't have them)
+   (C5 on feature only - main doesn't have it yet)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Branch behavior:
+   └─ Does NOT affect other branches until merge
+   └─ Isolation: work safely
+   └─ Protection: main stays stable
+
+Example:
+   feature-1 breaks? → main still works
+   feature-1 deleted? → main unaffected
+   feature-1 merged? → main gets changes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMANDS REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create branch:
+   $ git branch feature-1
+   └─ Creates new branch from current commit
+   └─ Doesn't switch to it
+   └─ You stay on current branch
+   └─ New branch is for other developers
+
+Switch branch:
+   $ git checkout feature-1
+   └─ Moves HEAD to feature-1
+   └─ Updates working files
+   └─ You can now work on feature-1
+   └─ Commits will go to feature-1
+
+Merge branch:
+   $ git merge feature-1
+   └─ Combines feature-1 into current branch
+   └─ Must be on main branch first
+   └─ Preserves all commits
+   └─ Brings feature code to main
+
+List branches:
+   $ git branch
+   └─ Shows all branches
+   └─ * marks current branch
+   └─ Helps you see all available branches
+
+Delete branch:
+   $ git branch -d feature-1
+   └─ Removes branch pointer
+   └─ Commits still exist in history
+   └─ Usually done after merging
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REAL LIFE EXAMPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Project: Website
+
+main branch (production):
+   └─ Stable working website
+   └─ Users depend on this
+   └─ Tested and verified
+   └─ Commits: C1, C2, C3, C4
+   └─ Developed by: Main team / DevOps
+
+feature-1 branch (development):
+   └─ New payment feature
+   └─ Under development
+   └─ Not ready for users
+   └─ Commits: C1, C2, C5
+   └─ Developed by: Payment feature team
+
+Workflow:
+
+Day 1-4:
+   └─ Everyone works on main
+   └─ Commits: C1, C2, C3, C4
+   └─ All developers on main branch
+
+Day 5:
+   $ git branch feature-1
+   └─ Create payment feature branch
+   └─ Executed by: Feature team lead
+   └─ Creates isolated space for feature team
+
+Day 5-7:
+   $ git checkout feature-1
+   └─ Feature team switches to feature-1
+   └─ Works on payment feature
+   $ git commit -m "add payment form"
+   └─ Creates C5 on feature-1
+   └─ Main branch still at C4
+   └─ Main team unaffected
+
+Day 8:
+   $ git checkout main
+   └─ Feature lead switches back to main
+   $ git merge feature-1
+   └─ Payment feature added to main!
+   └─ C5 now part of main
+   └─ Main now has all changes
+
+Day 9:
+   └─ Website has payment feature
+   └─ Users can use new feature
+   └─ All code stable and tested
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY POINTS SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Commit = Snapshot of code
+✓ Branch = Pointer to commits
+✓ main = Default branch (auto-created)
+✓ feature branch = Isolated development space
+✓ Shared commits = Both branches use same C1, C2
+✓ Independent commits = C5 on feature ≠ C3 on main
+✓ Merge = Combine branches together
+✓ Multiple branches = Parallel development
+✓ Safe = main stays stable while working
+✓ HEAD = Pointer to current branch
+✓ main branch = Developed by main team
+✓ feature branch = Developed by feature team
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WORKFLOW SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━��━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Typical workflow:
+
+1. Create branch:
+   git branch feature-1
+   (Created by: Feature lead or manager)
+   (Purpose: Create isolated space)
+
+2. Switch to branch:
+   git checkout feature-1
+   (Done by: Feature developers)
+   (Purpose: Start working on feature)
+
+3. Make changes and commit:
+   git add .
+   git commit -m "feature work"
+   (Done by: Feature developers)
+   (Purpose: Add code to feature branch)
+
+4. Switch back to main:
+   git checkout main
+   (Done by: Feature lead after feature complete)
+   (Purpose: Prepare for merge)
+
+5. Merge feature to main:
+   git merge feature-1
+   (Done by: Feature lead or maintainer)
+   (Purpose: Bring feature to main)
+
+6. Delete feature branch:
+   git branch -d feature-1
+   (Done by: Maintainer)
+   (Purpose: Clean up)
+
+Result: feature work now part of main!
+(All users get the new feature)
+====================================================
+19. WORKING WITH BRANCHES:-
+--------------------------
+GIT BRANCHES - COMPLETE WORKFLOW GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY POINTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Dev 1 (Tech Lead) creates feature branch on main
+✓ Dev 1 pushes to GitHub for others to access
+✓ Dev 2 fetches & switches to feature branch
+✓ Dev 2 works independently on feature
+✓ Dev 2 creates pull request when done
+✓ Dev 1 reviews & approves
+✓ Dev 1 merges feature to main
+✓ Dev 1 deletes feature branch
+✓ Both devs end up on main with complete code
+
+Benefits:
+   ├─ Main branch always stable
+   ├─ No conflicts between developers
+   ├─ Code review before merge
+   ├─ Easy to track changes
+   ├─ Professional workflow
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT ARE GIT BRANCHES?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Branch = Separate line of development
+   └─ Multiple developers work simultaneously
+   └─ Main code stays stable
+   └─ Features developed in isolation
+
+Why use branches?
+   └─ Dev 1: Works on main (production code)
+   └─ Dev 2: Works on feature (new feature)
+   └─ No conflicts
+   └─ Easy to merge when done
+
+Real example:
+   main branch = Working website
+   feature branch = Payment system (under development)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BASIC CONCEPTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Commit:
+   └─ Snapshot of code
+   └─ Has ID (C1, C2, C3, C4)
+   └─ Can't be changed, only viewed
+
+Branch:
+   └─ Pointer to commits
+   └─ Has name (main, feature-payment, etc.)
+   └─ Can be created, switched, deleted
+
+Main Branch:
+   └─ Production code
+   └─ Always stable
+   └─ Protected (needs approval to merge)
+
+Feature Branch:
+   └─ New feature development
+   └─ Isolated from main
+   └─ Can be broken during development
+
+Merge:
+   └─ Combine two branches
+   └─ All commits from feature come to main
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TEAM STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 1 (Tech Lead):
+   ├─ Works on: main branch
+   ├─ Creates: feature branches
+   ├─ Merges: code to main
+   └─ Reviews: pull requests
+
+Dev 2 (Feature Developer):
+   ├─ Works on: feature branch
+   ├─ Creates: commits on feature
+   ├─ Pushes: code to GitHub
+   └─ Creates: pull request
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DIAGRAM 1: INITIAL STATE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GitHub:
+   main: C1 → C2 → C3 → C4
+
+Dev 1's laptop:
+   main: C1 → C2 → C3 → C4
+   ↑ (Dev 1 here)
+
+Dev 2's laptop:
+   main: C1 → C2 → C3 → C4
+   ↑ (Dev 2 here)
+
+Status: Both on main, no feature branch yet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1: CREATE FEATURE BRANCH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 1 executes (on main laptop):
+   $ git branch feature-payment
+   (Creates locally)
+
+   $ git push origin feature-payment
+   (Pushes to GitHub)
+
+DIAGRAM 1.1: Branch Created
+
+GitHub:
+   main: C1 → C2 → C3 → C4
+   feature-payment: C1 → C2 → C3 → C4
+
+Dev 1's laptop:
+   main: C1 → C2 → C3 → C4 (Dev 1 still here)
+   feature-payment: C1 → C2 → C3 → C4
+
+Dev 2's laptop:
+   main: C1 → C2 → C3 → C4
+   (Doesn't see feature yet - need to fetch)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2: DEV 2 SWITCHES TO FEATURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 2 executes (on feature laptop):
+   $ git fetch
+   (Downloads branches from GitHub)
+
+   $ git checkout feature-payment
+   (Switches to feature branch)
+
+DIAGRAM 2: Dev 2 Switches
+
+Dev 2's laptop:
+   feature-payment: C1 → C2 → C3 → C4
+                                    ↑ (Dev 2 here now)
+   main: C1 → C2 → C3 → C4
+
+Dev 1's laptop:
+   main: C1 → C2 → C3 → C4
+   ↑ (Dev 1 still on main)
+
+GitHub: (unchanged)
+   main: C1 → C2 → C3 → C4
+   feature-payment: C1 → C2 → C3 → C4
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3: DEV 2 MAKES CHANGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 2 executes (on feature-payment branch):
+   $ git add payment.js
+   $ git commit -m "Add payment form"
+   (Creates C5 locally)
+
+   $ git push origin feature-payment
+   (Pushes C5 to GitHub)
+
+Then:
+   $ git add payment-process.js
+   $ git commit -m "Add payment processing"
+   (Creates C6 locally)
+
+   $ git push origin feature-payment
+   (Pushes C6 to GitHub)
+
+DIAGRAM 3: Dev 2 Adds Commits
+
+Dev 2's laptop:
+   feature-payment: C1→C2→C3→C4→C5→C6
+                                      ↑ (Dev 2)
+
+GitHub:
+   feature-payment: C1→C2→C3→C4→C5→C6 ✓
+   main: C1 → C2 → C3 → C4
+
+Dev 1's laptop:
+   main: C1 → C2 → C3 → C4
+   ↑ (Dev 1 unaffected)
+
+━━━━━━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4: PARALLEL DEVELOPMENT (SAME TIME)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 1 on main (same time as Dev 2):
+   $ git add styles.css
+   $ git commit -m "Fix footer bug"
+   (Creates C5 on main - different from feature C5)
+
+   $ git push origin main
+
+DIAGRAM 4: Parallel Work
+
+GitHub:
+   main: C1→C2→C3→C4→C5(bug fix)
+   feature: C1→C2→C3→C4→C5(payment)→C6
+   (Different C5 on each branch!)
+
+Dev 1's laptop:
+   main: C1→C2→C3→C4→C5(bug fix)
+   ↑
+
+Dev 2's laptop:
+   feature: C1→C2→C3→C4→C5(payment)→C6
+   ↑
+
+Status: Both working independently ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5: CREATE PULL REQUEST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 2 creates PR (via GitHub):
+   From: feature-payment
+   To: main
+   Title: "Add payment feature"
+   Description: "Implements payment processing"
+
+GitHub shows:
+   Pull Request #1 OPEN
+   Waiting for Dev 1 review
+
+Dev 1 gets notification:
+   "Dev 2 wants to merge feature-payment"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6: CODE REVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 1 reviews (on GitHub):
+   ✓ Checks C5, C6 changes
+   ✓ Verifies tests pass
+   ✓ Approves PR
+   ✓ Adds comment: "Looks good!"
+
+GitHub PR Status: APPROVED ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7: MERGE TO MAIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 1 merges (on main laptop):
+   $ git fetch
+   $ git checkout main
+   $ git merge feature-payment
+   (Combines C5, C6 from feature)
+
+   $ git push origin main
+   (Pushes merged code)
+
+DIAGRAM 5: After Merge
+
+GitHub:
+   main: C1→C2→C3→C4→C5(bug)→C5'(payment)→C6'
+   (All changes combined!)
+
+Dev 1's laptop:
+   main: C1→C2→C3→C4→C5(bug)→C5'→C6'
+   ↑
+
+Dev 2's laptop:
+   feature: C1→C2→C3→C4→C5→C6 (unchanged)
+   main: C1 → C2 → C3 → C4 (old)
+
+Status: Feature merged, payment system live ✓
+
+━━━━━━━━━━━━━━━━━━━━━��━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 8: CLEANUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Dev 1 cleans up (on main laptop):
+   $ git branch -d feature-payment
+   (Delete locally)
+
+   $ git push origin --delete feature-payment
+   (Delete from GitHub)
+
+DIAGRAM 6: Final State
+
+GitHub:
+   main: C1→C2→C3→C4→C5(bug)→C5'→C6' ✓
+
+Dev 1's laptop:
+   main: C1→C2→C3→C4→C5→C5'→C6'
+   ↑
+
+Dev 2's laptop (after fetch):
+   main: C1→C2→C3→C4→C5→C5'→C6'
+   ↑
+
+Status: Feature branch deleted, ready for next ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMAND REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create & Push (Dev 1):
+   git branch feature-payment
+   git push origin feature-payment
+
+Switch to Feature (Dev 2):
+   git fetch
+   git checkout feature-payment
+
+Work & Commit (Dev 2):
+   git add <file>
+   git commit -m "message"
+   git push origin feature-payment
+
+Create Pull Request (Dev 2):
+   (Via GitHub - Click "New Pull Request")
+
+Review & Approve (Dev 1):
+   (Via GitHub - Click "Approve")
+
+Merge & Push (Dev 1):
+   git fetch
+   git checkout main
+   git merge feature-payment
+   git push origin main
+
+Cleanup (Dev 1):
+   git branch -d feature-payment
+   git push origin --delete feature-payment
+
+Update Local (Dev 2):
+   git fetch
+   git checkout main
+   git pull origin main
+
+=======================================================
+20.MERGING BRANCHES - DETAILED GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHY BRANCHES?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+main = Production (live website)
+feature = Development (new feature)
+Don't merge half-finished features
+Keep main stable
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ON FEATURE BRANCH - MAKE CHANGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You are on: feature-restructure branch
+
+Step 1: Edit files
+   ├─ index.html (new structure + links)
+   └─ styles.css (new styling)
+
+Step 2: Stage & commit (on feature branch)
+   $ git add .
+   $ git commit -m "added links and restructured page"
+
+   Creates C5 on feature branch
+
+DIAGRAM - FEATURE BRANCH:
+
+   Feature: C1→C2→C3→C4→C5 (NEW!)
+                            ↑
+                       (Your commit)
+
+   Main: C1→C2→C3→C4 (unchanged)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ON MAIN BRANCH - BUG FIX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Switch to main:
+   $ git checkout main
+
+   (On main branch now)
+
+Edit file:
+   └─ index.html: change "Welcome" to "Welcome!"
+
+Stage & commit (on main branch):
+   $ git add .
+   $ git commit -m "changed title"
+
+   Creates different C5 on main branch
+
+DIAGRAM - MAIN BRANCH:
+
+   Main: C1→C2→C3→C4→C5 (bug fix!)
+                        ↑
+                   (Your commit)
+
+   Feature: C1→C2→C3→C4→C5 (unchanged)
+
+⚠️ IMPORTANT: Both branches have C5 but different content!
+   └─ Main C5 = "Welcome!" (title change)
+   └─ Feature C5 = "Welcome" + links + structure
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERIFY FEATURE UNCHANGED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Switch back to feature:
+   $ git checkout feature-restructure
+
+   (On feature-restructure now)
+
+Check files:
+   └─ NO exclamation mark (only on main)
+   └─ Links + structure still there
+
+Why? Branches are independent ✓
+
+DIAGRAM - DIVERGENCE POINT:
+
+   Feature: C1→C2→C3→C4→C5(links)
+                             ↑
+                        (feature's C5)
+
+   Main: C1→C2→C3→C4→C5(title!)
+                       ↑
+                   (main's C5)
+
+   Common parent: C4
+   Divergence: Both created C5 independently
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MERGE FEATURE TO MAIN - STEP BY STEP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Goal: Combine both branches into main
+
+Step 1: Switch to main
+   $ git checkout main
+
+   (You're now on main branch)
+
+Step 2: Merge feature into main
+   $ git merge feature-restructure
+
+   Git analyzes:
+   ├─ Common ancestor: C4
+   ├─ Main changes: "Welcome!" (title)
+   ├─ Feature changes: links + structure
+   └─ Conclusion: Can auto-merge ✓
+
+DIAGRAM - MERGE PROCESS:
+
+   BEFORE MERGE:
+   Feature: C1→C2→C3→C4→C5(links)
+   Main: C1→C2→C3→C4→C5(title!) ← HEAD here
+
+   MERGE COMMAND: $ git merge feature-restructure
+
+   Git asks: "What changed?"
+   ├─ From C4 to Main C5: added "!"
+   ├─ From C4 to Feature C5: added links + structure
+   ├─ Both edit index.html but different parts
+   └─ Solution: COMBINE BOTH ✓
+
+DIAGRAM - AFTER MERGE:
+
+   Main: C1→C2→C3→C4→C5(title!)→C5'(merged)
+                                   ↑
+                          (merge commit)
+
+   Result in C5':
+   ├─ "Welcome!" (from main's title change)
+   ├─ Links (from feature's links)
+   └─ Structure (from feature's structure)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MERGE COMMIT MESSAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After merge command, editor opens automatically
+
+Default message (auto-generated):
+   Merge branch 'feature-restructure' into 'main'
+
+This message:
+   └─ Describes what merge happened
+   └─ Auto-created by Git
+   └─ Safe to accept as-is
+
+How to save (depends on editor):
+   vim: type :wq (write and quit)
+   nano: Ctrl+O then Ctrl+X
+
+Output after saving:
+   Merge made by the 'recursive' strategy.
+   index.html | 25 +++++++++++++++++++++++
+   styles.css | 10 ++++++++
+   2 files changed, 35 insertions(+)
+
+What this shows:
+   ├─ Strategy: Git's merge algorithm
+   ├─ index.html: 25 lines added
+   ├─ styles.css: 10 lines added
+   └─ Merge successful ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERIFY MERGE SUCCEEDED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+View history (on main):
+   $ git log --oneline
+
+Output shows:
+   abc1234 (HEAD -> main) Merge branch 'feature-restructure'
+   def5678 changed title
+   ghi9012 added links and restructured page
+   jkl3456 added logo and styling
+
+What this means:
+   ├─ Merge commit at top
+   ├─ Both branches' commits visible
+   ├─ "changed title" = main's C5
+   ├─ "added links and restructured" = feature's C5
+   └─ All history preserved ✓
+
+Check actual files:
+   (Open index.html in browser)
+
+   Website now shows:
+   ├─ "Welcome!" ✓ (from main)
+   ├─ New links ✓ (from feature)
+   └─ New structure ✓ (from feature)
+
+Everything combined! ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FEATURE BRANCH AFTER MERGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Important: We merged feature INTO main, NOT vice versa
+
+Switch to feature:
+   $ git checkout feature-restructure
+
+   (On feature branch)
+
+Check history:
+   $ git log --oneline
+
+Output:
+   ghi9012 (HEAD -> feature-restructure) added links and restructured
+   jkl3456 added logo and styling
+
+   Note: NO "Welcome!" here
+
+Why?
+   └─ Merge was one-way: feature → main
+   └─ Feature branch untouched
+   └─ Only main has the merged commit
+
+DIAGRAM - AFTER MERGE:
+
+   Main (merged):
+   C1→C2→C3→C4→C5(title!)→C5'(merged)
+                              ↑
+
+   Feature (unchanged):
+   C1→C2→C3→C4→C5(links)
+                  ↑
+
+   Feature still has old content, no "Welcome!"
+
+━━━━━━��━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DELETE FEATURE BRANCH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Feature branch no longer needed (merged)
+
+Switch to main first:
+   $ git checkout main
+
+   (Must be on different branch to delete)
+
+Delete feature branch:
+   $ git branch -d feature-restructure
+
+Output:
+   Deleted branch feature-restructure.
+
+Verify deletion:
+   $ git branch
+
+   Output: * main (only main exists)
+
+What happened:
+   ├─ Branch pointer deleted
+   ├��� Commits preserved in main
+   ├─ All changes safe in main
+   └─ Repository cleaned ✓
+
+DIAGRAM - FINAL STATE:
+
+   Main: C1→C2→C3→C4→C5(title!)→C5'(merged)
+
+   Feature-restructure: DELETED ✗
+
+   ✓ All changes safe in main
+   ✓ Website ready for production
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHEN AUTO-MERGE WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This example: Auto-merge successful ✓
+
+Why it worked:
+├─ Main edited: index.html title (line 5)
+├─ Feature edited: index.html structure (line 20+)
+├─ Different lines = Git combines both
+└─ No manual conflict resolution needed
+
+What Git did:
+   1. Identified both C5 commits
+   2. Found common parent C4
+   3. Compared differences
+   4. Merged non-overlapping changes
+   5. Created C5' with both changes
+
+Result:
+   └─ "Welcome!" from main
+   └─ Links + structure from feature
+   └─ All combined in one file
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHEN CONFLICT HAPPENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+If both edited SAME lines (conflict):
+
+   Main: Changed line 5
+   Feature: Also changed line 5
+
+   Result: CONFLICT ✗
+
+   What Git shows:
+   <<<<<<< HEAD
+   Welcome!  (from main)
+   =======
+   Welcome   (from feature)
+   >>>>>>> feature-restructure
+
+How to resolve:
+   └─ Manual: Choose which to keep
+   └─ Edit file, remove conflict markers
+   └─ Save and commit
+   └─ Advanced topic (not covered here)
+
+This example: NO conflicts (different lines) ✓
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPLETE MERGE WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FEATURE DEVELOPER:
+1. (On feature-restructure)
+2. $ git add .
+3. $ git commit -m "added links and restructured page"
+
+MAIN DEVELOPER:
+4. $ git checkout main
+5. $ git add .
+6. $ git commit -m "changed title"
+
+MERGE (Tech Lead):
+7. $ git checkout main
+8. $ git merge feature-restructure
+9. (Save merge message when prompted)
+
+VERIFICATION:
+10. $ git log --oneline (check history)
+
+CLEANUP:
+11. $ git checkout main
+12. $ git branch -d feature-restructure
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━��━━
+KEY MERGE CONCEPTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Merge = Combining two branches
+
+What happens:
+├─ Git finds common parent (C4)
+├─ Git identifies what changed in each branch
+├─ Git tries to combine changes
+├─ If no conflicts: Auto-merge ✓
+└─ If conflicts: Manual resolve needed
+
+Merge commit:
+├─ New commit (C5')
+├─ Has two parents (both C5s)
+├─ Contains both changes
+└─ Preserves history ✓
+
+Feature branch after merge:
+├─ Remains unchanged
+├─ Still has old commits
+├─ Can be deleted safely
+└─ Changes preserved in main
+
+One-way merge:
+├─ We merged feature INTO main
+├─ Feature branch untouched
+├─ Could also merge main INTO feature
+└─ But not needed here
+
+Auto-merge requirement:
+├─ Changes in different parts
+├─ OR different files
+├─ Git can apply both
+└─ No manual intervention
+
+Merge message:
+├─ Auto-generated by Git
+├─ Describes merge
+├─ Can be custom
+└─ Save with editor
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REAL-WORLD MERGE SCENARIO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Team workflow:
+
+Developer 1 (Main):
+├─ Working on bug fixes
+├─ Committing to main
+└─ Website stable
+
+Developer 2 (Feature):
+├─ Working on new payment system
+├─ Committing to feature-payment
+└─ Takes 3 days to complete
+
+Day 4:
+├─ Feature complete
+├─ Dev 1 reviews code
+├─ Dev 1 merges to main
+└─ Website gets payment system
+
+Result:
+├─ Bug fixes from main
+├─ Payment system from feature
+├─ Both live on website
+└─ Users happy ✓
+
