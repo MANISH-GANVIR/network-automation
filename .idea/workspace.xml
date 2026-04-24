@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md">
-      <change afterPath="$PROJECT_DIR$/InterviewQ&amp;A.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/open_secure.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CICD Summary.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CICD Summary.txt" afterDir="false" />
-    </list>
+    <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -51,52 +45,53 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.AS2dryrun.executor": "Run",
-    "Python.ASA_SHOW LOGGING.executor": "Run",
-    "Python.ASA_SHOW RUN.executor": "Run",
-    "Python.LBP.executor": "Run",
-    "Python.VPN.executor": "Run",
-    "Python.as2.executor": "Run",
-    "Python.as2nat.executor": "Run",
-    "Python.asa_vpn_ops.executor": "Run",
-    "Python.build.executor": "Run",
-    "Python.client.executor": "Run",
-    "Python.commands.executor": "Run",
-    "Python.config.executor": "Run",
-    "Python.discovery.executor": "Run",
-    "Python.gen_api.executor": "Run",
-    "Python.main (1).executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.menu.executor": "Run",
-    "Python.open_secure (1).executor": "Run",
-    "Python.password.executor": "Run",
-    "Python.run_asa.executor": "Run",
-    "Python.sh run cli.executor": "Run",
-    "Python.sh run pandevice.executor": "Run",
-    "Python.sh run panos.executor": "Run",
-    "Python.sh run.executor": "Run",
-    "Python.transformset.executor": "Run",
-    "Python.update.executor": "Run",
-    "Python.vpn.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "ToolWindow.Run.ShowToolbar": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/Epicor/Network-Automation/.venv",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests in test_LBP.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.AS2dryrun.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ASA_SHOW LOGGING.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ASA_SHOW RUN.executor&quot;: &quot;Run&quot;,
+    &quot;Python.LBP.executor&quot;: &quot;Run&quot;,
+    &quot;Python.VPN.executor&quot;: &quot;Run&quot;,
+    &quot;Python.as2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.as2nat.executor&quot;: &quot;Run&quot;,
+    &quot;Python.asa_vpn_ops.executor&quot;: &quot;Run&quot;,
+    &quot;Python.build.executor&quot;: &quot;Run&quot;,
+    &quot;Python.client.executor&quot;: &quot;Run&quot;,
+    &quot;Python.commands.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.discovery.executor&quot;: &quot;Run&quot;,
+    &quot;Python.gen_api.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.menu.executor&quot;: &quot;Run&quot;,
+    &quot;Python.open_secure (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.password.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_asa.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sh run cli.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sh run pandevice.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sh run panos.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sh run.executor&quot;: &quot;Run&quot;,
+    &quot;Python.transformset.executor&quot;: &quot;Run&quot;,
+    &quot;Python.update.executor&quot;: &quot;Run&quot;,
+    &quot;Python.vpn.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;ToolWindow.Run.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Epicor/Network-Automation/.venv&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "TEXT"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;TEXT&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\backend\utils" />
@@ -107,7 +102,7 @@
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\Testing" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.open_secure (1)">
+  <component name="RunManager" selected="Python.LBP">
     <configuration name="LBP" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Automation" />
       <option name="ENV_FILES" value="" />
@@ -122,28 +117,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Testing/LBP.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="as2nat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Automation" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Videos/MarioKT/paloalto_scripts/paloalto_scripts/HQ_EDI" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$USER_HOME$/Videos/MarioKT/paloalto_scripts/paloalto_scripts/HQ_EDI/as2nat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -218,13 +191,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in test_LBP.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Automation" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Testing" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/Testing/test_LBP.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.LBP" />
+        <item itemvalue="Python tests.Python tests in test_LBP.py" />
         <item itemvalue="Python.open_secure (1)" />
         <item itemvalue="Python.open_secure" />
-        <item itemvalue="Python.LBP" />
         <item itemvalue="Python.commands" />
-        <item itemvalue="Python.as2nat" />
       </list>
     </recent_temporary>
   </component>

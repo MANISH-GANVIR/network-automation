@@ -35,6 +35,7 @@ FastAPI Backend (backend/main.py)             │
                         │
                         ▼
         Automation Layer:
+        - discover_tunnels()   ← 🔥 prerequisite
         - build.py
         - update.py
         - reset.py
