@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.2 (Python 3.12.3 on linux)" generated="2026-06-12T22:18:01.709352" rpa="false" schemaversion="5">
+<suite id="s1" name="Verify Upgrade" source="/mnt/d/Epicor/Network-Automation/Ansible/Robot/tests/verify_upgrade.robot">
+<test id="s1-t1" name="Verify NXOS Upgrade" line="11">
+<kw name="Open Connection" owner="SSHLibrary">
+<arg>${DEVICE_IP}</arg>
+<doc>Opens a new SSH connection to the given ``host`` and ``port``.</doc>
+<status status="PASS" start="2026-06-12T22:18:03.915272" elapsed="0.000308"/>
+</kw>
+<kw name="Login" owner="SSHLibrary">
+<msg time="2026-06-12T22:18:03.916122" level="INFO">Logging into '10.10.10.10:22' as 'admin'.</msg>
+<msg time="2026-06-12T22:18:06.951335" level="FAIL">TimeoutError: timed out</msg>
+<arg>${USERNAME}</arg>
+<arg>${PASSWORD}</arg>
+<doc>Logs into the SSH server with the given ``username`` and ``password``.</doc>
+<status status="FAIL" start="2026-06-12T22:18:03.915872" elapsed="3.063154">TimeoutError: timed out</status>
+</kw>
+<kw name="Verify Version">
+<status status="NOT RUN" start="2026-06-12T22:18:06.979390" elapsed="0.000035"/>
+</kw>
+<kw name="Verify vPC Status">
+<status status="NOT RUN" start="2026-06-12T22:18:06.979601" elapsed="0.000020"/>
+</kw>
+<kw name="Verify Interface Status">
+<status status="NOT RUN" start="2026-06-12T22:18:06.979774" elapsed="0.000019"/>
+</kw>
+<kw name="Close Connection" owner="SSHLibrary">
+<doc>Closes the current connection.</doc>
+<status status="NOT RUN" start="2026-06-12T22:18:06.979935" elapsed="0.000018"/>
+</kw>
+<status status="FAIL" start="2026-06-12T22:18:03.914130" elapsed="3.066026">TimeoutError: timed out</status>
+</test>
+<status status="FAIL" start="2026-06-12T22:18:01.711388" elapsed="5.269321"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Verify Upgrade" id="s1" pass="0" fail="1" skip="0">Verify Upgrade</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

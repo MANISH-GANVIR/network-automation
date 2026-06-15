@@ -1,0 +1,48 @@
+---
+- name: NXOS Upgrade
+  hosts: nexus_switches
+  gather_facts: no
+
+  tasks:
+
+    - name: Check Current Version
+      cisco.nxos.nxos_command:
+        commands:
+          - show version
+      register: version_output
+
+    - name: Display Current Version
+      debug:
+        var: version_output
+
+    - name: Check vPC Health
+      cisco.nxos.nxos_command:
+        commands:
+          - show vpc brief
+      register: vpc_output
+
+    - name: Copy NXOS Image
+      cisco.nxos.nxos_command:
+        commands:
+          - copy scp://10.10.100.100/nxos.10.2.5.bin bootflash:
+
+    - name: Verify MD5
+      cisco.nxos.nxos_command:
+        commands:
+          - show file bootflash:nxos.10.2.5.bin md5sum
+
+    - name: Install Image
+      cisco.nxos.nxos_command:
+        commands:
+          - install all nxos bootflash:nxos.10.2.5.bin
+
+    - name: Wait For Device Recovery
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host }}"
+        port: 22
+        timeout: 600
+
+    - name: Verify New Version
+      cisco.nxos.nxos_command:
+        commands:
+          - show version

@@ -1,0 +1,15 @@
+2026-06-06 08:08:31,950 p=801 u=manish n=ansible | PLAY [Cisco IOS XE Upgrade] *************************************************************************************
+2026-06-06 08:08:33,227 p=801 u=manish n=ansible | network_os is set to cisco.ios.ios
+2026-06-06 08:08:33,229 p=801 u=manish n=ansible | network_os is set to cisco.ios.ios
+2026-06-06 08:08:33,230 p=801 u=manish n=ansible | [WARNING]: ansible-pylibssh not installed, falling back to paramiko
+
+2026-06-06 08:08:33,330 p=801 u=manish n=ansible | TASK [Check current IOS version] ********************************************************************************
+2026-06-06 08:08:33,332 p=801 u=manish n=ansible | fatal: [ios02]: FAILED! => changed=false 
+  msg: 'paramiko is not installed: No module named ''paramiko'''
+2026-06-06 08:08:33,333 p=801 u=manish n=ansible | fatal: [ios01]: FAILED! => changed=false 
+  msg: 'paramiko is not installed: No module named ''paramiko'''
+2026-06-06 08:08:33,336 p=801 u=manish n=ansible | PLAY RECAP ******************************************************************************************************
+2026-06-06 08:08:33,337 p=801 u=manish n=ansible | ios01                      : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2026-06-06 08:08:33,338 p=801 u=manish n=ansible | ios02                      : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2026-06-06 08:08:33,436 p=819 u=manish n=ansible | shutdown complete
+2026-06-06 08:08:33,436 p=818 u=manish n=ansible | shutdown complete

@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-06-06T20:07:00.719093",
+  "play_name": "NXOS vPC Upgrade - Rolling Upgrade (SIMULATION MODE)",
+  "tasks": [
+    {
+      "name": "PRE-CHECK-1",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "name": "PRE-CHECK-2",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "name": "UPLOAD",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "skipped"
+        },
+        {
+          "host": "nexus02",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "VERIFY",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "name": "INSTALL",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "skipped"
+        },
+        {
+          "host": "nexus02",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "VPC-PREP",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "name": "REBOOT",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "skipped"
+        },
+        {
+          "host": "nexus02",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "WAIT",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "skipped"
+        },
+        {
+          "host": "nexus02",
+          "status": "skipped"
+        }
+      ]
+    },
+    {
+      "name": "POST-UPGRADE",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "name": "POST-UPGRADE",
+      "results": [
+        {
+          "host": "nexus01",
+          "status": "ok"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "nexus02": {
+      "ok": 6,
+      "changed": 0,
+      "unreachable": 0,
+      "failed": 0,
+      "skipped": 4,
+      "rescued": 0,
+      "ignored": 0
+    }
+  }
+}

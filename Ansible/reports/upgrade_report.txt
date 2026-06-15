@@ -1,0 +1,4 @@
+Upgrade Status : SUCCESS
+Version        : 10.2.3 -> 10.2.5
+vPC Status     : HEALTHY
+Downtime       : ZERO

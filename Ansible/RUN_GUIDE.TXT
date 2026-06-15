@@ -1,0 +1,493 @@
+# ============================================================================
+# HOW TO RUN ANSIBLE PLAYBOOKS - COMPLETE GUIDE
+# ============================================================================
+#
+# Network Automation Project
+# Project: Cisco Nexus 9300 vPC Pair Upgrade + VLAN Creation
+# Environment: Lab / Dry Run Mode
+#
+# ============================================================================
+# PREREQUISITE SETUP
+# ============================================================================
+#
+# 1. Install Ansible:
+#
+#    pip install ansible
+#
+# 2. Install Required Collections:
+#
+#    ansible-galaxy collection install cisco.nxos
+#    ansible-galaxy collection install cisco.ios
+#
+# 3. Verify Installation:
+#
+#    ansible --version
+#    ansible-galaxy collection list | grep cisco
+#
+# 4. Project Structure Check:
+#
+#    Network-Automation/
+#    └── Ansible/
+#        ├── ansible.cfg ✓
+#        ├── inventory/
+#        │   ├── hosts.ini ✓
+#        │   └── hosts.yml ✓
+#        ├── playbooks/
+#        │   ├── vlan_creation.yml ✓
+#        │   ├── ios_upgrade.yml ✓
+#        │   ├── nxos_upgrade.yml ✓
+#        │   └── site.yml ✓
+#        └── vars/
+#            ├── vlan.yml ✓
+#            ├── ios_upgrade.yml ✓
+#            └── nxos_upgrade.yml ✓
+#
+# ============================================================================
+# BASIC COMMANDS
+# ============================================================================
+#
+# 1. Navigate to Project Directory:
+#
+#    cd Network-Automation/Ansible
+#
+# 2. Verify Inventory:
+#
+#    ansible-inventory -i inventory/hosts.ini --list
+#
+# 3. Ping All Hosts (Test Connectivity):
+#
+#    ansible all -i inventory/hosts.ini -m ping
+#
+# ============================================================================
+# RUN PLAYBOOKS - DIFFERENT WAYS
+# ============================================================================
+#
+# METHOD 1: RUN ALL PLAYBOOKS (MASTER - site.yml)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Command:
+#
+#    ansible-playbook playbooks/site.yml
+#
+# What it does:
+# - Runs vlan_creation.yml
+# - Runs ios_upgrade.yml
+# - Runs nxos_upgrade.yml
+# - All in sequence
+#
+# Output:
+# - Creates 6 VLANs on all devices
+# - Validates IOS images
+# - Validates NXOS images
+# - Displays results
+#
+#
+# METHOD 2: RUN ONLY VLAN CREATION
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Command:
+#
+#    ansible-playbook playbooks/vlan_creation.yml
+#
+# What it does:
+# - Creates VLAN 10, 20, 30, 40, 50, 100
+# - On both NEXUS and IOS devices
+# - Verifies VLAN creation
+# - Displays results
+#
+# Time: ~2-3 minutes (Dry Run)
+#
+#
+# METHOD 3: RUN ONLY IOS UPGRADE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Command:
+#
+#    ansible-playbook playbooks/ios_upgrade.yml
+#
+# What it does:
+# - Targets: ios01, ios02
+# - Pre-checks: version, flash space, config backup
+# - Image validation: server details, checksum
+# - Configures boot variable
+# - Dry run mode (no actual reboot)
+#
+# Time: ~3-5 minutes (Dry Run)
+#
+#
+# METHOD 4: RUN ONLY NXOS UPGRADE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Command:
+#
+#    ansible-playbook playbooks/nxos_upgrade.yml
+#
+# What it does:
+# - Targets: nexus01, nexus02 (vPC pair)
+# - Pre-checks: version, vPC health, interfaces, flash
+# - Image validation: server details, checksum
+# - Rolling upgrade strategy
+# - Upgrade secondary first (nexus02)
+# - Wait for vPC recovery
+# - Upgrade primary second (nexus01)
+# - Final verification
+#
+# Time: ~5-7 minutes (Dry Run)
+#
+#
+# METHOD 5: DRY RUN MODE (CHECK MODE - SAFE)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Command:
+#
+#    ansible-playbook playbooks/site.yml --check
+#
+# What it does:
+# - Shows what WOULD happen
+# - NO actual changes made
+# - Safe for testing
+# - Perfect for interviews!
+#
+# Output:
+# - All tasks shown as "changed" (if they were to run)
+# - Actual output displayed
+# - No configuration pushed
+#
+# Time: ~5-10 minutes
+#
+#
+# METHOD 6: RUN WITH SPECIFIC TAG
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Only VLAN:
+#
+#    ansible-playbook playbooks/site.yml --tags vlan
+#
+# Only IOS:
+#
+#    ansible-playbook playbooks/site.yml --tags ios
+#
+# Only NXOS:
+#
+#    ansible-playbook playbooks/site.yml --tags nxos
+#
+# Multiple tags:
+#
+#    ansible-playbook playbooks/site.yml --tags "vlan,ios"
+#
+#
+# METHOD 7: RUN WITH SPECIFIC INVENTORY FILE
+# ━���━��━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Using INI format:
+#
+#    ansible-playbook -i inventory/hosts.ini playbooks/site.yml
+#
+# Using YAML format:
+#
+#    ansible-playbook -i inventory/hosts.yml playbooks/site.yml
+#
+#
+# METHOD 8: RUN ON SPECIFIC HOSTS ONLY
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Only NEXUS devices:
+#
+#    ansible-playbook playbooks/site.yml --limit nexus_switches
+#
+# Only IOS devices:
+#
+#    ansible-playbook playbooks/site.yml --limit ios_devices
+#
+# Only vPC pair:
+#
+#    ansible-playbook playbooks/site.yml --limit vpc_pair
+#
+# Specific host:
+#
+#    ansible-playbook playbooks/site.yml --limit nexus01
+#
+#
+# METHOD 9: RUN WITH VERBOSE OUTPUT (DEBUG MODE)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Verbose level 1:
+#
+#    ansible-playbook playbooks/site.yml -v
+#
+# Verbose level 2 (More details):
+#
+#    ansible-playbook playbooks/site.yml -vv
+#
+# Verbose level 3 (Maximum details):
+#
+#    ansible-playbook playbooks/site.yml -vvv
+#
+# Verbose level 4 (Debug everything):
+#
+#    ansible-playbook playbooks/site.yml -vvvv
+#
+#
+# METHOD 10: RUN WITHOUT DRY RUN (REAL EXECUTION)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+# Step 1: Edit variable files and set dry_run_enabled to false
+#
+#    vim vars/vlan.yml
+#    # Change: dry_run_enabled: false
+#
+#    vim vars/ios_upgrade.yml
+#    # Change: dry_run_enabled: false
+#    # Change: skip_reboot: false
+#
+#    vim vars/nxos_upgrade.yml
+#    # Change: dry_run_enabled: false
+#    # Change: skip_reboot: false
+#
+# Step 2: Run playbook
+#
+#    ansible-playbook playbooks/site.yml
+#
+# WARNING: This will make REAL changes!
+# - Creates VLANs on devices
+# - Upgrades IOS on routers (REBOOT)
+# - Upgrades NXOS on switches (REBOOT)
+#
+# ============================================================================
+# PRACTICAL EXAMPLES FOR INTERVIEWS
+# ============================================================================
+#
+# EXAMPLE 1: Safe Test Run (Interview Demo)
+# ──────────────────────────────────────────
+#
+# Command:
+#
+#    ansible-playbook playbooks/site.yml --check -v
+#
+# Why useful:
+# - Shows all tasks without making changes
+# - Perfect for demonstrating playbook logic
+# - Verbose output shows command details
+# - Interview-friendly
+#
+#
+# EXAMPLE 2: Test Only VLAN Creation (Interview Demo)
+# ─────────────────────────────────────────────────────
+#
+# Command:
+#
+#    ansible-playbook playbooks/vlan_creation.yml --check -v
+#
+# Shows:
+# - VLAN loop logic
+# - Device targeting (NEXUS vs IOS)
+# - Variables usage
+# - Verification commands
+#
+#
+# EXAMPLE 3: Test IOS Upgrade with Debug Output
+# ───────────────────────────────────────────────
+#
+# Command:
+#
+#    ansible-playbook playbooks/ios_upgrade.yml -vv --check
+#
+# Shows:
+# - Image validation tasks
+# - MD5 checksum verification
+# - Boot variable configuration
+# - Pre/post-upgrade checks
+#
+#
+# EXAMPLE 4: Test NXOS vPC Upgrade Logic
+# ────────────────────────────────────────
+#
+# Command:
+#
+#    ansible-playbook playbooks/nxos_upgrade.yml -vv --check --limit vpc_pair
+#
+# Shows:
+# - Rolling upgrade strategy
+# - Secondary peer upgrade first
+# - vPC health verification
+# - Primary peer upgrade second
+#
+#
+# EXAMPLE 5: Run Only on One Device
+# ───────────────────────────────────
+#
+# Command:
+#
+#    ansible-playbook playbooks/vlan_creation.yml --limit nexus01 -v
+#
+# Shows:
+# - Device-specific execution
+# - Group variable inheritance
+# - Host-specific variables
+#
+# ============================================================================
+# UNDERSTANDING DRY RUN MODE vs REAL EXECUTION
+# ============================================================================
+#
+# DRY RUN MODE (--check flag or dry_run_enabled: true)
+# ─────────────────────────────────────────────────────
+#
+# What happens:
+# - Tasks preview mode
+# - Configuration NOT pushed to devices
+# - Output shows what WOULD happen
+# - Safe to run multiple times
+# - Perfect for testing
+#
+# When to use:
+# - Before production deployments
+# - During testing and validation
+# - In interviews (demonstrate without real devices)
+# - To verify playbook logic
+#
+# Example:
+#
+#    ansible-playbook playbooks/site.yml --check
+#
+#
+# REAL EXECUTION MODE (dry_run_enabled: false)
+# ──────────────────────────────────────────────
+#
+# What happens:
+# - Configuration pushed to devices
+# - VLANs actually created
+# - Devices actually rebooted
+# - Real changes to network
+# - CANNOT undo without manual intervention
+#
+# When to use:
+# - Production deployments
+# - After thorough testing
+# - Only if you have device access
+# - With proper change management
+#
+# Example:
+#
+#    # First, edit var files:
+#    dry_run_enabled: false
+#    skip_reboot: false
+#
+#    # Then run:
+#    ansible-playbook playbooks/site.yml
+#
+# ============================================================================
+# TROUBLESHOOTING
+# ============================================================================
+#
+# ISSUE: "Error: Could not connect to device"
+# ──────────────────────────────────────────
+# Cause: Device IP not reachable or credentials wrong
+# Fix:
+#   1. Verify device IP in inventory
+#   2. Check ansible_user and ansible_password
+#   3. Ping device manually: ping 10.10.10.10
+#   4. Test SSH: ssh admin@10.10.10.10
+#
+#
+# ISSUE: "Module not found: cisco.nxos"
+# ──────────────────────────────────────
+# Cause: Collection not installed
+# Fix:
+#   ansible-galaxy collection install cisco.nxos cisco.ios
+#
+#
+# ISSUE: "FAILED - SSH Error"
+# ───────────────────────────
+# Cause: SSH connection issues
+# Fix:
+#   1. Check device IP and port 22
+#   2. Verify username/password
+#   3. Check ansible.cfg host_key_checking setting
+#   4. Test SSH manually
+#
+#
+# ISSUE: "Task failed: image not found"
+# ──────────────────────────────────────
+# Cause: Image file doesn't exist on device
+# Fix:
+#   1. Verify image_server IP
+#   2. Ensure image file copied to bootflash
+#   3. Check MD5 checksum
+#   4. Use "dir bootflash:" to verify
+#
+# ============================================================================
+# TIPS FOR INTERVIEWS
+# ============================================================================
+#
+# 1. Always run with --check first (safe mode)
+#
+#    ansible-playbook playbooks/site.yml --check -v
+#
+# 2. Use -v or -vv for detailed output to impress
+#
+#    ansible-playbook playbooks/vlan_creation.yml -vv
+#
+# 3. Demonstrate device targeting
+#
+#    ansible-playbook playbooks/site.yml --limit nexus01
+#
+# 4. Show tag-based execution
+#
+#    ansible-playbook playbooks/site.yml --tags vlan
+#
+# 5. Explain the workflow
+#
+#    "First we create VLANs, then validate image, then upgrade"
+#
+# 6. Walk through the playbook while running
+#
+#    "See how we're checking current version first,
+#     then validating image exists, then setting boot variable"
+#
+# 7. Highlight error handling
+#
+#    "Notice we use ignore_errors: yes for non-critical tasks"
+#
+# 8. Explain the rolling upgrade strategy
+#
+#    "We upgrade secondary peer first to maintain service,
+#     then primary peer, minimizing downtime"
+#
+# ============================================================================
+# QUICK START - FOR INTERVIEWS
+# ============================================================================
+#
+# Step 1: Navigate to project
+#
+#    cd Network-Automation/Ansible
+#
+# Step 2: Run inventory check
+#
+#    ansible-inventory -i inventory/hosts.ini --list
+#
+# Step 3: Test with VLAN playbook (simplest)
+#
+#    ansible-playbook playbooks/vlan_creation.yml --check -v
+#
+# Step 4: Show IOS upgrade validation
+#
+#    ansible-playbook playbooks/ios_upgrade.yml --check -vv
+#
+# Step 5: Explain NXOS rolling upgrade
+#
+#    ansible-playbook playbooks/nxos_upgrade.yml --check -vv
+#
+# Step 6: Run master playbook
+#
+#    ansible-playbook playbooks/site.yml --check -v
+#
+# This demonstrates:
+# ✓ Inventory management
+# ✓ VLAN automation with loops
+# ✓ Image validation before upgrade
+# ✓ Pre/post-upgrade checks
+# ✓ Rolling upgrade strategy
+# ✓ Error handling
+# ✓ Playbook orchestration
+#
+# ============================================================================

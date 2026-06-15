@@ -1,0 +1,103 @@
+> CISCO.NXOS.NXOS_INSTALL_OS    (/usr/lib/python3/dist-packages/ansible_collections/cisco/nxos/plugins/modules/nxos_install_os.py)
+
+        Install an operating system by setting the boot options like boot image and
+        kickstart image and optionally select to install using ISSU (In Server Software
+        Upgrade).
+
+ADDED IN: version 1.0.0 of cisco.nxos
+
+  * note: This module has a corresponding action plugin.
+
+OPTIONS (= is mandatory):
+
+- issu
+        Upgrade using In Service Software Upgrade (ISSU). (Supported on N5k, N7k, N9k
+        platforms)
+        Selecting 'required' or 'yes' means that upgrades will only proceed if the switch
+        is capable of ISSU.
+        Selecting 'desired' means that upgrades will use ISSU if possible but will fall
+        back to disruptive upgrade if needed.
+        Selecting 'no' means do not use ISSU. Forced disruptive.
+        choices: [required, desired, 'yes', 'no']
+        default: 'no'
+        type: str
+
+- kickstart_image_file
+        Name of the kickstart image file on flash. (Not required on all Nexus platforms)
+        default: null
+        type: str
+
+= system_image_file
+        Name of the system (or combined) image file on flash.
+        type: str
+
+
+NOTES:
+      * Tested against the following platforms and images - N9k 7.0(3)I4(6),
+        7.0(3)I5(3), 7.0(3)I6(1), 7.0(3)I7(1), 7.0(3)F2(2), 7.0(3)F3(2) - N3k
+        6.0(2)A8(6), 6.0(2)A8(8), 7.0(3)I6(1), 7.0(3)I7(1) - N7k 7.3(0)D1(1),
+        8.0(1), 8.1(1), 8.2(1)
+      * Tested against Cisco MDS NX-OS 9.2(1)
+      * This module requires both the ANSIBLE_PERSISTENT_CONNECT_TIMEOUT and
+        ANSIBLE_PERSISTENT_COMMAND_TIMEOUT timers to be set to 600 seconds or
+        higher. The module will exit if the timers are not set properly.
+      * When using connection local, ANSIBLE_PERSISTENT_CONNECT_TIMEOUT and
+        ANSIBLE_PERSISTENT_COMMAND_TIMEOUT can only be set using ENV variables or
+        the ansible.cfg file.
+      * Do not include full file paths, just the name of the file(s) stored on the
+        top level flash directory.
+      * This module attempts to install the software immediately, which may trigger
+        a reboot.
+      * In check mode, the module will indicate if an upgrade is needed and whether
+        or not the upgrade is disruptive or non-disruptive(ISSU).
+      * For information on using CLI and NX-API see the `NXOS Platform Options guide
+        <nxos_platform_options>`
+      * For more information on using Ansible to manage network devices see the
+        `Ansible Network Guide <network_guide>`
+      * For more information on using Ansible to manage Cisco devices see the `Cisco
+        integration page <https://www.ansible.com/integrations/networks/cisco>`_.
+
+
+AUTHOR: Jason Edelman (@jedelman8), Gabriele Gerbibo (@GGabriele)
+
+EXAMPLES:
+
+- name: Install OS on N9k
+  check_mode: false
+  cisco.nxos.nxos_install_os:
+    system_image_file: nxos.7.0.3.I6.1.bin
+    issu: desired
+
+- name: Wait for device to come back up with new image
+  wait_for:
+    port: 22
+    state: started
+    timeout: 500
+    delay: 60
+    host: '{{ inventory_hostname }}'
+
+- name: Check installed OS for newly installed version
+  nxos_command:
+    commands: [show version | json]
+  register: output
+- assert:
+    that:
+    - output['stdout'][0]['kickstart_ver_str'] == '7.0(3)I6(1)'
+
+
+RETURN VALUES:
+- install_state
+        Boot and install information.
+        returned: always
+        sample:
+          install_state:
+          - 'Compatibility check is done:'
+          - Module  bootable          Impact  Install-type  Reason
+          - '------  --------  --------------  ------------  ------'
+          - '     1       yes  non-disruptive         reset  '
+          - 'Images will be upgraded according to following table:'
+          - Module       Image                  Running-Version(pri:alt)           New-Version  Upg-Required
+          - '------  ----------  ----------------------------------------  --------------------  ------------'
+          - '     1        nxos                               7.0(3)I6(1)           7.0(3)I7(1)           yes'
+          - '     1        bios                        v4.4.0(07/12/2017)    v4.4.0(07/12/2017)            no'
+        type: dict
