@@ -1,3 +1,8 @@
+from fastapi.staticfiles import StaticFiles
+import os
+
+from backend.projects.vpn_automation.asa.web_wrapper import run_web
+from backend.ai.ai_chat import ai_chat
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -50,3 +55,19 @@ def asa_task(task: str, payload: dict = Body(default={})):
 
     except Exception as e:
         return {"error": str(e)}
+
+
+@app.post("/ai/chat")
+def ai_assistant(payload: dict = Body(default={})):
+
+    prompt = payload.get("message", "")
+
+    answer = ai_chat(prompt)
+
+    return {
+        "response": answer
+    }
+
+# Serve frontend
+if os.path.exists("./frontend"):
+    app.mount("/", StaticFiles(directory="./frontend", html=True), name="frontend")

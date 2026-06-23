@@ -902,3 +902,274 @@ function closeModal() {
     if (choice) choice.value = "";
     if (fields) fields.innerHTML = "";
 }
+
+function openAIAssistant() {
+
+    document.getElementById(
+        "aiPanel"
+    ).style.display = "block";
+}
+
+function closeAI() {
+
+    document.getElementById(
+        "aiPanel"
+    ).style.display = "none";
+}
+
+
+
+let aiMaximized = false;
+
+function aiMax() {
+
+    const panel =
+        document.getElementById("aiPanel");
+
+    if (!aiMaximized) {
+
+        panel.style.width = "90%";
+        panel.style.height = "85vh";
+        panel.style.right = "5%";
+        panel.style.bottom = "5%";
+
+        aiMaximized = true;
+
+    } else {
+
+        panel.style.width = "500px";
+        panel.style.height = "600px";
+        panel.style.right = "20px";
+        panel.style.bottom = "20px";
+
+        aiMaximized = false;
+    }
+}
+
+let aiMinimized = false;
+
+function aiMin() {
+
+    const input =
+        document.getElementById("aiInput");
+
+    const output =
+        document.getElementById("chatMessages");
+
+    const loading =
+        document.getElementById("aiLoading");
+
+    const analyzeBtn =
+        document.querySelector(
+            "#aiPanel button"
+        );
+
+    const panel =
+        document.getElementById(
+            "aiPanel"
+        );
+
+    if (!aiMinimized) {
+
+        panel.style.height = "60px";
+        panel.style.overflow = "hidden";
+
+        input.style.display = "none";
+        output.style.display = "none";
+        loading.style.display = "none";
+
+        if (analyzeBtn) {
+            analyzeBtn.style.display = "none";
+        }
+
+        aiMinimized = true;
+
+    } else {
+
+        panel.style.height = "85vh";
+        panel.style.overflow = "visible";
+
+        input.style.display = "block";
+        output.style.display = "block";
+
+        if (analyzeBtn) {
+            analyzeBtn.style.display = "block";
+        }
+
+        aiMinimized = false;
+    }
+}
+
+async function analyzeAI() {
+    try {
+        const message = document.getElementById("aiInput").value;
+
+        // SHOW LOADING MESSAGE
+
+        document.getElementById("loadingText").innerText ="🤖 Thinking...";
+
+        document.getElementById("aiLoading").style.display ="flex";
+
+        const chat =document.getElementById("chatMessages");
+
+        chat.innerHTML += `<div class="user-msg">👤 ${message}</div>`;
+
+        // Clear input after sending
+        document.getElementById("aiInput").value = "";
+
+        chat.scrollTop = chat.scrollHeight;
+
+
+
+        const response = await fetch(
+            "http://127.0.0.1:8000/ai/chat",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: message
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        chat.innerHTML += `<div class="ai-msg">🤖 ${data.response}</div>`;
+        document.getElementById("aiInput").value = "";
+        document.getElementById("aiInput").focus();
+        chat.scrollTop =chat.scrollHeight;
+
+        document.getElementById("aiLoading").style.display = "none";
+    }
+    catch (err) {
+        document.getElementById(
+    "aiLoading"
+).style.display = "none";
+        chat.innerHTML += `<div class="ai-msg">❌ Error: ${err.message}</div>`;
+        console.error("Fetch Error:", err);
+    }
+}
+
+// =============================
+// DRAG AI WINDOW (FIXED)
+// =============================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    setTimeout(function() {
+
+        const aiPanel = document.getElementById("aiPanel");
+        const aiHeader = document.getElementById("aiHeader");
+
+        if (!aiPanel || !aiHeader) {
+            console.warn("AI Panel or Header not found");
+            return;
+        }
+
+        aiHeader.style.cursor = "move";
+
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+        let startX = 0;
+        let startY = 0;
+
+        aiHeader.addEventListener("mousedown", function (e) {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+
+            const rect = aiPanel.getBoundingClientRect();
+            offsetX = startX - rect.left;
+            offsetY = startY - rect.top;
+
+            // Remove bottom/right to allow absolute positioning
+            aiPanel.style.right = "auto";
+            aiPanel.style.bottom = "auto";
+
+            // Set initial position
+            aiPanel.style.left = rect.left + "px";
+            aiPanel.style.top = rect.top + "px";
+
+            e.preventDefault();
+        });
+
+        document.addEventListener("mousemove", function (e) {
+
+    if (!isDragging) return;
+
+    let newLeft =
+        e.clientX - offsetX;
+
+    let newTop =
+        e.clientY - offsetY;
+
+    const panelWidth =
+        aiPanel.offsetWidth;
+
+    const panelHeight =
+        aiPanel.offsetHeight;
+
+    const screenWidth =
+        window.innerWidth;
+
+    const screenHeight =
+        window.innerHeight;
+
+    if (newLeft < 0)
+        newLeft = 0;
+
+    if (newTop < 0)
+        newTop = 0;
+
+    if (newLeft >
+        screenWidth - panelWidth)
+    {
+        newLeft =
+            screenWidth - panelWidth;
+    }
+
+    if (newTop >
+        screenHeight - panelHeight)
+    {
+        newTop =
+            screenHeight - panelHeight;
+    }
+
+    aiPanel.style.left =
+        newLeft + "px";
+
+    aiPanel.style.top =
+        newTop + "px";
+});
+
+        document.addEventListener("mouseup", function () {
+            isDragging = false;
+        });
+
+    }, 100); // Small delay to ensure DOM is ready
+
+});
+
+function clearAIChat() {
+
+    const chat =
+        document.getElementById("chatMessages");
+
+    chat.innerHTML = `
+        <div class="ai-msg">
+            🤖 Hello! How can I assist you today?
+            If you have any questions about network security,
+            feel free to ask.
+        </div>
+    `;
+
+    document.getElementById("aiInput").value = "";
+    // Hide Thinking spinner
+    document.getElementById("aiLoading").style.display = "none";
+}
