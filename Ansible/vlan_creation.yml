@@ -1,0 +1,52 @@
+---
+- name: Create VLANs on Multiple Cisco Switches
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    devices:
+      - 1.1.1.1
+      - 2.2.2.2
+      - 3.3.3.3
+
+    username: admin
+    password: admin
+    enable_password: cisco
+
+  tasks:
+
+    - name: Configure VLANs
+      cisco.ios.ios_config:
+        lines:
+          - vlan 101
+          - name 101
+          - vlan 102
+          - name 102
+          - vlan 103
+          - name 103
+          - vlan 104
+          - name 104
+          - vlan 105
+          - name 105
+          - vlan 106
+          - name 106
+          - vlan 107
+          - name 107
+          - vlan 108
+          - name 108
+          - vlan 109
+          - name 109
+
+        save_when: modified
+
+      loop: "{{ devices }}"
+
+      vars:
+        ansible_host: "{{ item }}"
+        ansible_user: "{{ username }}"
+        ansible_password: "{{ password }}"
+        ansible_network_os: cisco.ios.ios
+        ansible_connection: network_cli
+        ansible_become: yes
+        ansible_become_method: enable
+        ansible_become_password: "{{ enable_password }}"
