@@ -99,10 +99,6 @@
             <button onclick="runASA('troubleshoot')">Troubleshoot</button>
             <button onclick="openAIAssistant()">🤖 AI Assistant </button>
 
-
-
-
-
           <div class="footer-nav">
             <button onclick="goBack()">Back</button>
             <button class="exit" onclick="exitApp()">Exit</button>
@@ -110,20 +106,17 @@
         </div>
 
         <div class="asa-terminal-wrapper" id="asaTerminal">
+          <div class="terminal-bar">
+            <span>ASA CLI Output</span>
+            <div class="terminal-btns">
+              <span class="tbtn tmin" onclick="termMin()"></span>
+              <span class="tbtn tmax" onclick="termMax()"></span>
+              <span class="tbtn tclose" onclick="termClose()"></span>
+            </div>
+          </div>
 
-  <div class="terminal-bar">
-    <span>ASA CLI Output</span>
-    <div class="terminal-btns">
-      <span class="tbtn tmin" onclick="termMin()"></span>
-      <span class="tbtn tmax" onclick="termMax()"></span>
-      <span class="tbtn tclose" onclick="termClose()"></span>
-    </div>
-  </div>
-
-  <pre id="asaOutput" class="asa-output"></pre>
-
-</div>
-
+          <pre id="asaOutput" class="asa-output"></pre>
+        </div>
 
       </div>
     </div>
@@ -187,43 +180,25 @@ right:20px;
 bottom:20px;
 width:500px;
 height:600px;
-
 background:rgba(0,0,0,0.15);
-
 backdrop-filter:blur(15px);
 -webkit-backdrop-filter:blur(15px);
-
 border:1px solid rgba(0,255,255,0.25);
-
 border-radius:10px;
 padding:15px;
 z-index:9999;
 ">
 
-
-
 <div class="terminal-bar" id="aiHeader">
-
     <span style="color:white">
         🤖 AI VPN Assistant
     </span>
 
     <div class="terminal-btns">
-
-        <span class="tbtn tmin"
-        onclick="aiMin()">
-        </span>
-
-        <span class="tbtn tmax"
-        onclick="aiMax()">
-        </span>
-
-        <span class="tbtn tclose"
-        onclick="closeAI()">
-        </span>
-
+        <span class="tbtn tmin" onclick="aiMin()"></span>
+        <span class="tbtn tmax" onclick="aiMax()"></span>
+        <span class="tbtn tclose" onclick="closeAI()"></span>
     </div>
-
 </div>
 
 <div id="aiBody">
@@ -242,13 +217,33 @@ border:1px solid rgba(255,255,255,0.1);
 </div>
 
 <div id="aiLoading" class="ai-loading">
-
     <div class="loader"></div>
-
     <span id="loadingText">
         🤖 Thinking...
     </span>
+</div>
 
+<!-- ✅ ATTACHMENT ROW ADDED (theme-safe) -->
+<div style="
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:8px;
+margin-bottom:8px;
+">
+  <label for="aiFileInput"
+         style="
+         padding:8px 14px;
+         border:1px solid rgba(0,255,255,0.5);
+         border-radius:10px;
+         cursor:pointer;
+         color:#d9ffff;
+         background:rgba(0,0,0,0.2);
+         ">
+    📎 Attach
+  </label>
+  <input id="aiFileInput" type="file" multiple style="display:none" />
+  <span id="selectedFilesText" style="color:#bcd; font-size:14px;">No files selected</span>
 </div>
 
 <div style="
@@ -298,12 +293,6 @@ Clear
 </div>
 
 </div>
-
-
-
-</div>
-
-
 
 </div>
 

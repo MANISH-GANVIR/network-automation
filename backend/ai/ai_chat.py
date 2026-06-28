@@ -1,9 +1,10 @@
 import requests
+import json
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 
 
-def ai_chat(user_prompt):
+def ai_chat(user_prompt, file_context=""):
     system_prompt = """
     ROLE:
     You are a Senior Network Automation, Security and DevOps Engineer.
@@ -55,8 +56,9 @@ def ai_chat(user_prompt):
 {system_prompt}
 
 Question:
-
 {user_prompt}
+
+{file_context if file_context else ""}
 """
 
     try:
@@ -71,9 +73,18 @@ Question:
         )
 
         if response.status_code != 200:
-            return f"Ollama Error: {response.status_code}"
+            return f"Ollama Error: {response.status_code} - {response.text}"
 
-        return response.json()["response"]
+        # Defensive JSON parse (fixes backend 500 if Ollama returns non-JSON text)
+        try:
+            data = response.json()
+        except json.JSONDecodeError:
+            return f"Error: Invalid JSON from Ollama: {response.text[:500]}"
+
+        if not isinstance(data, dict):
+            return f"Error: Unexpected Ollama response type: {type(data).__name__}"
+
+        return str(data.get("response", "No response received from Ollama."))
 
     except requests.exceptions.Timeout:
         return "Error: Ollama took too long to respond (>300s). Try again or restart Ollama."

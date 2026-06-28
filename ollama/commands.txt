@@ -1,0 +1,148 @@
+prompt:-
+-------
+ALERT ::=>Device: ASA-DC1,Tunnel: VPN_US_INDIA,Status: DOWN,Time: 10:22 AM,Peer: 44.44.44.44,give me step by step l1 to l7  solution
+
+give me step by step l1 to l7  solution
+===============================
+ollama run qwen3:1.7b
+ollama run mistral:latest
+ollama run qwen3:8b
+ollama run qwen3:4b
+===============================
+Ollama End to End FLow
+----------------------
+Browser
+   ↓   # User submits troubleshooting request
+
+app.js
+   ↓   # Sends API request using Fetch API
+
+FastAPI /ai/chat
+   ↓   # Receives and validates request
+
+ai_chat.py
+   ↓   # Builds prompt and invokes AI engine
+
+Ollama
+   ↓   # Local LLM Runtime Engine (Model Hosting & Inference)
+
+Mistral
+   ↓   # LLM Model Generates Troubleshooting Guidance & Recommendations
+
+Response
+   ↓   # AI-generated response returned to backend
+
+Browser Output
+       # Displays troubleshooting guidance in AI Assistant UI
+======================
+
+D:\Epicor\Network-Automation
+------------------------------
+mkdir ollama
+cd ollama
+ni commands.txt -ItemType File
+
+------------------------------
+1)download Ollama through powershell
+start https://ollama.com/download
+        (or)
+explorer "https://ollama.com/download"
+
+#Actual Ollama server + CLI + model runtime
+
+2)(.venv) D:\Epicor\Network-Automation git:[main]
+pip install ollama # Install Python SDK/library
+
+Note:-
+-----
+If your goal is to use a local LLM in a Python Network Automation project,
+installing Ollama from the browser is mandatory. pip install ollama only
+installs the Python client library used to communicate with the Ollama server.
+
+1. Verified Ollama installation location:
+
+dir "$env:LOCALAPPDATA\Programs\Ollama"
+
+Result:
+- ollama.exe found
+- Ollama successfully installed on Windows
+
+2. Verified Ollama version:
+
+& "$env:LOCALAPPDATA\Programs\Ollama\ollama.exe" --version
+
+Output:
+ollama version 0.30.10
+
+Result:
+- Ollama CLI is working correctly
+
+3. Downloaded Qwen 3 8B model:
+
+& "$env:LOCALAPPDATA\Programs\Ollama\ollama.exe" pull qwen3:8b
+
+Result:
+- Downloads and installs the Qwen3 8B LLM locally
+- Model becomes available for offline inference
+
+Next Commands:
+ollama list          # Show installed models
+ollama run qwen3:8b  # Start chatting with the model
+======================================================
+A model is an AI brain that is trained on data
+used to perform specific tasks.
+
+An LLM (Large Language Model) is a type of AI model
+that is trained on large amounts of text data
+to understand and generate human language.
+
+In my automation project, I used Qwen3:8B,
+which is an LLM, and Ollama as the platform to run it locally.
+The command ollama pull qwen3:8b downloads and installs
+the Qwen3:8B model on the local machine, allowing it to be
+used offline for tasks such as answering questions,
+generating code, and assisting with automation.
+
+----------------------------------------------------
+content = """
+OLLAMA + QWEN3:8B NOTES
+
+1. Ollama is a platform used to run LLMs locally.
+
+2. Qwen3:8B is a Large Language Model developed by Alibaba.
+   - qwen3 = model family
+   - 8b = 8 billion parameters
+
+Important Commands:
+
+ollama --version
+ollama list
+ollama pull qwen3:8b
+ollama run qwen3:8b
+ollama rm qwen3:8b
+
+Workflow:
+
+1. Download Model
+   ollama pull qwen3:8b
+
+2. Run Model
+   ollama run qwen3:8b
+
+3. Chat Prompt Appears
+   >>> Send a message
+
+4. Ask Questions
+
+5. Receive Response
+
+Interview Answer:
+
+Qwen3:8B is a Large Language Model developed by Alibaba.
+The 8B indicates approximately 8 billion parameters.
+I use Ollama to run the model locally for Python coding,
+Network Automation, Ansible, Terraform, and AI-assisted
+infrastructure automation tasks.
+
+
+======================================================
