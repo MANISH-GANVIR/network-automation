@@ -1,0 +1,89 @@
+---
+- name: NXOS Upgrade Dry Run Validation
+  hosts: cisco_nxos
+  gather_facts: false
+
+  vars_files:
+    - ../vars/nxos_upgrade.yml
+
+  vars:
+    dry_run: true
+    simulated_nxos_version: "Cisco Nexus Operating System (NX-OS) Software, Version 9.3(10)"
+    simulated_vpc_status: "vPC status : up"
+    simulated_image_name: "{{ nxos_image | default('nxos.9.3.10.bin') }}"
+
+  tasks:
+    - name: Display hostname
+      ansible.builtin.debug:
+        msg: "Connected to {{ inventory_hostname }}"
+
+    - name: Simulate current NXOS version in dry run
+      ansible.builtin.set_fact:
+        pre_version_text: "{{ simulated_nxos_version }}"
+      when: dry_run
+
+    - name: Verify Current NXOS Version
+      cisco.nxos.nxos_command:
+        commands:
+          - show version
+      register: pre_version
+      when: not dry_run
+
+    - name: Display Current Version
+      ansible.builtin.debug:
+        msg: "{{ pre_version_text if dry_run else pre_version.stdout[0] }}"
+
+    - name: Simulate VPC status in dry run
+      ansible.builtin.set_fact:
+        vpc_status_text: "{{ simulated_vpc_status }}"
+      when: dry_run
+
+    - name: Check VPC Status
+      cisco.nxos.nxos_command:
+        commands:
+          - show vpc
+      register: vpc_status
+      when: not dry_run
+
+    - name: Display VPC Status
+      ansible.builtin.debug:
+        msg: "{{ vpc_status_text if dry_run else vpc_status.stdout[0] }}"
+
+    - name: Dry run notice
+      ansible.builtin.debug:
+        msg:
+          - "DRY RUN MODE ENABLED"
+          - "SSH to device skipped"
+          - "Image copy skipped"
+          - "Software install skipped"
+          - "Reload skipped"
+
+    - name: Simulate bootflash check
+      ansible.builtin.debug:
+        msg: "bootflash:/ has enough space for {{ simulated_image_name }}"
+
+    - name: Simulate MD5 check
+      ansible.builtin.debug:
+        msg: "MD5 checksum validation passed for {{ simulated_image_name }}"
+
+    - name: Simulate post version
+      ansible.builtin.set_fact:
+        post_version_text: "{{ pre_version_text if dry_run else pre_version.stdout[0] }}"
+
+    - name: Display Upgrade Summary
+      ansible.builtin.debug:
+        msg:
+          - "Device          : {{ inventory_hostname }}"
+          - "Old Version     : {{ pre_version_text if dry_run else pre_version.stdout[0] }}"
+          - "New Version     : {{ post_version_text if dry_run else post_version.stdout[0] }}"
+          - "Upgrade Status  : DRY RUN SUCCESS"
+
+    - name: Save Upgrade Report
+      ansible.builtin.copy:
+        content: |
+          Device          : {{ inventory_hostname }}
+          Old Version     : {{ pre_version_text if dry_run else pre_version.stdout[0] }}
+          New Version     : {{ post_version_text if dry_run else post_version.stdout[0] }}
+          Upgrade Status  : DRY RUN SUCCESS
+        dest: "{{ playbook_dir }}/../reports/upgrade_report_{{ inventory_hostname }}.txt"
+      delegate_to: localhost

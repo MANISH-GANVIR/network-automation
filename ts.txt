@@ -84,6 +84,9 @@ Starts the FastAPI backend server.
 
 Breakdown:
 - uvicorn → ASGI server used to run FastAPI applications.
+    -Uvicorn → A lightweight Python web server.
+    -ASGI → Asynchronous Server Gateway Interface
+    -Purpose → Runs FastAPI applications and handles incoming HTTP requests.
 - backend.main → Python module path (backend/main.py).
 - app → FastAPI instance inside main.py.
 - --reload → Automatically restarts server when code changes.

@@ -3,10 +3,7 @@ import re
 def _run_show(conn, cmd: str, title: str | None = None) -> str:
     if title:
         print(f"\n--- {title} ---")
-    print(f"{conn.hostname}# {cmd}")
-    out = conn.send_command(cmd) or ""
-    print(out.strip())
-    return out
+    return conn.send_command(cmd) or ""
 
 def discover_tunnels(conn):
     outside_iface = getattr(conn, "outside_iface", "N/A")
@@ -36,10 +33,13 @@ def discover_tunnels(conn):
     print("| Seq | Tunnel Name    | Outside Iface     | Local IP      | Peer IP         | Crypto Map   | Status |")
     print("|-----|---------------|-------------------|---------------|-----------------|--------------|--------|")
 
-    for t in tunnels:
-        print(
-            f"| {t['seq']:<3} | {t['name']:<13} | {t['outside_iface']:<17} | {t['local_ip']:<13} "
-            f"| {t['peer_ip']:<15} | {t['crypto_map']:<12} | {t['status']:<6} |"
-        )
+    if not tunnels:
+        print("| -   | No tunnels     | -                 | -             | -               | -            | -      |")
+    else:
+        for t in tunnels:
+            print(
+                f"| {t['seq']:<3} | {t['name']:<13} | {t['outside_iface']:<17} | {t['local_ip']:<13} "
+                f"| {t['peer_ip']:<15} | {t['crypto_map']:<12} | {t['status']:<6} |"
+            )
 
     return tunnels

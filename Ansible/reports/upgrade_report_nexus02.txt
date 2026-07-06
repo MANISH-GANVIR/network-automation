@@ -1,0 +1,4 @@
+Device          : nexus02
+Old Version     : Cisco Nexus Operating System (NX-OS) Software, Version 9.3(10)
+New Version     : Cisco Nexus Operating System (NX-OS) Software, Version 9.3(10)
+Upgrade Status  : DRY RUN SUCCESS

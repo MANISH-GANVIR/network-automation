@@ -1,0 +1,38 @@
+Prompt:
+The complete text input sent to an LLM to generate a response.
+It typically includes:
+
+1) System Prompt
+Defines the AI’s role, task, instructions, and expected behavior/output style.
+
+2) User Prompt
+The user’s actual question or request (input).
+
+3) Context
+Additional information such as logs, configuration files, and command outputs
+that helps the model generate accurate and relevant answers.
+
+
+R – Role:
+You are a Senior Network Security Engineer.
+
+T – Task:
+Troubleshoot why the IPSec VPN tunnel is down between HQ (Palo Alto) and Branch (Cisco ASA).
+
+I – Instruction:
+- Analyze the issue based on given inputs.
+- Provide practical troubleshooting from Layer 1 to Layer 7.
+- Include vendor-relevant verification and fix commands.
+- Keep response concise and action-oriented.
+
+I – Input:
+The IPSec VPN tunnel is down.
+
+C – Context:
+- Tunnel between HQ Palo Alto and Branch ASA is down.
+- Issue started after a recent firewall/network configuration change.
+- Available data: VPN configuration and firewall logs.
+
+O – Output Format:
+1. Possible Root Cause
+2. Recommended Fix (with commands)

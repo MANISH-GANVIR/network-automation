@@ -1,0 +1,173 @@
+---
+# ==========================================================
+# File Name : nxos_upgrade.yml
+# Location  : playbooks/nxos_upgrade.yml
+# Purpose   : Cisco NXOS Upgrade Automation Playbook
+# ==========================================================
+
+- name: NXOS Upgrade (Dry Run)
+  hosts: cisco_nxos
+  gather_facts: false
+
+  # Load Variables
+  vars_files:
+    - ../vars/nxos_upgrade.yml
+
+  tasks:
+
+    # ======================================================
+    # PRE-UPGRADE VALIDATION
+    # ======================================================
+
+    # Display Connected Device
+    - name: Display Hostname
+      ansible.builtin.debug:
+        msg: "Connected to {{ inventory_hostname }}"
+
+    # Check Current NXOS Version
+    - name: Verify Current NXOS Version
+      cisco.nxos.nxos_command:
+        commands:
+          - show version
+      register: pre_version
+
+    # Display Current Version
+    - name: Display Current Version
+      ansible.builtin.debug:
+        var: pre_version.stdout_lines
+
+    # Verify VPC Status
+    - name: Check VPC Status
+      cisco.nxos.nxos_command:
+        commands:
+          - show vpc
+      register: vpc_status
+
+    # Display VPC Status
+    - name: Display VPC Status
+      ansible.builtin.debug:
+        var: vpc_status.stdout_lines
+
+    # Verify Peer Keepalive
+    - name: Verify VPC Peer Keepalive
+      cisco.nxos.nxos_command:
+        commands:
+          - show vpc peer-keepalive
+
+    # Verify Boot Variables
+    - name: Check Boot Variables
+      cisco.nxos.nxos_command:
+        commands:
+          - show boot
+
+    # Verify Bootflash Storage
+    - name: Check Bootflash
+      cisco.nxos.nxos_command:
+        commands:
+          - dir {{ bootflash_location }}
+
+    # Backup Running Configuration
+    - name: Backup Running Configuration
+      cisco.nxos.nxos_config:
+        backup: yes
+
+    # ======================================================
+    # IMAGE COPY
+    # ======================================================
+
+    # Copy NXOS Image from SCP Server
+    - name: Copy NXOS Image
+      cisco.nxos.nxos_command:
+        commands:
+          - >
+            copy scp://{{ scp_user }}:{{ scp_password }}@{{ scp_server }}/{{ nxos_image }}
+            {{ bootflash_location }} vrf management
+
+    # Verify Image Exists
+    - name: Verify Image
+      cisco.nxos.nxos_command:
+        commands:
+          - dir {{ bootflash_location }}
+
+    # Verify Image MD5 Checksum
+    - name: Verify MD5 Checksum
+      cisco.nxos.nxos_command:
+        commands:
+          - show file {{ bootflash_location }}{{ nxos_image }} md5sum
+
+    # ======================================================
+    # SOFTWARE UPGRADE
+    # ======================================================
+
+    # Install NXOS Image
+    - name: Install NXOS Image
+      cisco.nxos.nxos_command:
+        commands:
+          - install all nxos {{ bootflash_location }}{{ nxos_image }}
+
+    # Wait Until Switch Comes Back
+    - name: Wait for Switch Reload
+      ansible.builtin.wait_for_connection:
+        timeout: "{{ reload_timeout }}"
+
+    # ======================================================
+    # POST-UPGRADE VALIDATION
+    # ======================================================
+
+    # Verify New NXOS Version
+    - name: Verify New Version
+      cisco.nxos.nxos_command:
+        commands:
+          - show version
+      register: post_version
+
+    # Verify VPC Status
+    - name: Verify VPC
+      cisco.nxos.nxos_command:
+        commands:
+          - show vpc
+
+    # Verify Port Channel Status
+    - name: Verify Port Channel
+      cisco.nxos.nxos_command:
+        commands:
+          - show port-channel summary
+
+    # Verify Interface Status
+    - name: Verify Interfaces
+      cisco.nxos.nxos_command:
+        commands:
+          - show interface status
+
+    # Verify Hardware Environment
+    - name: Verify Environment
+      cisco.nxos.nxos_command:
+        commands:
+          - show environment
+
+    # ======================================================
+    # UPGRADE SUMMARY
+    # ======================================================
+
+    # Display Upgrade Summary
+    - name: Display Upgrade Summary
+      ansible.builtin.debug:
+        msg:
+          - "Device          : {{ inventory_hostname }}"
+          - "Old Version     : {{ pre_version.stdout[0] }}"
+          - "New Version     : {{ post_version.stdout[0] }}"
+          - "Upgrade Status  : SUCCESS"
+
+    # Save Upgrade Report on Ansible Controller
+    - name: Save Upgrade Report
+      ansible.builtin.copy:
+        content: |
+          Device          : {{ inventory_hostname }}
+          Old Version     : {{ pre_version.stdout[0] }}
+          New Version     : {{ post_version.stdout[0] }}
+          Upgrade Status  : SUCCESS
+        dest: "{{ playbook_dir }}/../reports/upgrade_report.txt"
+      delegate_to: localhost
+      run_once: true
+
+...

@@ -105,7 +105,6 @@ from fastapi.middleware.cors import CORSMiddleware
 # Decorator
 # ============================================================
 # A decorator is a Python feature.
-# It adds extra functionality to a function without modifying its code.
 # In FastAPI, decorators register REST API endpoints.
 # @app.post("/login") tells FastAPI which function should execute.
 # When POST /login request arrives, login() function is executed.

@@ -1,3 +1,379 @@
+====================================================================
+CISCO ASA VPN AUTOMATION  Commands
+====================================================================
+
+This document covers:
+1) Discovery Module
+2) Reset Module
+3) Update Module
+4) Command-by-command purpose
+5) Practical interview explanation flow
+
+====================================================================
+MODULE 1: DISCOVERY
+====================================================================
+
+A) Connection and Interface Discovery
+-------------------------------------
+
+1) Command:
+show hostname
+Used for:
+- Verifying firewall identity.
+- Confirming connection to the correct ASA device.
+
+2) Command:
+show route
+Used for:
+- Checking default route (0.0.0.0/0).
+- Identifying the internet-facing (outside) interface.
+
+3) Command:
+show run interface | include nameif
+Used for:
+- Validating logical interface roles (outside/inside/dmz).
+- Confirming that the expected outside interface role exists.
+
+4) Command:
+show interface <interface_name>
+Example:
+show interface outside
+Used for:
+- Verifying interface operational state (up/down).
+- Extracting interface IP address.
+- Confirming correct outside interface selection.
+
+B) VPN Tunnel Discovery
+-----------------------
+
+5) Command:
+show crypto ikev1 sa
+Used for:
+- Checking Phase-1 (IKE) Security Associations.
+- Validating IKE negotiation status for peers.
+
+6) Command:
+show crypto ipsec sa
+Used for:
+- Checking Phase-2 (IPsec) Security Associations.
+- Validating encrypted traffic flow using packet counters.
+
+7) Command:
+show run crypto map
+Used for:
+- Reading VPN policy mapping.
+- Extracting crypto map name.
+- Extracting sequence number.
+- Extracting peer IP address.
+- Identifying ACL and transform-set association.
+
+C) Tunnel Status Logic
+----------------------
+
+Logic:
+- If peer IP is present in show crypto ikev1 sa OR show crypto ipsec sa:
+  Tunnel status = UP
+- If peer IP is absent in both:
+  Tunnel status = DOWN
+
+Used for:
+- Generating tunnel inventory with live status.
+
+====================================================================
+MODULE 2: RESET
+====================================================================
+
+A) Pre-Reset Validation
+-----------------------
+
+1) Command:
+show crypto ikev1 sa
+Used for:
+- Checking current Phase-1 state before reset.
+
+2) Command:
+show crypto ipsec sa
+Used for:
+- Checking current Phase-2 session/traffic state before reset.
+
+3) Command:
+show run crypto map
+Used for:
+- Identifying correct peer IP and crypto map tunnel reference.
+
+B) Reset Execution
+------------------
+
+4) Command:
+vpn-sessiondb logoff tunnel-group <peer-ip>
+Example:
+vpn-sessiondb logoff tunnel-group 4.227.229.249
+Used for:
+- Terminating active/stale VPN session for selected peer.
+- Forcing tunnel renegotiation.
+
+C) Post-Reset Validation
+------------------------
+
+5) Command:
+show crypto ikev1 sa
+Used for:
+- Verifying fresh/rebuilt Phase-1 session after reset.
+
+6) Command:
+show crypto ipsec sa
+Used for:
+- Verifying fresh/rebuilt Phase-2 session after reset.
+
+====================================================================
+MODULE 3: UPDATE
+====================================================================
+
+A) Session Preparation
+----------------------
+
+1) Command:
+terminal pager 0
+Used for:
+- Disabling CLI pagination (--More--).
+- Ensuring uninterrupted full output for automation parsing.
+
+B) Target VPN Validation
+------------------------
+
+2) Command:
+show run tunnel-group <peer-ip>
+Example:
+show run tunnel-group 4.227.229.249
+Used for:
+- Verifying selected tunnel-group exists before applying updates.
+
+3) Command:
+show run crypto map
+Used for:
+- Identifying crypto map name and sequence.
+- Identifying peer mapping.
+- Identifying ACL binding.
+- Identifying active transform-set.
+
+4) Command:
+show run access-list <acl_name>
+Example:
+show run access-list outside_cryptomap_1
+Used for:
+- Reading current encryption domain entries.
+- Identifying local-to-remote subnet rules currently active.
+
+C) Object and Object-Group Resolution
+-------------------------------------
+
+5) Command:
+show run object-group id <group_name>
+Example:
+show run object-group id AZURE_PA_NET
+Used for:
+- Listing object members inside VPN ACL object-group.
+
+6) Command:
+show run
+Used for:
+- Parsing object network definitions.
+- Resolving object names into actual subnet/mask values.
+
+D) Display Current VPN Configuration Before Change
+--------------------------------------------------
+
+Commands:
+show run tunnel-group <peer-ip>
+show run crypto map
+show run access-list <acl_name>
+
+Used for:
+- Presenting current peer, subnet policy, and transform-set details.
+- Preventing accidental updates on wrong tunnel/policy.
+
+E) Update Operations (Detailed)
+-------------------------------
+
+Operation 1: Update Peer IP
+---------------------------
+Command:
+crypto map <map_name> <seq> set peer <new-peer-ip>
+Used for:
+- Updating remote VPN endpoint IP.
+
+Optional (if new peer tunnel-group is needed):
+tunnel-group <new-peer-ip> type ipsec-l2l
+tunnel-group <new-peer-ip> ipsec-attributes
+ ikev1 pre-shared-key <psk>
+Used for:
+- Creating peer tunnel-group.
+- Assigning authentication key for new peer.
+
+Operation 2: Update Local Subnet
+---------------------------------
+Add command:
+access-list <acl_name> extended permit ip <new_local_subnet> <new_local_mask> <remote_subnet> <remote_mask>
+Used for:
+- Adding new local encryption domain.
+
+Replace commands:
+no access-list <acl_name> extended permit ip <old_local_subnet> <old_local_mask> <remote_subnet> <remote_mask>
+access-list <acl_name> extended permit ip <new_local_subnet> <new_local_mask> <remote_subnet> <remote_mask>
+Used for:
+- Replacing old local subnet with new local subnet safely.
+
+Operation 3: Update Remote Subnet
+----------------------------------
+Add command:
+access-list <acl_name> extended permit ip <local_subnet> <local_mask> <new_remote_subnet> <new_remote_mask>
+Used for:
+- Adding new remote encryption domain.
+
+Replace commands:
+no access-list <acl_name> extended permit ip <local_subnet> <local_mask> <old_remote_subnet> <old_remote_mask>
+access-list <acl_name> extended permit ip <local_subnet> <local_mask> <new_remote_subnet> <new_remote_mask>
+Used for:
+- Replacing old remote subnet with new remote subnet.
+
+Operation 4: Update Phase-2 Encryption
+--------------------------------------
+Command:
+crypto map <map_name> <seq> set ikev1 transform-set <new_transform_set>
+Used for:
+- Updating IPsec Phase-2 transform-set policy.
+
+Operation 5: Update PSK
+-----------------------
+Command:
+tunnel-group <peer-ip> ipsec-attributes
+ ikev1 pre-shared-key <new_psk>
+Used for:
+- Rotating/updating pre-shared key for selected peer.
+
+F) Post-Update Verification and Save
+------------------------------------
+
+21) Command:
+show crypto ikev1 sa
+Used for:
+- Verifying Phase-1 status after updates.
+
+22) Command:
+show crypto ipsec sa
+Used for:
+- Verifying Phase-2 status and traffic after updates.
+
+23) Command:
+write memory
+Used for:
+- Saving running configuration to startup configuration.
+
+====================================================================
+COMPLETE AUTOMATION EXECUTION FLOW (INTERVIEW FORMAT)
+====================================================================
+
+Step 1:
+Connect to ASA over SSH (Netmiko)
+Used for:
+- Starting authenticated automation session.
+
+Step 2:
+terminal pager 0
+Used for:
+- Full command output collection without pagination breaks.
+
+Step 3:
+Run discovery commands:
+show hostname
+show route
+show run interface | include nameif
+show interface outside
+Used for:
+- Device and interface validation, outside IP detection.
+
+Step 4:
+Run VPN inventory commands:
+show run crypto map
+show crypto ikev1 sa
+show crypto ipsec sa
+Used for:
+- Peer discovery and tunnel UP/DOWN status evaluation.
+
+Step 5:
+(If reset required)
+vpn-sessiondb logoff tunnel-group <peer-ip>
+Used for:
+- Clearing stale/active VPN sessions and forcing renegotiation.
+
+Step 6:
+(If update required)
+Apply selected operation:
+- Peer IP update
+- Local subnet update
+- Remote subnet update
+- Transform-set update
+- PSK update
+Used for:
+- Controlled policy and endpoint modification.
+
+Step 7:
+Verify:
+show crypto ikev1 sa
+show crypto ipsec sa
+Used for:
+- Ensuring tunnel stability after change.
+
+Step 8:
+write memory
+Used for:
+- Persisting configuration across reboot.
+
+====================================================================
+short
+====================================================================
+
+“I first disable pager using terminal pager 0, then validate device and outside interface using show route, show run interface | include nameif, and show interface outside.
+For VPN discovery, I parse show run crypto map for peer and policy mapping, and validate live status through show crypto ikev1 sa and show crypto ipsec sa.
+For reset, I run vpn-sessiondb logoff tunnel-group <peer-ip> and re-check IKE/IPsec SAs.
+For updates, I modify peer, ACL subnets, transform-set, or PSK based on selected operation, verify tunnel health again, and finally save using write memory.”
+
+====================================================================
+END OF DOCUMENT
+====================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ============ASA Modules=====================================
 
 ========MODULE-1:-DISCOVERY=================================

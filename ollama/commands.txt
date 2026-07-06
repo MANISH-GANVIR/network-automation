@@ -89,15 +89,15 @@ Next Commands:
 ollama list          # Show installed models
 ollama run qwen3:8b  # Start chatting with the model
 ======================================================
-A model is an AI brain that is trained on data
+Model :-A model is an AI brain that is trained on data
 used to perform specific tasks.
 
-An LLM (Large Language Model) is a type of AI model
+LLM:-An LLM (Large Language Model) is a type of AI model
 that is trained on large amounts of text data
 to understand and generate human language.
 
 In my automation project, I used Qwen3:8B,
-which is an LLM, and Ollama as the platform to run it locally.
+which is an LLM, and Ollama as the platform/engine to run it locally.
 The command ollama pull qwen3:8b downloads and installs
 the Qwen3:8B model on the local machine, allowing it to be
 used offline for tasks such as answering questions,

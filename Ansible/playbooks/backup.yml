@@ -1,0 +1,29 @@
+#ansible-playbook -i inventory/hosts.yml playbooks/backup.yml
+
+
+---  # Start of the YAML file / playbook
+- name: Cisco Config Backup  # Name of the play
+  hosts: cisco_ios  # Target host group from the inventory
+  gather_facts: false  # Disable fact gathering because it is not needed for Cisco network devices
+
+  tasks:  # List of tasks in this play
+    - name: Take Backup  # Task name to fetch the running configuration
+      cisco.ios.ios_command:  # Cisco IOS module used to run operational/show commands
+        commands:  # List of commands to run on the device
+          - show running-config  # Command to display the current running configuration
+      register: backup  # Store the output of the command in the variable named 'backup'
+
+    - name: Print Backup  # Task name to display the fetched configuration
+      ansible.builtin.debug:  # Debug module used to print output
+        msg: "{{ backup.stdout[0] }}"  # Print the first command output stored in backup.stdout
+                                       # backup.stdout[0] → show running-config ka output
+                                       # backup.stdout[1] → show version ka output
+
+    - name: Save Backup  # Task name to save the configuration into a file
+      ansible.builtin.copy:  # Copy module used to write content into a file
+        content: "{{ backup.stdout[0] }}"  # File content will be the running configuration output
+        dest: "/tmp/{{ inventory_hostname }}-backup.txt"  # Destination file path using inventory hostname
+                                                          # the backup is being saved temporarily in the /tmp directory on the Ansible control node.
+      delegate_to: localhost  # Execute this task on the Ansible control node
+                              # delegate_to is used to run a specific task on a different host than the target host. In this case, delegate_to: localhost makes
+                              #the save operation happen on the Ansible control node instead of the Cisco device.”

@@ -1,0 +1,1490 @@
+Phase 1 (Must Complete)
+✔ Why Ansible  ...done
+✔ Architecture ...done
+✔ ansible.cfg ...done
+✔ Inventory ...done
+✔ YAML ...done
+✔ Ad-hoc ...done
+
+----------------------------------
+
+Phase 2
+
+✔ Playbooks  ...done
+✔ Variables  ...done
+✔ Register  ...done
+✔ Facts   ...done
+✔ Loops  ...done
+✔ When  ...done
+
+✔ user define module
+----------------------------------
+
+Phase 3
+
+✔ ios_command
+✔ ios_config
+✔ ios_facts
+✔ Jinja2
+
+----------------------------------
+
+Phase 4
+
+✔ Capstone Project
+✔ ServiceNow
+
+
+ANSIBLE
+-------
+-Ansible is an agentless, YAML-based automation tool .
+-used to automate the configuration, deployment, and
+ management of network devices and servers.
+-It connects to devices using SSH or APIs, so no agent needs to be installed.
+
+Main Components:
+-----------------
+1. Control Node
+   - Machine where Ansible is installed.
+   - Executes playbooks and manages all automation.
+
+2. Inventory
+   - List of managed devices (routers, switches, firewalls, servers).
+   - Tells Ansible which devices to connect to.
+
+3. Playbook
+   - YAML file containing automation tasks.
+   - Defines what action to perform and on which devices.
+
+4. Managed Nodes
+   - Devices managed by Ansible.(Cisco, Juniper, Palo Alto ,Linux, Windows ,AWS EC2, Azure VMs)
+   - No agent installation required.
+   - Connected using SSH or APIs.
+
+Workflow:
+- Log in to the Control Node.
+- Run the Playbook.
+- Ansible reads the Inventory.
+- Connects to all managed devices using SSH/APIs.
+- Executes tasks in parallel.
+- Returns Success/Failure report.
+
+QUICK WORKFLOW (3 STEPS)
+========================
+
+Step 1: Log into Control Node
+$ ssh user@ansible-server
+
+Step 2: Run Playbook
+$ ansible-playbook deploy.yml
+
+Step 3: Changes Applied to ALL Devices Simultaneously
+✓ Real-time feedback
+✓ No manual errors
+✓ 15 minutes instead of 3 weeks manually
+
+Benefits:
+- Agentless
+- YAML Based
+- Easy to Learn
+- Multi-Vendor Support
+- Scalable
+- Reduces Manual Errors
+- Ensures Configuration Consistency
+- Integrates with ServiceNow
+
+Real-World Example:
+If a security patch must be applied to 500 routers, instead of logging into
+each router manually, we write one playbook and Ansible applies the same
+configuration to all devices within minutes.
+
+
+====================================================================
+chapter 5:-
+----------
+====================================================================================================================
+                    ANSIBLE ARCHITECTURE - CHEAT SHEET
+====================================================================================================================
+
+CORE COMPONENTS (4 Main)
+========================
+
+1. CONTROL NODE
+   - Where Ansible runs
+   - Must be Linux-based
+   - Can be laptop, desktop, or server
+   - Alternative: Container (execution environment)
+
+2. MANAGED NODES
+   - Devices to manage (routers, switches, servers, firewalls)
+   - NO agent needed (agentless)
+   - Connected via SSH or APIs
+
+3. INVENTORY
+   - File listing all managed devices
+   - Format: YAML or INI
+   - Type: Static (manual) or Dynamic (from CMDB/cloud)
+
+4. PLAYBOOK
+   - YAML file with tasks
+   - Contains Plays (targets groups)
+   - Contains Tasks (specific actions)
+   - Defines what to automate
+
+====================================================================================================================
+
+ADVANCED COMPONENTS (5 More)
+============================
+
+5. MODULES
+   - Small programs that perform tasks
+   - Written in Python
+   - Examples: Configure interfaces, manage files, set users
+   - Execute commands on managed nodes
+
+6. HANDLERS
+   - Tasks that run only when changes occur
+   - Example: Restart service if config changed
+   - Reduces unnecessary actions
+
+7. LOOPS
+   - Perform repetitive tasks efficiently
+   - Instead of: Write same task 10 times
+   - Use: Loop over list of items
+
+8. BLOCKS
+   - Group tasks together
+   - Handle errors more effectively
+   - Manage complex workflows
+   - Execute in sequence
+
+9. ROLES
+   - Organize playbooks into reusable components
+   - Include: tasks, variables, files, templates
+   - Modular and easy to maintain
+
+====================================================================================================================
+
+ADVANCED FEATURES (2 More)
+==========================
+
+10. COLLECTIONS
+    - Bundle roles, modules, plugins together
+    - Example: Collection for Cisco devices
+    - Simplifies sharing and reusing automation
+
+11. PLUGINS
+    - Extend Ansible functionality
+    - Callback plugins: Customize output
+    - Lookup plugins: Fetch external data
+
+====================================================================================================================
+
+QUICK STRUCTURE
+===============
+
+Control Node (Linux)
+    ↓ (runs)
+Playbook (YAML file)
+    ↓ (uses)
+Inventory (device list)
+    ↓ (connects to)
+Managed Nodes (devices)
+    ↓ (via)
+SSH/APIs
+    ↓ (executes)
+Modules/Tasks
+
+====================================================================================================================
+
+IF INTERVIEWER ASKS:
+
+Q: "Explain Ansible architecture"
+A: "Control Node (Linux machine) reads Inventory (device list) and Playbook (YAML tasks).
+   Uses Modules (Python programs) to connect to Managed Nodes via SSH.
+   Executes Tasks using Handlers (conditional), Loops (repetitive), Blocks (grouped),
+   Roles (reusable), Collections (bundled), and Plugins (extended functionality)."
+
+Q: "What's the role of modules?"
+A: "Modules are Python programs that perform specific tasks on managed nodes.
+   They simplify complex actions like configuring interfaces, managing files, or setting up users."
+
+Q: "What are handlers?"
+A: "Handlers are tasks that run only when a change occurs.
+   Example: Restart service only if config was changed."
+
+Q: "What are loops?"
+A: "Loops perform repetitive tasks efficiently.
+   Instead of writing same task 10 times, loop over list of 10 items."
+
+Q: "What are roles?"
+A: "Roles organize playbooks into reusable components (tasks, variables, files, templates).
+   Makes playbooks modular and maintainable."
+
+Q: "Collections?"
+A: "Collections bundle roles, modules, and plugins together for specific use cases.
+   Example: Cisco collection has all tools to automate Cisco devices."
+
+====================================================================================================================
+
+MEMORY TRICK
+============
+
+C-I-P-M-H-L-B-R-C-P
+
+Control Node
+Inventory
+Playbook
+Modules
+Handlers
+Loops
+Blocks
+Roles
+Collections
+Plugins
+
+====================================================================================================================
+
+STRUCTURE (Remember)
+====================
+
+CONTROL NODE
+- Where it runs (Linux/Container)
+
+INVENTORY + PLAYBOOK
+- What devices + What to do
+
+MODULES
+- How to do it (Python programs)
+
+HANDLERS, LOOPS, BLOCKS, ROLES, COLLECTIONS, PLUGINS
+- Advanced features to organize/simplify
+
+MANAGED NODES
+- Result: Devices are configured
+
+====================================================================================================================
+
+3. Ansible Installation
+------------------------
+Prerequisites:
+- Python 3.x installed
+- pip package manager
+- Linux/Mac/WSL environment
+
+Installation steps:
+$ python3 --version
+$ pip install ansible
+$ ansible --version
+
+Verification:
+$ ansible --version
+Shows version, config file path, Python location
+================================================
+Inventory:-
+-----------
+-Inventory is an Ansible configuration file that contains a
+ list of managed devices, logical groups, and connection details
+ such as IP address, username, password, and connection type."
+
+-Inventory Formats:
+1. INI
+2. YAML
+
+YAML Inventory Structure
+---------------------------
+Inventory                               # Inventory File
+│
+└── all                                 # Root Group (Always Present)
+      │
+      ├── children                      # All Child Groups
+      │      │
+      │      ├── cisco                  # Parent Group (Optional)
+      │      │      │
+      │      │      ├── children        # Child Groups under Cisco
+      │      │      │      │
+      │      │      │      ├── cisco_ios    # Cisco IOS Group
+      │      │      │      └── cisco_nxos   # Cisco NXOS Group
+      │      │      │
+      │      │      ├── cisco_ios       # Child Group
+      │      │      │      │
+      │      │      │      └── hosts    # Devices inside Cisco IOS
+      │      │      │             │
+      │      │      │             ├── router1      # Cisco IOS Router
+      │      │      │             │      │
+      │      │      │             │      └── ansible_host  # Management IP
+      │      │      │             │
+      │      │      │             └── router2
+      │      │      │                    │
+      │      │      │                    └── ansible_host
+      │      │      │
+      │      │      └── cisco_nxos      # Child Group
+      │      │             │
+      │      │             └── hosts    # Devices inside Nexus
+      │      │                    │
+      │      │                    ├── nexus1
+      │      │                    │      │
+      │      │                    │      └── ansible_host
+      │      │                    │
+      │      │                    └── nexus2
+      │      │                           │
+      │      │                           └── ansible_host
+      │      │
+      │      └── arista                 # Another Vendor Group
+      │             │
+      │             └── hosts
+      │                    ├── eos1
+      │                    └── eos2
+      │
+      └── vars                          # Global Variables
+             ├── ansible_user           # SSH Username
+             ├── ansible_password       # SSH Password
+             ├── ansible_connection     # network_cli / ssh
+             ├── ansible_network_os     # Device OS
+             └── ansible_become         # Enable Mode
+YAML
+-----
+Root Group      → all (Always Present)
+Parent Group    → cisco (Optional)
+Child Group     → cisco_ios, cisco_nxos
+Hosts           → router1, nexus1
+Host Variables  → ansible_host
+Global Variables→ ansible_user, ansible_password,
+                  ansible_connection, ansible_network_os
+
+
+
+code:-
+-----
+all:                                  # Root group (all devices)
+  children:                           # Device groups( All Child Groups)
+    cisco_nxos:                       # Cisco Nexus group
+      hosts:                          # Nexus hosts
+        nexus01:                      # Nexus Switch 1
+          ansible_host: 10.10.10.10   # Management IP
+        nexus02:                      # Nexus Switch 2
+          ansible_host: 10.10.10.11   # Management IP
+
+    cisco_ios:                        # Cisco IOS group
+      hosts:                          # IOS hosts
+        ios01:                        # IOS Router 1
+          ansible_host: 10.10.20.10   # Management IP
+        ios02:                        # IOS Router 2
+          ansible_host: 10.10.20.11   # Management IP
+
+  vars:                               # Global variables
+    ansible_connection: network_cli   # Connection type
+    ansible_user: admin               # SSH username
+    ansible_password: admin           # SSH password
+
+===============================================================
+
+INI Inventory Structure:-
+-------------------------
+Inventory                               # Inventory File
+│
+├── [cisco:children]                    # Parent Group (Optional)
+│      ├── cisco_ios                    # Child Group
+│      └── cisco_nxos                   # Child Group
+│
+├── [cisco_ios]                         # Child Group
+│      ├── router1                      # Host
+│      │      └── ansible_host          # Management IP
+│      └── router2
+│             └── ansible_host
+│
+├── [cisco_nxos]                        # Child Group
+│      ├── nexus1
+│      │      └── ansible_host
+│      └── nexus2
+│             └── ansible_host
+│
+├── [arista]                            # Another Group
+│      ├── eos1
+│      └── eos2
+│
+└── [all:vars]                          # Global Variables
+       ├── ansible_user                 # SSH Username
+       ├── ansible_password             # SSH Password
+       ├── ansible_connection           # network_cli
+       ├── ansible_network_os           # Device OS
+       └── ansible_become               # Enable Mode
+
+Parent Group    → [cisco:children] (Optional)
+Child Group     → [cisco_ios], [cisco_nxos]
+Hosts           → router1, router2, nexus1
+Host Variables  → ansible_host
+Global Variables→ [all:vars]
+================================================================
+====================================================================
+                ANSIBLE AD-HOC CHEAT SHEET
+====================================================================
+WHAT IS AD-HOC?
+---------------
+One-time command used to perform a single task without creating a playbook.
+
+SYNTAX
+------
+ansible <target> -i <inventory> -m <module> -a "<arguments>"
+
+COMMON MODULES
+--------------
+ping
+cisco.ios.ios_command
+cisco.nxos.nxos_command
+
+TOP COMMANDS
+------------
+ansible-inventory -i inventory.ini --graph
+ansible-inventory -i inventory.ini --list
+ansible all -i inventory.ini --list-hosts
+ansible all -i inventory.ini -m ping
+ansible cisco_ios -i inventory.ini -m cisco.ios.ios_command -a "commands='show version'"
+ansible cisco_nxos -i inventory.ini -m cisco.nxos.nxos_command -a "commands='show version'"
+
+ONE-LINER
+---------
+Ad-hoc commands execute a single task without creating a playbook
+
+==============================================================.
+chapter 11 YAML
+----------------
+# -------------------------
+# 1) BASIC YAML STRUCTURE
+# -------------------------
+
+# '---' marks start of YAML document (optional but common)
+# '...' marks end of YAML document (optional)
+
+---
+name: Elon Musk        # key-value pair (string)
+age: 53                # integer value
+...
+
+
+# -------------------------
+# 2) INDENTATION / NESTING
+# -------------------------
+
+# Nested dictionaries (objects) are created by indentation.
+# Here 'city', 'zipcode', and 'country' belong to 'address'.
+
+address:
+  city: Austin
+  zipcode: 73301
+  country: USA
+
+
+# -------------------------
+# 3) DATA TYPES IN YAML
+# -------------------------
+
+hostname: R1               # string (unquoted)
+serial_number: 12345       # integer
+pi_value: 3.14             # float
+logging_enabled: true      # boolean true/false
+timezone: null             # null / no value
+
+# Strings can also be quoted (useful with special chars)
+site1: "DC-1 Router"
+site2: 'Branch Router'
+
+
+# -------------------------
+# 4) COMMENTS
+# -------------------------
+
+# Full-line comment example
+hostname: R1   # Inline comment example
+
+
+# -------------------------
+# 5) LISTS
+# -------------------------
+
+# YAML lists use dash + space ('- ')
+# Each item is one list element
+
+interfaces:
+  - GigabitEthernet0/0
+  - GigabitEthernet0/1
+  - Loopback0
+
+
+# -----------------------------------
+# 6) LIST OF DICTIONARIES (IMPORTANT)
+# -----------------------------------
+
+# Very common in Ansible/network automation:
+# interfaces is a LIST, and each item is a DICTIONARY
+
+interfaces:
+  - name: GigabitEthernet0/0
+    description: Uplink to Core
+    ip_address: 10.0.0.1/24
+
+  - name: GigabitEthernet0/1
+    description: User VLAN
+    ip_address: 10.0.1.1/24
+
+  - name: Loopback0
+    description: Router ID
+    ip_address: 1.1.1.1/32
+
+
+# -------------------------
+# 7) MULTILINE STRINGS
+# -------------------------
+
+# Literal block '|' preserves line breaks exactly as typed
+banner: |
+  Unauthorized access prohibited.
+  Disconnect immediately.
+  Activity is monitored.
+
+# Folded block '>' converts new lines into spaces
+notes: >
+  This router is in DC1
+  managed by NetOps team
+  escalate via CAB process.
+
+
+# --------------------------------
+# 8) SIMPLE ANSIBLE PLAYBOOK YAML
+# --------------------------------
+
+# This is YAML used by Ansible playbooks
+
+---
+- name: Configure NTP on routers
+  hosts: routers
+  gather_facts: false
+
+  vars:
+    ntp_server: 192.0.2.10
+
+  tasks:
+    - name: Push NTP config
+      ios_config:
+        lines:
+          - ntp server {{ ntp_server }}
+
+
+# -----------------------------------
+# 9) SIMPLE ANSIBLE INVENTORY IN YAML
+# -----------------------------------
+
+all:
+  children:
+    routers:
+      hosts:
+        R1:
+          ansible_host: 192.168.1.11
+        R2:
+          ansible_host: 192.168.1.12
+
+
+# -------------------------
+# 10) QUICK RULES CHECKLIST
+# -------------------------
+
+# [✓] Use spaces only (no tabs)
+# [✓] Keep indentation consistent
+# [✓] Put one space after colon => key: value
+# [✓] Use '-' for list items
+# [✓] Use comments to explain intent
+# [✓] Validate with yamllint before execution
+
+
+# -------------------------
+# 11) COMMON YAML MISTAKES
+# -------------------------
+
+# Wrong (missing space after colon):
+# hostname:R1
+
+# Correct:
+# hostname: R1
+
+# Wrong (tabs used for indent):
+# \tcity: Austin
+
+# Correct (spaces):
+#   city: Austin
+
+# Wrong (misaligned list indentation):
+# interfaces:
+#   - name: Gi0/0
+#    ip_address: 10.0.0.1/24
+
+# Correct:
+# interfaces:
+#   - name: Gi0/0
+#     ip_address: 10.0.0.1/24
+
+============================================
+12 Inventory In yaml formate
+----------------------------
+# ============================================================
+# ANSIBLE YAML INVENTORY CHEAT SHEET (Python TXT Style)
+# ============================================================
+
+# 1) YAML INVENTORY KEYWORDS
+# all              -> root group
+# children         -> subgroup container
+# hosts            -> devices inside group
+# vars             -> variables for group/all
+# ansible_host     -> management IP
+# ansible_network_os -> network OS plugin
+# ansible_connection -> connection type (network_cli/httpapi/netconf)
+# ansible_user     -> login username
+# ansible_password -> login password
+
+# 2) BASIC STRUCTURE
+---
+all:
+  children:
+    group_name:
+      hosts:
+        host1:
+          ansible_host: 192.168.1.10
+  vars:
+    ansible_connection: network_cli
+...
+# end marker optional but valid
+
+# 3) FULL EXAMPLE (CISCO + ARISTA)
+---
+all:                                  # Root group (contains all devices)
+  children:                           # Child groups under all
+
+    cisco:                            # Parent group for Cisco devices
+      children:                       # Cisco sub-groups
+
+        cisco_ios:                    # Cisco IOS devices group
+          hosts:                      # Hosts inside cisco_ios
+            csr1:                     # Hostname
+              ansible_host: 10.10.10.11        # Management IP of csr1
+              ansible_network_os: cisco.ios.ios # Network OS driver/plugin
+            csr2:                     # Hostname
+              ansible_host: 10.10.10.12        # Management IP of csr2
+              ansible_network_os: cisco.ios.ios # Network OS driver/plugin
+
+        cisco_nxos:                   # Cisco NX-OS devices group
+          hosts:                      # Hosts inside cisco_nxos
+            nexus1:                   # Hostname
+              ansible_host: 10.10.20.11         # Management IP of nexus1
+              ansible_network_os: cisco.nxos.nxos # Network OS driver/plugin
+
+        cisco_iosxr:                  # Cisco IOS-XR devices group
+          hosts:                      # Hosts inside cisco_iosxr
+            xr1:                      # Hostname
+              ansible_host: 10.10.30.11          # Management IP of xr1
+              ansible_network_os: cisco.iosxr.iosxr # Network OS driver/plugin
+
+    arista:                           # Parent group for Arista devices
+      children:                       # Arista sub-groups
+
+        arista_eos:                   # Arista EOS devices group
+          hosts:                      # Hosts inside arista_eos
+            eos1:                     # Hostname
+              ansible_host: 10.10.40.11          # Management IP of eos1
+              ansible_network_os: arista.eos.eos # Network OS driver/plugin
+
+  vars:                               # Global variables for all hosts
+    ansible_connection: network_cli   # Connection method used by Ansible
+    ansible_user: admin               # Username for device login
+    ansible_password: admin           # Password for device login
+...
+
+# 4) VERIFY INVENTORY TREE
+# ansible-inventory -i inventory.yaml --graph
+
+# 5) SHOW PARSED INVENTORY (YAML OUTPUT)
+# ansible-inventory -i inventory.yaml --list -y
+
+# 6) RUN AD-HOC COMMAND ON GROUP
+# ansible cisco_ios -i inventory.yaml -m cisco.ios.ios_command -a "commands='show ip interface brief'"
+
+# 7) CONVERT INI -> YAML
+# ansible-inventory -i inventory_basic.ini --list -y > inventory_converted.yaml
+
+# 8) INDENTATION RULES
+# use spaces only (no tabs)
+# keep indentation consistent (2 spaces recommended)
+# key-value must be: key: value
+
+# 9) COMMON ERRORS
+# wrong indent under children/hosts
+# ansible_network_os typo
+# wrong group name in command target
+# plain-text password in production
+
+# 10) BEST PRACTICE
+# keep host IP + minimal data in inventory
+# move vars to group_vars/ and host_vars/
+# store secrets with ansible-vault
+# ============================================================
+chpter 13 Ansible Playbook
+--------------------------
+# ============================================================
+# ANSIBLE PLAYBOOK CHEAT SHEET (Python TXT Style)
+# Topic: Ad-hoc to Playbook, gather_facts, register, debug
+# ============================================================
+
+# 1) WHAT IS A PLAYBOOK
+# - A YAML file with one or more plays
+# - Each play = target hosts + tasks
+# - Reusable, readable, repeatable automation
+
+# 2) BASIC PLAY STRUCTURE
+# ---
+# - name: Play name
+#   hosts: group_or_host
+#   gather_facts: false
+#   tasks:
+#     - name: Task name
+#       module_name:
+#         key: value
+
+# 3) IMPORTANT FIELDS
+# - name         -> Human-readable play/task name
+# - hosts        -> Inventory group or host target
+# - gather_facts -> true (default) / false
+# - tasks        -> Ordered list of actions
+# - register     -> Saves module output into a variable
+
+# 4) BEST PRACTICE
+# - Use FQCN (Fully Qualified Collection Name) modules:
+#   cisco.ios.ios_command
+#   cisco.nxos.nxos_command
+#   arista.eos.eos_command
+
+# 5) SINGLE PLAY EXAMPLE (Cisco IOS)
+---
+- name: Run show version on Cisco IOS
+  hosts: cisco_ios
+  gather_facts: false
+
+  tasks:
+    - name: Run show version
+      cisco.ios.ios_command:
+        commands:
+          - show version
+      register: ios_out
+
+    - name: Display output
+      ansible.builtin.debug:
+        var: ios_out
+...
+
+# 6) IMPORTANT REGISTER OUTPUT KEYS
+# ios_out.changed      -> Whether configuration changed
+# ios_out.failed       -> Whether task failed
+# ios_out.stdout       -> Raw command output (list)
+# ios_out.stdout_lines -> Line-by-line output (structured)
+
+# 7) GATHER FACTS
+# - Default: true (Ansible runs "Gathering Facts" automatically)
+# - If not needed, set:
+#   gather_facts: false
+# - Facts variable name:
+#   ansible_facts
+
+# 8) PRINT FACTS
+---
+- name: Show facts
+  hosts: cisco_ios
+  gather_facts: true
+
+  tasks:
+    - name: Print ansible_facts
+      ansible.builtin.debug:
+        var: ansible_facts
+...
+
+# 9) MULTI-PLAY EXAMPLE (IOS + NXOS + EOS)
+---
+- name: Show version - Cisco IOS
+  hosts: cisco_ios
+  gather_facts: false
+  tasks:
+    - name: Run show version on IOS
+      cisco.ios.ios_command:
+        commands: [show version]
+      register: ios_out
+    - name: Print IOS output
+      ansible.builtin.debug:
+        var: ios_out.stdout_lines
+
+- name: Show version - Cisco NXOS
+  hosts: cisco_nxos
+  gather_facts: false
+  tasks:
+    - name: Run show version on NXOS
+      cisco.nxos.nxos_command:
+        commands: [show version]
+      register: nxos_out
+    - name: Print NXOS output
+      ansible.builtin.debug:
+        var: nxos_out.stdout_lines
+
+- name: Show version - Arista EOS
+  hosts: arista_eos
+  gather_facts: false
+  tasks:
+    - name: Run show version on EOS
+      arista.eos.eos_command:
+        commands: [show version]
+      register: eos_out
+    - name: Print EOS output
+      ansible.builtin.debug:
+        var: eos_out.stdout_lines
+...
+
+# 10) RUN COMMANDS
+# Run playbook:
+# ansible-playbook playbooks/show_version.yml
+#
+# If inventory path is not set in ansible.cfg:
+# ansible-playbook -i inventory/inventory.yml playbooks/show_version.yml
+
+# 11) EXECUTION BEHAVIOR
+# - Tasks run in order
+# - Same task runs on all matched hosts
+# - If a task fails on one host, that host is removed from remaining tasks in that play
+
+# 12) QUICK TROUBLESHOOTING CHECKLIST
+# - Is the inventory group name correct? (hosts: cisco_ios, etc.)
+# - Is module FQCN correct?
+# - Set gather_facts: false if not required
+# - Not seeing command output? Use register + debug
+# - Are connection vars set? (ansible_connection, ansible_user, ansible_password)
+
+# ============================================================
+14 Understanding Variable
+---------------------------
+# 1) WHY VARIABLES
+# - Separate static logic from site-specific data
+# - Reuse same playbook across environments
+# - Avoid hardcoding usernames/passwords/IPs/OS types
+
+# 2) VARIABLE SOURCES (covered)
+# - Play variables            -> vars
+# - Variables from file       -> vars_files
+# - Prompted variables        -> vars_prompt
+# - Dynamic variables         -> set_fact
+# - CLI variables             -> --extra-vars / -e
+# - Inventory variables       -> inventory/group/host
+# - host_vars and group_vars
+# - include_vars (task-level include)
+
+# 3) BASIC SYNTAX (vars in play)
+---
+- name: Play name
+  hosts: target_group
+  gather_facts: false   # optional (default true)
+  vars:                 # optional
+    key: value
+  tasks:
+    - name: Task name
+      module_name:
+        option: value
+...
+
+Syntax with Comment :
+----------------------
+
+--- # Start of YAML document
+- name: Vars demo # Play name (human-readable)
+  hosts: all # Target all hosts from inventory
+  gather_facts: false # Disable automatic fact gathering for faster run
+  vars: # Play-level variables section
+    playbook_username: play_user # Variable: username value
+    playbook_password: play_pass # Variable: password value
+  tasks: # List of tasks to execute
+    - name: Print vars # Task name
+      ansible.builtin.debug: # Use Ansible debug module to print output
+        msg: # Message(s) to display
+          - "Username: {{ playbook_username }}" # Print username variable using Jinja2
+          - "Password: {{ playbook_password }}" # Print password variable using Jinja2
+... # End of YAML document
+
+
+# 4) INVENTORY VARIABLE EXAMPLE
+# inventory.yml
+---
+all:
+  hosts:
+    r1:
+      ansible_host: 10.10.10.10
+      inventory_username: inv_user
+      inventory_password: inv_pass
+...
+
+# 5) PRINT INVENTORY VARS
+---
+- name: Print inventory vars
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Show inventory vars
+      ansible.builtin.debug:
+        msg:
+          - "Inventory user: {{ inventory_username }}"
+          - "Inventory pass: {{ inventory_password }}"
+...
+
+# 6) vars_files EXAMPLE
+# vars/username_vars.yml
+---
+external_username: external_user
+external_password: external_123
+default_username: external_default_user
+default_password: external_default_pass
+...
+
+# playbook.yml
+---
+- name: Vars file demo
+  hosts: all
+  gather_facts: false
+  vars_files:
+    - vars/username_vars.yml
+  tasks:
+    - name: Show external vars
+      ansible.builtin.debug:
+        msg:
+          - "External user: {{ external_username }}"
+          - "External pass: {{ external_password }}"
+...
+
+# 7) vars_prompt EXAMPLE
+---
+- name: Prompt vars demo
+  hosts: all
+  gather_facts: false
+  vars_prompt:
+    - name: prompt_username
+      prompt: "Enter username"
+      private: false
+    - name: prompt_password
+      prompt: "Enter password"
+      private: true
+  tasks:
+    - name: Show prompted vars
+      ansible.builtin.debug:
+        msg:
+          - "Prompt user: {{ prompt_username }}"
+          - "Prompt pass: {{ prompt_password }}"
+...
+
+# 8) set_fact EXAMPLE (dynamic variable)
+---
+- name: set_fact demo
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Set dynamic var
+      ansible.builtin.set_fact:
+        dynamic_env: lab
+    - name: Print dynamic var
+      ansible.builtin.debug:
+        msg: "Dynamic env: {{ dynamic_env }}"
+...
+
+# 9) include_vars EXAMPLE
+---
+- name: include_vars demo
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Load vars at task level
+      ansible.builtin.include_vars:
+        file: vars/username_vars.yml
+    - name: Print loaded vars
+      ansible.builtin.debug:
+        msg: "Loaded user: {{ external_username }}"
+...
+
+# 10) EXTRA VARS (-e) EXAMPLE
+# ansible-playbook -i inventory.yml playbook.yml -e "default_username=extra_user default_password=devnet"
+
+# 11) VARIABLE REFERENCE RULE
+# - Use Jinja2 syntax: {{ variable_name }}
+
+# 12) IMPORTANT msg SYNTAX RULE
+# - If msg item starts with variable, quote the whole line
+# Correct:
+# msg:
+#   - "{{ inventory_password }} is password for {{ inventory_username }}"
+# Incorrect:
+# msg:
+#   - {{ inventory_password }} is password for {{ inventory_username }}
+
+# 13) SCOPE RULE
+# - vars defined in Play-1 are NOT automatically available in Play-2
+# - inventory vars are available to matching hosts in all plays
+
+# 14) PRECEDENCE (as covered in your lecture)
+# Highest -> Lowest
+# 1. extra-vars (-e)                 # always highest
+# 2. vars_files
+# 3. vars_prompt
+# 4. play vars (vars:)
+# 5. inventory vars (host/group)
+
+# 15) QUICK TEST PLAYBOOK FOR PRECEDENCE
+# inventory.yml
+#   default_username: inv_user
+# vars file
+#   default_username: ext_user
+# play vars
+#   default_username: play_user
+# vars_prompt
+#   default_username: prompt_user
+# run with:
+#   -e "default_username=extra_user"
+# result -> extra_user
+
+# 16) USEFUL COMMANDS
+# Run:
+# ansible-playbook -i inventory.yml vars_demo.yml
+# Verbose:
+# ansible-playbook -i inventory.yml vars_demo.yml -vv
+# With extra vars:
+# ansible-playbook -i inventory.yml vars_demo.yml -e "k=v"
+
+# 17) BEST PRACTICES
+# - Keep secrets out of plain text (use ansible-vault)
+# - Use descriptive variable names
+# - Store reusable vars in vars/, group_vars/, host_vars/
+# - Avoid duplicate names unless testing precedence
+# - Keep playbooks static, data in variables
+
+# ============================================================
+15 Valid Variable Name
+----------------------
+# ============================================================
+# ANSIBLE VALID VARIABLE NAMES CHEAT SHEET (Python TXT Style)
+# ============================================================
+
+# 1) VALID RULES
+# - Allowed chars: letters (a-z, A-Z), numbers (0-9), underscore (_)
+# - Must NOT start with a number
+# - Can start with underscore (_)
+# - Case-sensitive (User != user)
+# - No spaces
+# - No hyphens (-)
+# - No special chars (!, @, #, $, %, ., etc.)
+# - Avoid Python keywords (example: lambda, async)
+
+# 2) VALID EXAMPLES
+# router
+# cisco_ios
+# __switch
+# switch1
+# device_hostname
+# _ip_address
+# Interface1
+
+# 3) INVALID EXAMPLES
+# 1hostname          # starts with number
+# 20                 # only number
+# cisco-ios          # hyphen not allowed
+# cisco ios          # space not allowed
+# cisco.ios          # dot not allowed in var name
+# star*router        # special char not allowed
+# lambda             # Python keyword
+# async              # Python keyword
+
+# 4) CASE SENSITIVITY EXAMPLE
+# username: admin
+# UserName: admin2
+# => both are different variables
+
+# 5) DEMO PLAYBOOK (VALID VARIABLE NAMES)
+---
+- name: Valid variable names demo
+  hosts: all
+  gather_facts: false
+  vars:
+    device_hostname: R1
+    interface: GigabitEthernet0/0
+    _ip_address: 10.10.10.10
+  tasks:
+    - name: Print valid vars
+      ansible.builtin.debug:
+        msg:
+          - "device_hostname = {{ device_hostname }}"
+          - "interface = {{ interface }}"
+          - "_ip_address = {{ _ip_address }}"
+...
+
+# 6) DEMO PLAYBOOK (INVALID - DO NOT RUN)
+# vars:
+#   1hostname: R1          # invalid
+#   cisco-ios: ios         # invalid
+#   lambda: test           # invalid keyword
+
+# 7) QUICK NAMING BEST PRACTICE
+# - Use lowercase + underscores
+# - Keep names descriptive
+# - Examples:
+#   mgmt_ip
+#   device_role
+#   snmp_community
+#   ntp_server_primary
+
+# 8) SAFE PATTERN (RECOMMENDED)
+# ^[a-z_][a-z0-9_]*$
+# meaning:
+# - first char: lowercase letter or underscore
+# - remaining: lowercase letters, numbers, underscores
+
+=====================================================
+# ============================================================
+# ANSIBLE group_vars & host_vars CHEAT SHEET (Python TXT Style)
+# ============================================================
+
+# 1) WHY group_vars / host_vars
+# - Better variable organization at scale
+# - Keep inventory file clean
+# - Easy per-group and per-host customization
+# - Supports YAML data structures (list/dict)
+
+# 2) DIRECTORY LAYOUT (STANDARD)
+# inventory/
+#   hosts.yml
+#   group_vars/
+#     all.yml
+#     cisco_ios.yml
+#     cisco_nxos.yml
+#     cisco_iosxr.yml
+#     arista_eos.yml
+#   host_vars/
+#     csr1.yml
+#     csr2.yml
+#     nexus1.yml
+#     xr1.yml
+#     eos1.yml
+
+# 3) INVENTORY FILE (ONLY GROUPS + HOSTS)
+---
+all:
+  children:
+    cisco_ios:
+      hosts:
+        csr1:
+          ansible_host: 10.10.10.11
+        csr2:
+          ansible_host: 10.10.10.12
+
+    cisco_nxos:
+      hosts:
+        nexus1:
+          ansible_host: 10.10.20.11
+
+    cisco_iosxr:
+      hosts:
+        xr1:
+          ansible_host: 10.10.30.11
+
+    arista_eos:
+      hosts:
+        eos1:
+          ansible_host: 10.10.40.11
+...
+
+# 4) group_vars/all.yml (APPLIES TO ALL HOSTS)
+---
+ansible_connection: network_cli
+ansible_user: admin
+ansible_password: admin
+...
+
+# 5) group_vars/cisco_ios.yml (GROUP-SPECIFIC)
+---
+ansible_network_os: cisco.ios.ios
+ntp_server: 2.2.2.2
+dns_server: 8.8.8.8
+...
+
+# 6) host_vars/csr1.yml (HOST-SPECIFIC OVERRIDE)
+---
+dns_server: 4.2.2.2
+...
+
+# 7) PLAYBOOK TO VERIFY VARS
+---
+- name: Verify group_vars and host_vars
+  hosts: cisco_ios
+  gather_facts: false
+  tasks:
+    - name: Print resolved vars
+      ansible.builtin.debug:
+        msg:
+          - "host={{ inventory_hostname }}"
+          - "ntp_server={{ ntp_server }}"
+          - "dns_server={{ dns_server }}"
+          - "ansible_network_os={{ ansible_network_os }}"
+...
+
+# 8) PRECEDENCE (FOR THIS TOPIC)
+# play vars > host_vars > group_vars
+# Example:
+# - group_vars/cisco_ios.yml: dns_server=8.8.8.8
+# - host_vars/csr1.yml:       dns_server=4.2.2.2
+# => csr1 gets 4.2.2.2
+# If play has vars: dns_server=5.5.5.5
+# => playbook value wins
+
+# 9) PLAY VAR OVERRIDE EXAMPLE
+---
+- name: Play var override demo
+  hosts: cisco_ios
+  gather_facts: false
+  vars:
+    dns_server: 5.5.5.5
+  tasks:
+    - name: Show dns_server
+      ansible.builtin.debug:
+        var: dns_server
+...
+
+# 10) SINGLE FILE vs FOLDER STYLE (BOTH VALID)
+# group_vars/cisco_ios.yml                     # single file
+# OR
+# group_vars/cisco_ios/main.yml                # folder style
+# group_vars/cisco_ios/ntp.yml
+# group_vars/cisco_ios/dns.yml
+
+# 11) COMMON PRACTICE
+# - If one file per group/host: use groupname.yml / hostname.yml
+# - If multiple files per group/host: use folder + main.yml + extra files
+# - Keep shared defaults in group_vars/all.yml
+
+# 12) QUICK CHECK COMMANDS
+# Show host variable resolution:
+# ansible-inventory -i inventory/hosts.yml --host csr1
+#
+# Show graph:
+# ansible-inventory -i inventory/hosts.yml --graph
+#
+# Run test playbook:
+# ansible-playbook -i inventory/hosts.yml playbooks/test_vars.yml
+
+# 13) COMMON MISTAKES
+# - Wrong group/host file names (must match inventory names)
+# - Wrong indentation in YAML
+# - Typo in variable names (dns_server vs dnsServer)
+# - Placing files in wrong path
+# - Assuming host_vars applies to all hosts (it does not)
+
+17.Register:-
+-----------
+- The register feature allows you to capture the output of a task
+  and later we can use it in a playbook,which is extremely useful
+  when interacting with network devices like Cisco routers and switches.
+
+Code:-
+====
+
+---
+- name: Run show commands on Cisco IOS devices   # Name/description of the play
+  hosts: ciscoIOS                                 # Target host group defined in inventory
+  gather_facts: false                             # Disable automatic fact gathering (speeds up execution)
+  tasks:
+    - name: Run show version command    # Name/description of the task
+      cisco.ios.ios_command:                      # Cisco IOS module from the cisco.ios collection
+        commands:                                 # List of commands to run on the device
+          - show version                          # IOS CLI command to display version info
+      register: cisco_ios_command                 # Store the task output in the variable 'cisco_ios_command'
+    - name: Display cisco_ios_command output      # Name/description of the debug task
+      ansible.builtin.debug:                      # Built-in Ansible module to print messages
+        msg:                                      # The message to display
+          - "{{ cisco_ios_command }}"             # Print the registered variable's content (the show version output)
+----------------------------------------------------------------------
+Dot notation :-we can also access the output of any register variable
+using dot notation.
+
+-In this example the output of the command will stored in the
+ "stdout"=>standard out key.
+-if you if you don't want to print all the Output information
+ and just focus on particular part of the output then we use
+ dot notation:-
+ - "{{ cisco_ios_command.stdout[0] }}"        # Prints full output as one big text block
+ - "{{ cisco_ios_command.stdout_lines[0] }}"  # Prints output as a list, line by line
+ - "{{ cisco_ios_command.rc }}"               # Return code: 0 = success, 1+ = failed
+ - "{{ cisco_ios_command.failed }}"           # Boolean: false = success, true = failed
+
+    where,  - show version          # → stdout[0]
+            - show ip interface     # → stdout[1]
+            - show running-config   # → stdout[2]
+
+- if we use this module "{{ cisco_ios_command.stdout[0] }}"
+  we will have the whole so version command output,but if
+  we want to extract specific information like software version
+  from the output..
+
+- apply the  regex filter useing pipe symbol.
+ Method 1  :
+  {{ cisco_ios_command.stdout[0] | regex_findall('Version (\S+)') }} # extracts only version number from full output
+  1. cisco_ios_command.stdout[0]  →  takes the raw output of show version command
+  2. |                            →  pipe sends that output to the next filter
+  3. regex_findall(...)           →  searches for a specific pattern in the output
+  4. 'Version (\S+)'              →  pattern to find: word "Version" followed by version number
+  5. (\S+)                        →  captures only the version number (non-whitespace characters)
+  6. output: ["17.3.1"]           →  returns only the version number from full output
+
+Method 2  :
+    - "{{ cisco_ios_command.stdout[0] | regex_findall('Cisco IOS XE Software, Version (\\S+)')[0] }}"
+
+    1. cisco_ios_command.stdout[0]              → raw output of show version command
+    2. |                                         → pipe sends output to filter
+    3. regex_findall('Cisco IOS XE Software, Version (\\S+)')     → searches this exact pattern in output
+
+    4. (\\S+)                                   → captures only the version number
+    5. [0]                                       → picks first match from regex result list
+    6. output: "17.3.1"                          → prints only the version number as string
+
+===========================
+Ansible Facts:
+---------------
+-Ansible Facts = auto-collected device data
+-stored in ansible_facts variable,
+-accessed via dot or bracket notation. 🎯
+      Dot notation       → ansible_facts.os_version
+      Bracket notation   → ansible_facts['os_version']
+-What facts contain:
+      - Hardware info
+      - IP addresses
+      - OS details
+      - Network interfaces
+      - Software versions
+- Facts are used to make dynamic decisions in tasks
+- Facts are collected from managed nodes automatically,
+  no need to write extra commands
+
+Code:-
+=====
+---
+- name: Gather Ansible Facts              # Play name/description
+  hosts: CSR1                             # Target device: CSR1 (Cisco router)
+  gather_facts: true                      # Enable automatic fact gathering
+  gather_subset: all                      # Collect ALL available facts
+  tasks:
+    - name: Display Ansible Facts         # Task name
+      ansible.builtin.debug:              # Built-in debug module to print output
+        msg:
+          - "{{ ansible_facts }}"         # Print ALL collected facts (big dictionary)
+          - "{{ ansible_facts.net_model }}"  # Print only device model name
+
+Simple Rule :-
+        gather_subset: all       →  collect everything
+        ansible_facts            →  access everything
+        ansible_facts.net_model  →  access specific value 🎯
+
+Ex:Localhost facts
+---
+- name: Gather Ansible Facts         # Play name
+  hosts: localhost                   # Target: local machine (not remote device)
+  gather_facts: true                 # Enable fact gathering
+  tasks:
+    - name: Display Ansible Facts    # Task name
+      ansible.builtin.debug:        # Debug module to print output
+        msg: "{{ ansible_facts }}"  # Print ALL facts as one big dictionary
+
+Output:-
+What ansible_facts will show for localhost:
+{
+  "os_family": "RedHat/Debian",        # OS type
+  "architecture": "x86_64",            # system architecture
+  "hostname": "mypc",                  # machine name
+  "interfaces": ["eth0", "lo"],        # network interfaces
+  "python_version": "3.9.1",           # python version
+  "memory_mb": { "total": 8192 },      # RAM info
+  "processor": ["Intel Core i5"]       # CPU info
+}
+
+
+---
+- name: Gather Ansible Facts                              # Play name
+  hosts: localhost                                        # Target: local machine
+  gather_facts: true                                      # Enable fact gathering
+  tasks:
+    - name: Display Ansible Facts                         # Task name
+      ansible.builtin.debug:                             # Debug module to print
+        msg:
+          - "{{ ansible_facts }}"                         # ALL facts (big dictionary)
+          - "{{ ansible_facts.all_ipv4_addresses }}"      # dot notation
+          - "{{ ansible_facts['all_ipv4_addresses'] }}"   # bracket notation
+          - "{{ ansible_all_ipv4_addresses }}"            # shorthand notation
+
+===============================
+Magic Variables in Ansible:-
+Definition:
+- Magic variables are built-in variables automatically
+  created and managed by Ansible.
+- They provide information about the playbook, inventory, hosts, tasks,
+  and execution environment.
+- Unlike user-defined variables, magic variables do not need to be declared
+  manually.
+
+---
+# ==========================================================
+# File Name : magic_variables.yml
+# Location  : playbooks/magic_variables.yml
+# Purpose   : Demonstrates commonly used Ansible Magic Variables
+# ==========================================================
+- name: Demo on Magic Variables in Ansible
+  hosts: ciscoIOS                      # Target host group from inventory
+  gather_facts: false                  # Skip fact collection
+  tasks:
+    # Display commonly used Ansible Magic Variables
+    - name: Display Magic Variables
+      ansible.builtin.debug:           # Print output on the console
+        msg:
+          - "{{ playbook_dir }}"       # Directory where the playbook is located
+          - "{{ inventory_dir }}"      # Directory containing the inventory file
+          - "{{ inventory_file }}"     # Full path of the inventory file
+          - "{{ inventory_hostname }}" # Current host being executed
+          - "{{ ansible_play_hosts }}" # List of all hosts in the current play
+...
+===============================
+Common Magic Variables:
+1. inventory_hostname
+   - Returns the current host name from the inventory.
+2. ansible_host
+   - Returns the management IP or hostname of the target device.
+3. groups
+   - Displays all inventory groups and their member hosts.
+4. group_names
+   - Lists the groups to which the current host belongs.
+5. hostvars
+   - Accesses variables of any host in the inventory.
+6. playbook_dir
+   - Returns the directory where the current playbook is located.
+7. inventory_dir
+   - Returns the directory containing the inventory file.
+8. ansible_play_hosts
+   - Lists all hosts participating in the current play.
+9. ansible_play_batch
+   - Lists hosts being processed in the current batch.
+10. ansible_check_mode
+    - Returns True if the playbook is running in check (dry-run) mode.
+======================
+Example:
+- name: Display Magic Variables
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Show Host Information
+      ansible.builtin.debug:
+        msg:
+          - "Host Name : {{ inventory_hostname }}"
+          - "Management IP : {{ ansible_host }}"
+          - "Playbook Path : {{ playbook_dir }}"
+========================================================
+Project 1:Configuration Backup
+----------------------------------

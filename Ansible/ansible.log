@@ -13,3 +13,4 @@
 2026-06-06 08:08:33,338 p=801 u=manish n=ansible | ios02                      : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
 2026-06-06 08:08:33,436 p=819 u=manish n=ansible | shutdown complete
 2026-06-06 08:08:33,436 p=818 u=manish n=ansible | shutdown complete
+2026-07-04 06:55:42,765 p=8618 u=manish n=ansible | ERROR! Empty playbook, nothing to do: /mnt/d/Epicor/Network-Automation/Ansible/playbooks/nxos_upgrade.yml

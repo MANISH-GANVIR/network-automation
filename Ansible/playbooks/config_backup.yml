@@ -1,0 +1,43 @@
+---
+- name: Backup Cisco Device Configurations (DRY RUN)
+  hosts: ciscoIOS
+  gather_facts: false
+  check_mode: true
+
+  tasks:
+
+    # STEP 1: Capture Running Configuration
+    - name: Capture Running Configurations
+      cisco.ios.ios_command:
+        commands:
+          - show running-config
+      register: config_output
+      check_mode: false
+      ignore_errors: true                       # ← FIXED
+
+    # STEP 2: Create Device Specific Folder
+    - name: Ensure backup directory exists
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../reports/config_backups/{{ inventory_hostname }}"
+        state: directory
+        mode: '0755'
+      check_mode: true
+
+    # STEP 3: Gather Facts for Timestamp
+    - name: Gather Facts for Timestamp
+      ansible.builtin.setup:
+      check_mode: false
+      ignore_errors: true                       # ← FIXED
+
+    # STEP 4: Set Current Date Variable
+    - name: Set current date variable
+      ansible.builtin.set_fact:
+        current_date: "{{ ansible_facts.date_time.date | default('2024-01-15') }}_{{ ansible_facts.date_time.time | default('10:30:45') }}"
+      check_mode: false
+
+    # STEP 5: Copy Config to File
+    - name: Copy Configurations to a file
+      ansible.builtin.copy:
+        content: "{{ config_output.stdout[0] | default('DRY RUN - No actual config') }}"
+        dest: "{{ playbook_dir }}/../reports/config_backups/{{ inventory_hostname }}/{{ inventory_hostname }}-{{ current_date | default('dry-run') }}-config-backup.txt"
+      check_mode: true

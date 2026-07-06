@@ -1,0 +1,43 @@
+---
+# ==========================================================
+# File Name : nxos_upgrade.yml
+# Location  : vars/nxos_upgrade.yml
+# Purpose   : Variables used by the NXOS Upgrade Playbook
+# ==========================================================
+
+# Current NXOS version running on the switch
+current_version: 10.2(2)
+
+# Target NXOS version after upgrade
+target_version: 10.2(3)
+
+# NXOS image file stored on the SCP server
+nxos_image: nxos.10.2.3.bin
+
+# MD5 checksum used to verify the image after copy
+nxos_md5: 8d9b45c2a1f34d56b7c890abcdef1234
+
+# Linux/Windows SCP server where the NXOS image is stored
+scp_server: 192.168.1.100
+
+# SCP server username
+scp_user: admin
+
+# SCP server password
+scp_password: admin
+
+# Switch bootflash location where the image will be copied
+bootflash_location: bootflash
+
+# Backup configuration filename
+backup_file: backup.cfg
+
+# Upgrade report path on the Ansible Controller
+report_path: reports/upgrade_report.txt
+
+# Maximum time (seconds) to wait for switch reload
+reload_timeout: 900
+
+# Maximum time (seconds) to wait for SSH reconnection
+ssh_timeout: 600
+...

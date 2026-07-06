@@ -4,7 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md" />
+    <list default="true" id="b72a59f0-8cbb-4d15-848b-4e0ddfa97dba" name="Changes" comment="Added README.md">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ansible/ansible.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/ansible.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ansible/ansible.log" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/ansible.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ansible/inventory/hosts.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/inventory/hosts.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ansible/playbooks/nxos_upgrade.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/playbooks/nxos_upgrade.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ansible/playbooks/nxos_upgrade2.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/playbooks/nxos_upgrade2.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Ansible/vars/ios_upgrade.yml" beforeDir="false" afterPath="$PROJECT_DIR$/Ansible/vars/ios_upgrade.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Testing/LBP.py" beforeDir="false" afterPath="$PROJECT_DIR$/Testing/LBP.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Testing/connect_to_ASA_100devices.py" beforeDir="false" afterPath="$PROJECT_DIR$/Testing/connect_to_ASA_100devices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/ai/ai_chat.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/ai/ai_chat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/projects/vpn_automation/asa/discovery.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/projects/vpn_automation/asa/discovery.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/commands" beforeDir="false" afterPath="$PROJECT_DIR$/commands" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ollama/commands.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ollama/commands.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/terraform/main.tf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ts.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,6 +65,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
     &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
@@ -60,9 +79,11 @@
     &quot;Python.as2nat.executor&quot;: &quot;Run&quot;,
     &quot;Python.asa_vpn_ops.executor&quot;: &quot;Run&quot;,
     &quot;Python.build.executor&quot;: &quot;Run&quot;,
+    &quot;Python.chatboat_demo.executor&quot;: &quot;Run&quot;,
     &quot;Python.client.executor&quot;: &quot;Run&quot;,
     &quot;Python.commands.executor&quot;: &quot;Run&quot;,
     &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.connect_to_ASA_100devices.executor&quot;: &quot;Run&quot;,
     &quot;Python.discovery.executor&quot;: &quot;Run&quot;,
     &quot;Python.gen_api.executor&quot;: &quot;Run&quot;,
     &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
@@ -81,6 +102,11 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Terraform.Plan azurerm_resource_group.rg.executor&quot;: &quot;Run&quot;,
+    &quot;Terraform.Plan directory terraform (1).executor&quot;: &quot;Run&quot;,
+    &quot;Terraform.Plan directory terraform (2).executor&quot;: &quot;Run&quot;,
+    &quot;Terraform.Plan directory terraform (3).executor&quot;: &quot;Run&quot;,
+    &quot;Terraform.Plan directory terraform.executor&quot;: &quot;Run&quot;,
     &quot;ToolWindow.Run.ShowToolbar&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Epicor/Network-Automation/.venv&quot;,
@@ -98,121 +124,89 @@
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\frontend\assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Epicor\Network-Automation\Testing" />
       <recent name="D:\Epicor\Network-Automation\frontend\assets" />
       <recent name="C:\Users\manish.ganvir\PycharmProjects\Automation\Testing" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.LBP">
-    <configuration name="LBP" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Automation" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Testing" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Testing/LBP.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+  <component name="RunManager" selected="Terraform.Plan directory terraform (3)">
+    <configuration name="Plan azurerm_resource_group.rg" type="#org.intellij.plugins.hcl.terraform.run.TerraformConfigurationType" factoryName="Terraform Plan" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="plan -target=azurerm_resource_group.rg" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="workingDirectory" value="D:\Epicor\Network-Automation\terraform" />
       <method v="2" />
     </configuration>
-    <configuration name="commands" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Automation" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PANORAMA-VPN" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PANORAMA-VPN/commands.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+    <configuration name="Plan directory terraform (1)" type="#org.intellij.plugins.hcl.terraform.run.TerraformConfigurationType" factoryName="Terraform Plan" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="plan" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="workingDirectory" value="D:\Epicor\Network-Automation\terraform" />
       <method v="2" />
     </configuration>
-    <configuration name="open_secure (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Automation" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/open_secure.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+    <configuration name="Plan directory terraform (2)" type="#org.intellij.plugins.hcl.terraform.run.TerraformConfigurationType" factoryName="Terraform Plan" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="plan" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="workingDirectory" value="D:\Epicor\Network-Automation\terraform" />
       <method v="2" />
     </configuration>
-    <configuration name="open_secure" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Automation" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="D:\Epicor\Network-Automation\open_secure.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
+    <configuration name="Plan directory terraform (3)" type="#org.intellij.plugins.hcl.terraform.run.TerraformConfigurationType" factoryName="Terraform Plan" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="plan" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="workingDirectory" value="D:\Epicor\Network-Automation\terraform" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_LBP.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="Automation" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Testing" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/Testing/test_LBP.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+    <configuration name="Plan directory terraform" type="#org.intellij.plugins.hcl.terraform.run.TerraformConfigurationType" factoryName="Terraform Plan" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="plan" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="workingDirectory" value="D:\Epicor\Network-Automation\terraform" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.LBP" />
-        <item itemvalue="Python tests.Python tests in test_LBP.py" />
-        <item itemvalue="Python.open_secure (1)" />
-        <item itemvalue="Python.open_secure" />
-        <item itemvalue="Python.commands" />
+        <item itemvalue="Terraform.Plan directory terraform (3)" />
+        <item itemvalue="Terraform.Plan directory terraform (2)" />
+        <item itemvalue="Terraform.Plan azurerm_resource_group.rg" />
+        <item itemvalue="Terraform.Plan directory terraform (1)" />
+        <item itemvalue="Terraform.Plan directory terraform" />
       </list>
     </recent_temporary>
   </component>
@@ -257,6 +251,11 @@
         <entry key="MAIN">
           <value>
             <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
               <option name="FILTERS">
                 <map>
                   <entry key="branch">
