@@ -1,0 +1,2139 @@
+18/8/2026
+1)How RestAPI works and which are the protocol
+2)what is Vnet Peering
+3)
+
+
+============================================================
+ROUTER SHELF (RS) ARCHITECTURE - INTERVIEW ANSWER
+============================================================
+
+Interview Answer:
+
+"Router Shelf architecture separates control-plane and
+data-plane functions. The Route Processor (RP) handles
+control-plane functions such as routing and control
+operations, while the Line Cards (LCs) handle high-speed
+packet forwarding.
+
+Conceptually, it is similar to the separation of the
+control plane and data plane in Palo Alto firewalls,
+although the hardware architecture is different."
+
+
+============================================================
+PALO ALTO COMPARISON
+============================================================
+
+Palo Alto:
+
+Control Plane
+→ Handles control and management functions
+
+Data Plane
+→ Handles packet processing and forwarding
+
+
+Router Shelf:
+
+Route Processor (RP)
+→ Control Plane
+→ Routing and control functions
+
+Line Card (LC)
+→ Data Plane
+→ High-speed packet forwarding
+
+
+============================================================
+QUICK MEMORY
+============================================================
+
+RP → Control Plane → Decide / Routing
+
+LC → Data Plane    → Forward Packets
+
+
+============================================================
+ONE-LINE INTERVIEW ANSWER
+============================================================
+
+"RP handles the control plane, while Line Cards handle
+high-speed data-plane packet forwarding, similar to the
+control-plane and data-plane separation in Palo Alto."
+
+
+
+============================================================
+MPLS - INTERVIEW NOTES
+============================================================
+
+MPLS
+----
+
+MPLS stands for Multiprotocol Label Switching.
+MPLS uses labels instead of routing table lookup.
+
+In traditional IP routing, routers perform a routing table
+lookup to determine the next hop for packet forwarding.
+
+MPLS uses labels for packet forwarding, which provides a
+scalable and efficient forwarding mechanism widely used
+in service-provider and large enterprise networks.
+
+MPLS performs three fundamental operations:
+
+Push → Add the label       → Ingress LER (Label Edge Router)
+Swap → Replace the label   → LSR (Label Switch Router)
+Pop  → Remove the label    → Egress LER (Label Edge Router)
+
+Benefits / Use Cases:
+
+✅ Efficient and scalable packet forwarding
+✅ Can reduce repeated IP lookup processing in the MPLS core
+✅ Traffic Engineering (TE) support
+✅ QoS support for voice, video, and other traffic
+✅ Layer 3 VPN (L3VPN) services
+✅ Layer 2 VPN (L2VPN) services
+✅ High scalability for service-provider and enterprise backbones
+
+Definition:
+MPLS is a packet-forwarding technology that uses labels to
+forward packets through the network instead of relying only
+on IP routing at every hop.
+
+
+============================================================
+MPLS ABBREVIATIONS
+============================================================
+
+MPLS = Multiprotocol Label Switching
+
+LER  = Label Edge Router
+
+LSR  = Label Switch Router
+
+FEC  = Forwarding Equivalence Class
+
+LDP  = Label Distribution Protocol
+
+
+============================================================
+MPLS PACKET FLOW
+============================================================
+
+Ingress LER
+    |
+    | Push Label
+    v
+LSR
+    |
+    | Swap Label
+    v
+LSR
+    |
+    | Swap Label
+    v
+Egress LER
+    |
+    | Pop Label
+    v
+Destination Network
+
+
+============================================================
+THREE FUNDAMENTAL MPLS OPERATIONS
+============================================================
+
+1. PUSH
+--------
+Push means adding an MPLS label to the packet.
+
+Performed by:
+Ingress LER
+
+
+2. SWAP
+--------
+Swap means replacing the existing MPLS label with another
+label.
+
+Performed by:
+LSR
+
+
+3. POP
+-------
+Pop means removing the MPLS label from the packet.
+
+Performed by:
+Egress LER
+
+
+============================================================
+QUICK MEMORY
+============================================================
+
+Push → Add Label     → Ingress LER
+
+Swap → Replace Label → LSR
+
+Pop  → Remove Label  → Egress LER
+
+
+============================================================
+INTERVIEW ANSWER
+============================================================
+
+"MPLS stands for Multiprotocol Label Switching. It is a
+packet-forwarding technology that uses labels to forward
+packets through the network. At the ingress LER, a label is
+pushed onto the packet. The LSRs in the core swap the label
+and forward the packet, and at the egress LER the label is
+popped before forwarding the packet toward the destination."
+
+
+========================================
+
+
+NETCONF & RESTCONF — INTERVIEW NOTES
+====================================
+
+1. WHY DID NETCONF COME INTO THE PICTURE? — HISTORY
+----------------------------------------------------
+
+-Earlier, network engineers primarily configured routers and switches manually
+ through the CLI.
+-Then SNMP (Simple Network Management Protocol) became widely used, mainly for
+ monitoring network devices.
+-SNMP was later adapted for configuration as well, but configuring devices through
+ SNMP had several limitations and challenges.
+  (Note:-UDP 161 → SNMP queries/requests & responses (GET, SET, etc.)
+  UDP 162 → SNMP Traps/notifications from device to management system)
+-The industry needed a better and more structured protocol specifically
+ designed for network configuration and management.
+
+This led to NETCONF.
+Evolution:
+
+    CLI
+      ↓
+    SNMP (mainly monitoring, later adapted for configuration)
+      ↓
+    NETCONF (purpose-built network configuration)
+      ↓
+    RESTCONF (REST/API-friendly approach)
+
+
+2. WHAT IS NETCONF?
+-------------------
+-NETCONF stands for Network Configuration Protocol.
+-NETCONF is a protocol used to install, modify, retrieve, and delete configuration
+ on network devices programmatically.
+-Instead of logging into a router and manually entering CLI commands,
+ an automation system can use NETCONF to communicate with the device.
+
+Basic flow:
+
+Management / Automation System
+        ↓
+     NETCONF
+        ↓
+       SSH
+        ↓
+  Network Device
+
+
+3. HOW DOES NETCONF WORK?
+-------------------------
+
+NETCONF uses:
+
+- YANG       -> Data modeling
+- XML        -> Data representation / exchange
+- SSH        -> Secure transport
+- TCP 830    -> Default NETCONF port
+
+
+
+
+4. WHAT IS YANG?
+----------------
+
+YANG is a data modeling language used to define the structure of configuration
+and operational data.
+
+Think of YANG as a blueprint or schema for network device data.
+
+Example:
+
+Interface
+  |
+  +-- Name
+  +-- IP Address
+  +-- Description
+  +-- MTU
+
+YANG defines how this information is structured.
+
+Interview line:
+
+"YANG is a data modeling language used by NETCONF and RESTCONF to define the structure of network configuration and operational data."
+
+
+5. WHY XML IN NETCONF?
+----------------------
+
+NETCONF uses XML to represent configuration and operational data.
+
+Instead of sending CLI commands such as:
+
+interface GigabitEthernet0/1
+ip address 10.1.1.1 255.255.255.0
+
+the configuration can be represented in a structured XML format.
+
+Remember:
+
+YANG = Data model / structure
+XML  = Data representation
+
+
+6. WHY WAS RESTCONF INTRODUCED?
+-------------------------------
+
+As network automation evolved, REST APIs became very popular.
+
+This was driven by:
+
+- Public Cloud
+- Private Cloud
+- Hybrid Cloud
+- Modern automation platforms
+- Web applications
+- API-based integrations
+
+RESTCONF provides a more RESTful and API-friendly approach to managing YANG-modeled network data.
+
+Think:
+
+NETCONF approach
+      ↓
+RESTful / API-based approach
+      ↓
+RESTCONF
+
+
+7. WHAT IS RESTCONF?
+--------------------
+
+RESTCONF is a REST-based protocol used to access and configure YANG-modeled network data.
+
+It uses standard HTTP methods:
+
+GET       -> Retrieve data
+POST      -> Create data
+PUT/PATCH -> Modify data
+DELETE    -> Delete data
+
+RESTCONF commonly uses:
+
+- YANG          -> Data model
+- JSON / XML    -> Data representation
+- HTTP / HTTPS  -> Transport
+- HTTPS TCP 443 -> Common secure port
+
+Basic flow:
+
+Python / Automation Tool
+        ↓
+   RESTCONF API
+        ↓
+      HTTPS
+        ↓
+  Network Device
+
+
+8. NETCONF VS RESTCONF
+----------------------
+👉 NETCONF = TCP 830
+👉 RESTCONF = HTTPS TCP 443
+
+Feature             NETCONF                 RESTCONF
+------------------------------------------------------------
+Purpose             Network configuration  Network configuration
+                    and management         and management
+
+Data Model          YANG                    YANG
+
+Data Format         XML                     JSON / XML
+
+Communication       SSH                     HTTP / HTTPS
+
+Default/Common      TCP 830                 TCP 443 (HTTPS)
+Port
+
+Interface Style     RPC-based               REST API
+
+API Friendly        Less familiar to        Very API-friendly
+                    web developers
+
+Cloud/Web           Good                    Excellent
+
+
+9. NETCONF VS SNMP
+------------------
+
+Interview Question:
+What is the difference between NETCONF and SNMP?
+
+Interview Answer:
+
+"SNMP was primarily designed for monitoring and retrieving network information, although it can also be used for configuration. NETCONF was specifically designed for network configuration and management and provides a more structured and reliable approach using YANG and XML."
+
+
+10. WHY RESTCONF IF NETCONF ALREADY EXISTS?
+--------------------------------------------
+
+Interview Question:
+Why do we need RESTCONF if NETCONF already exists?
+
+Interview Answer:
+
+"NETCONF is powerful for network configuration, but RESTCONF provides a RESTful interface using standard HTTP methods. This makes it easier to integrate network devices with modern applications, automation systems, and cloud-based platforms."
+
+
+11. RELATIONSHIP BETWEEN YANG, NETCONF AND RESTCONF
+----------------------------------------------------
+
+Very Important Interview Question:
+
+What is the relationship between YANG, NETCONF and RESTCONF?
+
+Interview Answer:
+
+"YANG defines the data model, NETCONF provides a protocol to manage that data, and RESTCONF provides a RESTful API to access and manage the same YANG-modeled data."
+
+Easy way to remember:
+
+YANG     = What does the data look like?
+NETCONF  = How do I manage it using NETCONF?
+RESTCONF = How do I manage it using REST APIs?
+
+
+12. EASY MEMORY TRICK
+---------------------
+
+NETCONF:
+
+YANG -> XML -> SSH -> TCP 830
+
+RESTCONF:
+
+YANG -> JSON/XML -> HTTPS -> TCP 443
+
+
+13. 30-SECOND INTERVIEW ANSWER
+------------------------------
+"NETCONF stands for Network Configuration Protocol.
+ Historically, network devices were mainly configured through CLI,
+ while SNMP was primarily used for monitoring and was later adapted
+ for configuration. Because SNMP had limitations for configuration,
+ NETCONF was introduced as a purpose-built network configuration protocol.
+
+NETCONF
+    -uses YANG as the data modeling language,
+    -XML for data representation, and typically
+    -SSH on TCP port 830 for secure communication.
+
+RESTCONF provides a RESTful API approach to the same YANG-modeled data.
+It uses HTTP or HTTPS and commonly HTTPS on port 443,
+and can work with JSON or XML.
+
+RESTCONF is particularly useful for modern API-based and cloud-oriented network automation."
+
+
+14. KEYWORDS TO REMEMBER
+------------------------
+CLI
+SNMP
+NETCONF
+YANG
+XML
+RESTCONF
+JSON
+REST API
+SSH
+HTTPS
+TCP 830
+TCP 443
+
+
+15. ONE-LINE SUMMARY
+--------------------
+
+NETCONF = YANG + XML + SSH + TCP 830 + Network Configuration
+
+RESTCONF = YANG + JSON/XML + REST API + HTTPS + TCP 443 + Network Configuration
+
+
+
+
+
+HPE:-
+----
+ZTNA (Zero Trust Network Access) is an identity-based secure access solution
+that authenticates and authorizes users using credentials, MFA, device posture,
+and security policies before granting access.
+
+Unlike a traditional VPN, which provides access to the corporate network,
+ZTNA provides access only to the specific application that the user is authorized to use.
+
+It follows the "Never Trust, Always Verify" security principle,
+meaning every access request is continuously verified based on user identity,
+device health, and security policies.
+
+          User
+            │
+            ▼
+ Username + Password
+            │
+            ▼
+           MFA
+            │
+            ▼
+ Device Heakth Check
+            │
+            ▼
+   ZTNA Policy Check
+            │
+            ▼
+ Only Authorized Application
+
+ Application
+ -----------
+    HR Portal
+    SAP
+    GitHub
+    Database
+    Linux Server
+
+User Rahul works in HR.
+    Rahul logs in.
+        ↓
+    MFA successful.
+        ↓
+    ZTNA verifies his identity and device.
+        ↓
+    ZTNA policy allows only the HR Portal.
+
+Rahul can open:✅ HR Portal
+
+BUT Rahul cannot open:
+    ❌ SAP
+    ❌ Database
+    ❌ Linux Server
+Even though all these applications are inside the same company network.
+
+The applications are hosted on internal servers, cloud platforms like Azure or AWS,
+or in the DMZ. ZTNA does not host the applications; it securely controls access to
+them based on identity and policy.
+
+| VPN                           | ZTNA                                       |
+| ----------------------------- | ------------------------------------------ |
+| Gives access to the network   | Gives access only to specific applications |
+| Network-based                 | Identity-based                             |
+| User enters corporate network | User accesses only authorized apps         |
+| Larger attack surface         | Smaller attack surface                     |
+
+
+-----------
+2)Regression testing:-
+----------------------
+Regression testing means retesting existing functionalities
+after any code change to ensure that nothing else is broken.
+In my project, after modifying automation scripts or APIs,
+I verified that the related existing features were still
+working correctly before deployment.
+
+3) TCP/IP, UDP, DNS, DHCP, NAT, routing, MTU, proxies, firewalls, HTTP/HTTPS, TLS, certificates, and packet flow analysis.
+
+TCP/IP
+-------
+ TCP/IP is the standard networking protocol suite used for
+ communication over networks. IP is responsible for addressing
+ and routing packets, while TCP provides reliable,
+ connection-oriented communication using acknowledgements,
+ sequencing, and retransmissions.
+
+ Example:-When you open a website, IP routes packets to the
+ destination and TCP ensures all packets arrive correctly.
+
+Client                 Server
+
+SYN ------------------>
+
+      <--------------- SYN + ACK
+
+ACK ------------------>
+
+Connection Established
+
+↓
+
+Data Transfer
+
+UDP
+===
+
+UDP (User Datagram Protocol) is a connectionless transport layer protocol.
+It is faster than TCP because it does not establish a connection or guarantee delivery.
+
+**Used In**
+- DNS
+- VoIP
+- Video Streaming
+
+Client                 Server
+
+Data ----------------->
+
+Data ----------------->
+
+Data ----------------->
+---
+
+## 3. DNS
+### Interview Answer
+DNS (Domain Name System) translates domain names into IP addresses so clients can
+communicate with the correct server.
+
+**DNS Resolution Flow**
+User → Local Cache → Recursive DNS → Root DNS → TLD → Authoritative DNS → IP Address
+
+**Troubleshooting**
+- nslookup
+- dig
+- ipconfig /flushdns
+
+========================================================
+1. What is DNS?
+========================================================
+Interview Answer:
+DNS (Domain Name System) translates a domain name (e.g., www.google.com)
+into an IP address so that the client can communicate with the correct server.
+
+========================================================
+2. DNS Resolution Flow
+========================================================
+
+User
+ │
+ ▼
+Browser
+ │
+ ▼
+Local DNS Cache
+ │
+ ▼
+Recursive DNS Server (Usually ISP DNS / Google DNS / Company DNS)
+ │
+ ▼
+Root DNS Server
+ │
+ ▼
+TLD DNS Server (.com, .org, .net, .in)
+ │
+ ▼
+Authoritative DNS Server
+ │
+ ▼
+Returns IP Address
+ │
+ ▼
+TCP 3-Way Handshake
+ │
+ ▼
+TLS Handshake (HTTPS)
+ │
+ ▼
+HTTP Request
+ │
+ ▼
+Server Response
+
+========================================================
+3. Step-by-Step Explanation
+========================================================
+
+Step 1 - User
+- User enters www.google.com in the browser.
+- Browser needs the server's IP address.
+
+--------------------------------------------------------
+
+Step 2 - Local DNS Cache
+
+Definition:
+Stores previously resolved DNS records.
+
+If IP is available:
+-> Return IP immediately.
+
+If not:
+-> Query Recursive DNS Server.
+
+--------------------------------------------------------
+
+Step 3 - Recursive DNS Server
+
+Definition:
+A Recursive DNS Server receives DNS requests from clients and performs
+the complete DNS lookup process on behalf of the client.
+
+Usually:
+- ISP DNS
+- Google DNS (8.8.8.8)
+- Cloudflare DNS (1.1.1.1)
+- Company Internal DNS
+
+Job:
+- Check cache.
+- If IP found -> Return IP.
+- Otherwise query Root DNS.
+
+--------------------------------------------------------
+
+Step 4 - Root DNS Server
+
+Definition:
+The Root DNS Server does not store the IP address.
+It only tells the Recursive DNS Server
+which TLD DNS Server to contact.
+
+Example:
+www.google.com
+
+Root DNS replies:
+
+"I don't know the IP.
+Ask the .com TLD DNS Server."
+
+--------------------------------------------------------
+
+Step 5 - TLD DNS Server
+
+Definition:
+The Top-Level Domain DNS Server knows which Authoritative DNS Server
+manages the requested domain.
+
+Examples:
+.com
+.net
+.org
+.in
+
+Reply:
+"Ask Google's Authoritative DNS Server."
+
+--------------------------------------------------------
+
+Step 6 - Authoritative DNS Server
+
+Definition:
+Stores the actual DNS records for the domain and returns the correct IP address.
+
+Example:
+
+www.google.com
+↓
+142.xxx.xxx.xxx
+
+--------------------------------------------------------
+
+Step 7 - Browser Connects
+
+After receiving the IP:
+
+- TCP 3-Way Handshake
+- TLS Handshake (HTTPS)
+- HTTP Request
+- Server Response
+
+========================================================
+4. Interview Definitions
+========================================================
+
+DNS
+-> Converts domain names into IP addresses.
+
+Local DNS Cache
+-> Stores previously resolved DNS records.
+
+Recursive DNS Server
+-> Receives client DNS requests and performs the complete DNS lookup.
+   Usually the ISP DNS server.
+
+Root DNS Server
+-> Directs the request to the correct TLD DNS Server.
+
+TLD DNS Server
+-> Directs the request to the correct Authoritative DNS Server.
+
+Authoritative DNS Server
+-> Stores the actual DNS records and returns the correct IP address.
+
+========================================================
+5. Common Interview Questions
+========================================================
+
+Q. What is DNS?
+
+Answer:
+DNS converts domain names into IP addresses.
+
+--------------------------------------------------------
+
+Q. What is a Recursive DNS Server?
+
+Answer:
+A Recursive DNS Server receives the client's DNS request and performs
+the complete DNS lookup on behalf of the client.
+It is usually the ISP DNS server.
+
+--------------------------------------------------------
+
+Q. What is the Root DNS Server?
+
+Answer:
+The Root DNS Server directs DNS queries to the appropriate TLD DNS Server.
+
+--------------------------------------------------------
+
+Q. What is a TLD DNS Server?
+
+Answer:
+The TLD DNS Server directs DNS queries to the appropriate
+Authoritative DNS Server.
+
+--------------------------------------------------------
+
+Q. What is an Authoritative DNS Server?
+
+Answer:
+The Authoritative DNS Server stores the actual DNS records
+and returns the correct IP address.
+
+--------------------------------------------------------
+
+Q. Why does DNS use UDP?
+
+Answer:
+DNS usually uses UDP because DNS queries are small and require
+fast responses with low overhead.
+TCP is used for zone transfers and large DNS responses.
+
+--------------------------------------------------------
+
+Q. What happens if the Recursive DNS Server already has the record?
+
+Answer:
+If the Recursive DNS Server already has a valid cached record,
+it immediately returns the IP address without querying the Root,
+TLD or Authoritative DNS servers.
+
+========================================================
+6. 30-Second Interview Answer
+========================================================
+
+When a user enters a domain name, the browser first checks the local
+DNS cache. If the record is not found, it sends the request to the
+Recursive DNS Server, which is usually the ISP DNS server. If the
+recursive server does not have the answer, it queries the Root DNS
+Server, which directs it to the appropriate TLD DNS Server. The TLD
+DNS Server then points to the Authoritative DNS Server, which returns
+the correct IP address. The browser then establishes a TCP connection,
+performs the TLS handshake (for HTTPS), and sends the HTTP request.
+---
+
+## 4. DHCP
+### Interview Answer
+DHCP automatically assigns IP address, subnet mask, default gateway and DNS server to clients.
+
+**DORA Process**
+Discover → Offer → Request → Acknowledge
+
+---
+
+## 5. NAT
+### Interview Answer
+NAT (Network Address Translation) translates private IP addresses into public IP addresses
+and vice versa.
+
+**SNAT**
+Changes Source IP (Outbound)
+
+**DNAT**
+Changes Destination IP (Inbound)
+
+---
+
+## 6. Routing
+### Interview Answer
+Routing is the process of selecting the best path to forward packets from
+the source network to the destination network using a routing table.
+
+**Command**
+Windows: route print
+Linux: ip route
+
+---
+
+## 7. MTU
+### Interview Answer
+MTU (Maximum Transmission Unit) is the maximum packet size that can be transmitted without
+fragmentation. Ethernet MTU is typically 1500 bytes.
+
+| MTU                                    | MSS                           |
+| -------------------------------------- | ----------------------------- |
+| **Layer 3 (Network Layer)**            | **Layer 4 (Transport Layer)** |
+| IP Packet Size                         | TCP Payload Size              |
+| IP Concept                             | TCP Concept                   |
+| Includes IP Header + TCP Header + Data | Only Application Data         |
+
+Application Layer
+        │
+        ▼
+Transport Layer (TCP)
+        │
+        │  MSS = 1460 Bytes
+        ▼
+Network Layer (IP)
+        │
+        │  MTU = 1500 Bytes
+        ▼
+Data Link Layer (Ethernet)
+=========================================================
+1. What is MTU?
+=========================================================
+
+Interview Answer:
+
+MTU (Maximum Transmission Unit) is the maximum size of an IP packet
+that can be transmitted over a network interface without fragmentation.
+
+For Ethernet, the default MTU is 1500 Bytes.
+
+=========================================================
+2. Ethernet Frame
+=========================================================
+
+| Destination MAC | Source MAC | 802.1Q | EtherType |
+                     |
+                     V
+              IP Packet (MTU = 1500 Bytes)
+              --------------------------------
+              IP Header (20 Bytes)
+              TCP Header (20 Bytes)
+              Application Data (1460 Bytes)
+              --------------------------------
+| FCS (4 Bytes) |
+
+NOTE:
+MTU refers only to the IP Packet.
+It does NOT include:
+- Ethernet Header
+- VLAN Tag
+- FCS
+
+=========================================================
+3. Why is MSS 1460 Bytes?
+=========================================================
+
+Ethernet MTU = 1500 Bytes
+
+IP Header   =   20 Bytes
+TCP Header  =   20 Bytes
+--------------------------
+Application Data = 1460 Bytes
+
+Formula:
+
+MSS = MTU - IP Header - TCP Header
+
+MSS = 1500 - 20 - 20
+
+MSS = 1460 Bytes
+
+=========================================================
+4. Difference Between MTU and MSS
+=========================================================
+
+MTU
+- Maximum IP Packet Size
+- Layer 3 (IP)
+- Includes IP Header + TCP Header + Data
+
+MSS
+- Maximum TCP Payload
+- Layer 4 (TCP)
+- Only Application Data
+
+=========================================================
+5. What Happens if Packet Size Exceeds MTU?
+=========================================================
+
+Example
+
+MTU = 1500 Bytes
+
+Packet = 2000 Bytes
+
+Case 1:
+DF (Don't Fragment) = 0
+
+Router fragments the packet into smaller packets.
+
+Case 2:
+DF (Don't Fragment) = 1
+
+Router drops the packet and sends
+ICMP "Fragmentation Needed".
+
+=========================================================
+6. Why is MTU Important?
+=========================================================
+
+- Prevents fragmentation
+- Improves performance
+- Reduces retransmissions
+- Important for VPNs
+- Helps efficient packet delivery
+
+=========================================================
+7. VPN Interview Question
+=========================================================
+
+Q. Why is MTU important in VPN?
+
+Answer:
+
+VPN encapsulation adds extra headers to packets.
+If MTU is not adjusted, packets may exceed 1500 bytes,
+causing fragmentation or drops.
+
+To avoid this:
+- Reduce MTU
+OR
+- Use MSS Clamping
+
+=========================================================
+8. HPE Interview Answer
+=========================================================
+
+MTU (Maximum Transmission Unit) is the maximum size of an IP packet
+that can be transmitted without fragmentation.
+
+In an Ethernet frame, MTU refers only to the IP packet and does not
+include the Ethernet header or FCS.
+
+For Ethernet, the default MTU is 1500 bytes.
+This 1500-byte IP packet contains:
+
+- IP Header (20 Bytes)
+- TCP Header (20 Bytes)
+- Application Data (1460 Bytes)
+
+The maximum TCP payload is called MSS.
+
+=========================================================
+9. Follow-up Questions
+=========================================================
+
+Q. Does MTU include Ethernet Header?
+
+Answer:
+No. MTU refers only to the IP packet.
+
+--------------------------------------------
+
+Q. What is the Ethernet MTU?
+
+Answer:
+1500 Bytes
+
+--------------------------------------------
+
+Q. What is MSS?
+
+Answer:
+Maximum TCP Payload (1460 Bytes for Ethernet).
+
+--------------------------------------------
+
+Q. Difference between MTU and MSS?
+
+Answer:
+MTU is the maximum IP packet size.
+MSS is the maximum TCP payload.
+
+--------------------------------------------
+
+Q. Why is MSS used in VPN?
+
+Answer:
+To prevent fragmentation caused by VPN encapsulation.
+
+
+---
+
+8. Proxy:-
+----------
+A Proxy Server is an intermediary between a client and a destination server.
+It improves security, access control, caching, and privacy.
+
+**Forward Proxy**
+Represents Clients.
+
+**Reverse Proxy**
+Represents Servers.
+------------------
+Proxy Server:An intermediary server between a client and a destination server.
+Forward Proxy:Represents the client and controls outbound Internet access.
+Reverse Proxy:Represents the server and manages inbound client requests to backend servers.
+------------------
+
+## 9. Firewall
+### Interview Answer
+A Firewall monitors and controls network traffic based on predefined security policies.
+It allows authorized traffic and blocks unauthorized traffic.
+
+---
+
+## 10. HTTP
+### Interview Answer
+HTTP is an application layer protocol used for communication between web browsers and web servers. It is not encrypted and uses Port 80.
+
+---
+
+## 11. HTTPS
+### Interview Answer
+HTTPS is the secure version of HTTP. It uses TLS encryption to provide confidentiality, integrity, and authentication. It uses Port 443.
+
+---
+
+## 12. TLS
+### Interview Answer
+TLS (Transport Layer Security) encrypts communication between the client and the server.
+
+**TLS Handshake**
+Client Hello → Server Hello → Certificate → Key Exchange → Secure Communication
+
+---
+
+## 13. Digital Certificate
+### Interview Answer
+A Digital Certificate is issued by a trusted Certificate Authority (CA)
+to verify the identity of a server or client.
+It contains the public key required for secure communication.
+
+
+from pathlib import Path
+
+text = """HPE INTERVIEW NOTES - TLS & DIGITAL CERTIFICATES
+
+=========================================================
+1. What is TLS?
+=========================================================
+
+Interview Answer:
+
+TLS (Transport Layer Security) is a cryptographic protocol that
+encrypts communication between a client and a server. It provides
+confidentiality, integrity, and authentication, ensuring that data
+cannot be read or modified by unauthorized users during transmission.
+
+---------------------------------------------------------
+Why is TLS Used?
+---------------------------------------------------------
+
+- Encrypts communication
+- Prevents eavesdropping
+- Prevents data tampering
+- Verifies server identity
+- Secures HTTP (HTTPS)
+
+=========================================================
+2. TLS Handshake
+=========================================================
+
+Client
+  │
+  ▼
+Client Hello
+  │
+  ▼
+Server Hello
+  │
+  ▼
+Server sends Digital Certificate
+  │
+  ▼
+Client verifies Certificate
+  │
+  ▼
+Key Exchange
+  │
+  ▼
+Session Key Created
+  │
+  ▼
+Encrypted Communication Starts
+
+---------------------------------------------------------
+Handshake Steps
+---------------------------------------------------------
+
+1. Client Hello
+- Sends supported TLS versions.
+- Sends supported cipher suites.
+- Sends a random number.
+
+2. Server Hello
+- Selects TLS version.
+- Selects cipher suite.
+- Sends a random number.
+
+3. Certificate
+- Server sends its Digital Certificate.
+- Client verifies the certificate.
+
+4. Key Exchange
+- Client and Server generate a shared session key.
+
+5. Secure Communication
+- All data is encrypted using the session key.
+
+=========================================================
+3. Common Interview Questions
+=========================================================
+
+Q. Why is TLS used?
+
+Answer:
+TLS is used to encrypt communication, verify the server's identity,
+and ensure confidentiality, integrity, and authentication.
+
+---------------------------------------------------------
+
+Q. What happens if the certificate is expired?
+
+Answer:
+The client rejects the certificate, the TLS handshake fails, and the
+browser displays a security warning.
+
+---------------------------------------------------------
+
+Q. What happens if the certificate is not trusted?
+
+Answer:
+The client cannot verify the server's identity, so the TLS handshake
+fails and the browser warns the user.
+
+=========================================================
+4. What is a Digital Certificate?
+=========================================================
+
+Interview Answer:
+
+A Digital Certificate is an electronic document issued by a trusted
+Certificate Authority (CA). It verifies the identity of a server or
+client and contains the public key required to establish secure
+encrypted communication.
+
+---------------------------------------------------------
+A Digital Certificate Contains
+---------------------------------------------------------
+
+- Public Key
+- Domain Name
+- Organization Name
+- Certificate Authority (CA)
+- Validity Period
+- Digital Signature
+
+=========================================================
+5. Certificate Flow
+=========================================================
+
+Client
+  │
+HTTPS Request
+  │
+  ▼
+Server
+  │
+Sends Certificate
+  │
+  ▼
+Client Verifies:
+- Certificate Authority
+- Domain Name
+- Expiry Date
+- Digital Signature
+  │
+  ▼
+Certificate Trusted
+  │
+  ▼
+TLS Session Starts
+
+=========================================================
+6. What is a Certificate Authority (CA)?
+=========================================================
+
+Interview Answer:
+
+A Certificate Authority (CA) is a trusted organization that issues,
+signs, and manages digital certificates after verifying the identity
+of the certificate owner.
+
+Examples:
+- DigiCert
+- GlobalSign
+- Let's Encrypt
+
+=========================================================
+7. HTTP vs HTTPS
+=========================================================
+
+HTTP
+- No Encryption
+- Port 80
+- Less Secure
+
+HTTPS
+- Uses TLS Encryption
+- Port 443
+- Uses Digital Certificate
+- Secure Communication
+
+=========================================================
+8. 30-Second Interview Answer
+=========================================================
+
+TLS is a security protocol that encrypts communication between a
+client and a server. During the TLS handshake, the client and server
+exchange hello messages, the server sends its digital certificate,
+the client verifies the certificate, both sides generate a shared
+session key, and then all communication is encrypted.
+
+A Digital Certificate, issued by a trusted Certificate Authority,
+verifies the identity of the server and contains the public key
+required for secure communication.
+
+
+
+---
+
+## 14. Packet Flow Analysis
+### Interview Answer
+Packet Flow Analysis is the process of tracing packets from the client to the destination server to identify connectivity, routing, DNS, firewall, or application issues.
+
+**Common Tools**
+- Wireshark
+- tcpdump
+
+---
+
+## 15. Scenario: VPN Connected but Application Not Opening
+
+### Interview Answer
+1. Verify VPN connection.
+2. Check assigned IP address.
+3. Verify DNS resolution.
+4. Check routing table.
+5. Verify split/full tunnel configuration.
+6. Review firewall/security policies.
+7. Verify certificates and authentication.
+8. Check logs.
+9. Capture packets if required.
+
+Split Tunnel:  -Only corporate traffic goes through the VPN tunnel and
+               -Internet traffic goes directly to the Internet.
+
+Full Tunnel:   -All traffic, including Internet and corporate traffic,
+                goes through the VPN tunnel.
+
+
+---
+
+## Quick Revision
+
+TCP/IP -> Reliable communication.
+UDP -> Fast, connectionless.
+DNS -> Domain to IP.
+DHCP -> Automatic IP assignment.
+NAT -> Private to Public IP translation.
+Routing -> Best path selection.
+MTU -> Maximum packet size.
+Proxy -> Intermediary server.
+Firewall -> Traffic filtering.
+HTTP -> Unencrypted web protocol.
+HTTPS -> Secure HTTP using TLS.
+TLS -> Encryption protocol.
+Certificate -> Verifies identity.
+Packet Flow -> End-to-end packet troubleshooting.
+
+| **Term**                                      | **Interview Answer**                                                                                                   |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **SSO (Single Sign-On)**                      | Login once, access multiple applications without logging in again.                                                     |
+| **SAML (Security Assertion Markup Language)** | An XML-based authentication protocol used to implement Single Sign-On (SSO).                                           |
+| **OIDC (OpenID Connect)**                     | An OAuth 2.0-based authentication protocol that uses JWT tokens for user authentication.                               |
+| **MFA (Multi-Factor Authentication)**         | Uses two or more authentication factors to verify a user's identity.                                                   |
+| **Token Expiry**                              | An authentication token becomes invalid after a defined validity period, requiring renewal or re-authentication.       |
+| **Session Expiry**                            | A user's logged-in session ends after inactivity or when the session timeout is reached.                               |
+| **Certificate-Based Authentication (CBA)**    | Authenticates users or devices using digital certificates instead of passwords.                                        |
+| **Posture-Based Access (PBA)**                | Grants or denies access based on the security compliance of the user's device (e.g., antivirus, firewall, OS updates). |
+
+
+
+
+
+
+
+
+==============================================================
+
+LTI MIndtree:-
+1) What is a Collision Domain?
+-A **collision domain** is a network segment where two or more devices transmitting
+ data at the same time may cause a data collision because they share the same
+ communication medium.
+-A **hub** is a **Layer 1 (Physical Layer)** device.
+ It does not maintain a **MAC address table** and cannot identify the source or destination
+ MAC address. It simply repeats the incoming signal to all ports.
+ Therefore, if multiple devices transmit at the same time, their signals collide,
+ making the **entire hub a single collision domain**.
+
+-A **switch** is a **Layer 2 (Data Link Layer)** device.
+ It learns and maintains a **MAC address table** by recording the source MAC addresses of
+ incoming frames. It then forwards frames only to the correct destination port.
+ Since **each switch port is an independent collision domain**, a switch **separates collision
+ domains** and prevents collisions in full-duplex communication.
+
+ If the destination MAC address is unknown, the switch floods the frame only within the same VLAN.
+ When a host does not know the destination MAC address, it sends an **ARP Request** (broadcast),
+ and after receiving the **ARP Reply**, the switch learns and updates its MAC address table.
+
+ ### Example
+ Suppose **PC1, PC2, and PC3** are connected to a **hub**. If **PC1** and **PC3** transmit data
+ at the same time, their electrical signals share the same communication medium
+ and may collide because the hub has no intelligence or MAC address table.
+
+ Now connect the same PCs to a **switch**. "Each switch port is a separate collision domain".
+ The switch learns MAC addresses and forwards frames only to the correct destination port,
+ so simultaneous transmissions on different ports do not collide.
+
+### Key Interview Points
+    * **Hub = Single Collision Domain**
+    * **Switch = Separates Collision Domains (Each Port = One Collision Domain)**
+    * **Router = Separates Broadcast Domains**
+    * **VLAN = Each VLAN can also creates its own separate Broadcast Domain**
+
+### One-Line Interview Summary
+
+> **Hub creates a single collision domain because it simply repeats signals.
+> A switch separates collision domains by forwarding frames based on its MAC address table.
+> A router separates broadcast domains, and each VLAN also forms its own broadcast domain.**
+
+
+2)What is a Broadcast Domain?
+- "A broadcast domain is a network segment where a broadcast frame
+  (Destination MAC: FF:FF:FF:FF:FF:FF) is received by all devices in the same network.
+  A switch forwards broadcast traffic to all ports within the same VLAN.
+  A router does not forward broadcast traffic to another network,
+  so it separates broadcast domains. Similarly, each VLAN creates its own broadcast domain."
+
+Example:-
+ -Suppose PC1, PC2, and PC3 are connected to the same switch.
+  If PC1 sends an ARP Request, the switch forwards that broadcast to all devices
+  in the same VLAN. If there is a router connecting another network,
+  the router will not forward that broadcast to the other network.
+  That's why routers separate broadcast domains."
+
+One-line summary
+    Hub = 1 Broadcast Domain
+    Switch = 1 Broadcast Domain by default
+    Each VLAN = 1 Separate Broadcast Domain
+    Router = Separates Broadcast Domains
+
+Device	                Collision Domain	                            Broadcast Domain
+Hub	                    1	                                           1
+Switch	                Each Port = 1	                                   1 (Default)
+Switch + VLANs	        Each Port = 1	                                   Each VLAN = 1
+Router	                Each Interface = Separate Collision Domain	       Each Interface = Separate Broadcast Domain
+
+
+VLAN Tagging Summary
+What is VLAN Tagging?
+
+VLAN Tagging is a method of identifying
+which VLAN an Ethernet frame belongs to when it travels over a trunk link.
+
+1. Cisco ISL (Inter-Switch Link)
+Cisco Proprietary Protocol
+Encapsulates the entire Ethernet frame
+Adds 26-byte ISL Header
+Adds 4-byte ISL Trailer (CRC)
+Mostly obsolete
+
+ISL Header (26Byte)
+        │
+Original Ethernet Frame
+        │
+ISL Trailer (4Byte)
+
+2. IEEE 802.1Q (Dot1Q)
+IEEE Standard
+Does not encapsulate the frame
+Inserts a 4-byte VLAN Tag
+Tag is inserted between Source MAC and EtherType
+Most widely used VLAN tagging protocol
+Destination MAC
+Source MAC
+     │
+4-byte VLAN Tag
+     │
+EtherType
+Payload
+FCS
+ISL vs 802.1Q
+ISL	IEEE 802.1Q
+Cisco Proprietary	IEEE Standard
+Encapsulates entire frame	Inserts 4-byte tag
+26-byte Header + 4-byte Trailer	4-byte VLAN Tag
+Obsolete	Widely Used
+Interview One-Liner
+
+"ISL and IEEE 802.1Q are VLAN tagging protocols used on trunk links
+ to carry traffic from multiple VLANs. ISL encapsulates the entire Ethernet
+ frame by adding a 26-byte header and a 4-byte trailer, whereas IEEE 802.1Q
+ inserts a 4-byte VLAN tag between the Source MAC Address and the EtherType field."
+
+ BPDU:-"BPDU is a Layer 2 control message used by STP to exchange spanning tree
+       information between switches, such as the Root Bridge ID and Root Path Cost.
+       This information enables STP to elect the Root Bridge, select the best path,
+       and prevent Layer 2 switching loops."
+
+----------------------------------------------------------------------------------------
+
+
+🔥 Yaad rakhne ki trick:
+
+ISL = Encapsulation (26B Header + 4B Trailer)
+802.1Q = 4B Tag Insertion
+Access Port = Untagged
+
+
+Que 3:VLAN TAGGING (IEEE 802.1Q)
+Definition
+----------
+IEEE 802.1Q is the standard used for VLAN tagging.
+It adds a 4-byte VLAN tag between the Source MAC Address and the Protocol Type (EtherType) field of an Ethernet frame. The VLAN tag contains the VLAN ID, which identifies the VLAN. VLAN tagging is used only on Trunk Ports because a trunk carries traffic for multiple VLANs. Access Ports send untagged frames.
+
+Diagram :Normal Ethernet Frame
+------------------------------
+
++---------+---------+--------------+--------+------+
+| Dst MAC | Src MAC | Protocol Type| Data   | FCS  |
+| 6 Bytes | 6 Bytes |   2 Bytes    |        |4 Byte|
++---------+---------+--------------+--------+------+
+
+                |
+
+                V
+
+VLAN Tagged Ethernet Frame
+
++---------+---------+----------+--------------+--------+------+
+| Dst MAC | Src MAC | VLAN Tag | Protocol Type| Data   | FCS  |
+| 6 Bytes | 6 Bytes | 4 Bytes  |   2 Bytes    |        |4 Byte|
++---------+---------+----------+--------------+--------+------+
+
+VLAN Tag Structure (4 Bytes)
+
++----------------+-----------------------------+
+| TPID (16 bits) | TCI (16 bits)               |
++----------------+-----------------------------+
+
+TCI
+
++---------+---------+----------------------+
+| PCP(3)  | DEI(1)  | VLAN ID (12 bits)    |
++---------+---------+----------------------+
+
+Interview Answer
+----------------
+-IEEE 802.1Q is the standard used for VLAN tagging.
+-It inserts a 4-byte VLAN tag between the Source MAC Address
+ and the Protocol Type (EtherType) field of an Ethernet frame.
+-The VLAN tag carries the VLAN ID, which identifies the VLAN.
+ VLAN tagging is used only on Trunk Ports to carry traffic for multiple VLANs,
+ whereas Access Ports send untagged frames.
+
+Important Points
+----------------
+1. VLAN Tag Size = 4 Bytes
+2. IEEE Standard = 802.1Q
+3. Tag inserted between Source MAC and Protocol Type (EtherType)
+4. Trunk Port = Tagged Frames
+5. Access Port = Untagged Frames
+6. Normal Ethernet Frame = 64–1518 Bytes
+7. VLAN Tagged Frame = 68–1522 Bytes
+
+------------------------------------------------------------------------
+
+FCS / CRC (Frame Check Sequence)
+--------------------------------
+FCS (Frame Check Sequence), also called CRC (Cyclic Redundancy Check), is the
+last field of the Ethernet frame and is 4 Bytes long.
+
+Purpose:
+- Detects transmission errors in the Ethernet frame.
+- The sender calculates the CRC value and stores it in the FCS field.
+- The receiver recalculates the CRC.
+- If both values match, the frame is accepted.
+- If they do not match, the frame is discarded.
+
+Interview Answer
+----------------
+FCS (Frame Check Sequence) is a 4-byte field at the end of the Ethernet frame.
+It uses the CRC algorithm to detect transmission errors. If the calculated CRC
+at the receiver matches the received FCS, the frame is accepted; otherwise, it
+is discarded.
+
+=========================================================================
+
+
+Wise Hydrabad
+-------------
+-IaC practice
+-Python Scripting
+-how to Manage the code
+-how to Push the code in Pipeline
+ with docker and cubernatives
+-AWS
+-Routing & Switching
+====================================
+
+=========================================
+Router-on-a-Stick (ROAS) - Interview Notes
+=========================================
+
+1. What is Router-on-a-Stick?
+
+Answer:
+Router-on-a-Stick (ROAS) is an inter-VLAN routing technique in which a single
+physical router interface is configured as an IEEE 802.1Q trunk. Multiple
+subinterfaces are created on the router, and each subinterface is assigned
+to a different VLAN with its own IP address. This allows communication
+between different VLANs using a single physical router interface.
+
+------------------------------------------------------------
+
+2. Why is it called Router-on-a-Stick?
+
+Answer:
+It is called Router-on-a-Stick because a single physical router interface
+acts as a trunk ("stick") and carries traffic for multiple VLANs using
+multiple logical subinterfaces.
+
+------------------------------------------------------------
+
+3. Why do we need Router-on-a-Stick?
+
+Answer:
+Devices in different VLANs cannot communicate directly because each VLAN is
+a separate broadcast domain. Router-on-a-Stick provides Layer 3 routing
+between VLANs, enabling inter-VLAN communication.
+
+          Router
+        G0/0 (Trunk)
+             |
+      =================
+             |
+          Switch
+        (Trunk Port)
+      /       |       \
+ VLAN10    VLAN20   VLAN30
+   |          |         |
+  PC1        PC2       PC3
+
+  Router:
+  -------
+  interface g0/0
+ no shutdown
+
+interface g0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+
+interface g0/0.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+
+interface g0/0.30
+ encapsulation dot1Q 30
+ ip address 192.168.30.1 255.255.255.0
+
+Switch:
+-------
+interface g0/1
+
+switchport mode trunk
+switchport trunk encapsulation dot1q
+====================================================================
+          WISE HYDERABAD - INTERVIEW QUESTIONS & ANSWERS
+====================================================================
+
+1. Explain your Network Automation Project
+------------------------------------------
+Answer:
+"I worked on an enterprise Network Automation project where we automated
+firewall and network operations using Python, Terraform and REST APIs.
+
+We developed a self-service portal to create, update, reset and
+troubleshoot VPN tunnels. The backend was written in Python, infrastructure
+was managed using Terraform, and the code was maintained in Git.
+
+This reduced manual work, improved consistency and decreased deployment time."
+
+====================================================================
+
+2. Why Python?
+--------------
+Answer:
+"Python is simple, readable and has a rich ecosystem of libraries.
+
+It provides libraries like requests, Netmiko, Paramiko and supports
+REST APIs, making it ideal for backend development and network automation."
+
+====================================================================
+
+3. Explain REST API
+-------------------
+Answer:
+"REST API is a communication method between applications over HTTP.
+
+A client sends requests using GET, POST, PUT or DELETE methods, and the
+server responds with JSON data.
+
+We used REST APIs to automate firewall and cloud operations."
+
+what if API Fails?
+-Check HTTP status code → Identify the error (200, 401, 404, 500, etc.).
+-Use try-except → Catch exceptions like timeout, connection error, or invalid response.
+-Set timeouts → Prevent the application from waiting forever for a response.
+-Retry with exponential backoff → Retry temporary failures with increasing delays (1s → 2s → 4s → 8s).
+-Verify authentication → Check API key, token, headers, and permissions.
+-Verify connectivity → Ensure internet connection, correct endpoint URL, and server availability.
+-Log errors → Record error details (status code, message, timestamp) for troubleshooting.
+-Return meaningful messages → Show user-friendly messages instead of technical errors.
+-Stop or roll back automation → Prevent further steps and undo partial changes if possible.
+====================================================================
+
+4. Flask vs FastAPI
+-------------------
+
+Flask
+- Lightweight web framework
+- More manual coding
+- Good for web applications
+
+FastAPI
+- High-performance API framework
+- Automatic validation
+- Automatic API documentation
+- Better for REST APIs
+
+Interview Answer:
+"I prefer FastAPI because it is faster, supports automatic documentation,
+request validation and is well suited for backend REST APIs."
+
+====================================================================
+
+5. What is Infrastructure as Code (IaC)?
+----------------------------------------
+Answer:
+"Infrastructure as Code means managing infrastructure using code instead
+of manual configuration.
+
+We define infrastructure in Terraform files, store the code in Git,
+review changes and deploy automatically."
+
+====================================================================
+
+6. Explain Terraform Workflow
+-----------------------------
+
+Write .tf Files
+        │
+        ▼
+terraform init
+        │
+        ▼
+terraform validate
+        │
+        ▼
+terraform plan
+        │
+        ▼
+terraform apply
+        │
+        ▼
+Infrastructure Created
+
+Interview Answer:
+"Terraform reads the configuration, validates it, generates an execution
+plan and then creates or updates infrastructure."
+
+====================================================================
+
+7. What is Terraform State?
+---------------------------
+Answer:
+"Terraform State is a file that stores the current state of infrastructure.
+
+Terraform compares the state file with the configuration files to identify
+what needs to be created, updated or deleted."
+
+====================================================================
+
+8. Explain Git Workflow
+-----------------------
+
+Write Code
+     │
+     ▼
+git add
+     │
+     ▼
+git commit
+     │
+     ▼
+git push
+     │
+     ▼
+GitHub
+     │
+     ▼
+Pull Request
+     │
+     ▼
+Merge
+
+Commands
+
+git add .
+git commit -m "message"
+git push origin main
+
+Interview Answer:
+"We develop code locally, commit it using Git, push it to GitHub and
+create a Pull Request before merging into the main branch."
+
+====================================================================
+
+9. Explain CI/CD Pipeline
+-------------------------
+
+Developer
+      │
+      ▼
+Git
+      │
+      ▼
+GitHub
+      │
+      ▼
+GitHub Actions
+      │
+      ▼
+Run Tests
+      │
+      ▼
+Build Docker Image
+      │
+      ▼
+Push Docker Image
+      │
+      ▼
+Docker Registry
+      │
+      ▼
+Kubernetes
+      │
+      ▼
+Application Live
+
+Interview Answer:
+"CI automatically builds and tests the application, while CD deploys
+the application automatically to the target environment."
+
+====================================================================
+
+10. Docker Image vs Docker Container
+------------------------------------
+
+Docker Image
+- Read-only package
+- Contains application, runtime and dependencies
+
+Docker Container
+- Running instance of an Image
+- Executes the application
+
+Interview Answer:
+"Docker Image is the blueprint, while Docker Container is the running
+instance of that image."
+
+====================================================================
+
+11. Explain Dockerfile
+----------------------
+
+Answer:
+"Dockerfile is a text file that contains instructions to build a Docker Image."
+
+Example
+
+FROM python:3.11
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["python","app.py"]
+
+====================================================================
+
+12. Kubernetes Pod vs Deployment
+--------------------------------
+
+Pod
+- Smallest deployable unit
+- Runs one or more containers
+
+Deployment
+- Manages Pods
+- Scaling
+- Rolling Updates
+- Self Healing
+
+Interview Answer:
+"A Pod runs the application, while a Deployment manages Pods,
+handles scaling and rolling updates."
+
+====================================================================
+
+13. Explain AWS VPC Architecture
+--------------------------------
+
+Internet
+    │
+Internet Gateway
+    │
+VPC
+├── Public Subnet
+│      └── EC2
+│
+└── Private Subnet
+       └── EC2
+            │
+      NAT Gateway
+
+Main Components
+---------------
+VPC
+Subnet
+Internet Gateway
+NAT Gateway
+Route Table
+Security Group
+NACL
+
+====================================================================
+
+14. Security Group vs NACL
+--------------------------
+
+Security Group
+- Instance Level
+- Stateful
+- Allow Rules Only
+
+NACL
+- Subnet Level
+- Stateless
+- Allow & Deny Rules
+
+Interview Answer:
+"Security Group protects EC2 instances,
+whereas NACL protects the entire subnet."
+
+====================================================================
+
+15. Explain Complete Deployment Flow
+------------------------------------
+
+Developer
+      │
+      ▼
+Python Code
+      │
+      ▼
+Git
+      │
+      ▼
+GitHub
+      │
+      ▼
+GitHub Actions
+      │
+      ├── Install Dependencies
+      ├── Run Tests
+      ├── Build Docker Image
+      └── Push Docker Image
+      │
+      ▼
+Docker Registry
+      │
+      ▼
+Kubernetes
+      │
+      ├── Pull Image
+      ├── Update Deployment
+      ├── Create Pods
+      └── Expose Service
+      │
+      ▼
+Application Live
+
+Interview Answer:
+"Developers push code to GitHub. GitHub Actions automatically builds,
+tests and creates a Docker image. The image is pushed to a Docker Registry.
+Kubernetes pulls the latest image, updates the Deployment, creates Pods
+and exposes the application through a Service."
+
+====================================================================
+END
+====================================================================
+CI stands for Continuous Integration,
+and CD stands for Continuous Delivery or Continuous Deployment.
+
+CI/CD automates the process of integrating code,
+testing, building, and deploying software.
+
+In our environment, we use a CI/CD pipeline based on
+Git, GitHub, GitHub Actions, Docker, Docker Hub, and Azure VM.
+
+Git is a version control system used to track code changes.
+Developers write Python code in the local repository and then
+use Git commands such as add, commit, and push to send the code
+to the GitHub repository, which stores and shares the source code remotely.
+
+Once the code is pushed to GitHub, a webhook event automatically
+triggers the GitHub Actions workflow.
+
+A webhook is an event notification mechanism. When a specific event occurs,
+it automatically notifies another application.
+
+                   CI/CD PIPELINE
+
+             Developer
+                 │
+        Write Python Code
+                 │
+       git add / commit / push
+                 │
+                 ▼
+          GitHub Repository
+                 │
+       (Push Event Trigger)
+                 │
+                 ▼
+          GitHub Actions
+
+──────────────────────────────────────────────
+Start of CI:
+GitHub Actions runs on a GitHub runner/server.
+
+1. Checkout source code – Downloads the latest code from GitHub.
+2. Set up the Python environment – Because the project is written in Python.
+3. Install dependencies – To install all required libraries from requirements.txt.
+4. Run Pytest – To validate the code.
+5. Build the Docker image – To package the application and its dependencies into a Docker image.
+6. Push the image to Docker Hub – To make the image available for deployment.
+
+Note:
+- requirements.txt contains the list of Python packages required for the project.
+- A Docker image usually has no normal file extension; if exported, it is typically saved as a .tar file.
+- Docker Hub is a Docker image registry.
+
+──────────────────────────────────────────────
+Docker Hub:
+Docker Hub is a cloud-based container registry that stores Docker images.
+
+After the image is pushed to Docker Hub, the Azure VM pulls the required image for deployment.
+
+                 │
+              Pull Image
+                 ▼
+              Azure VM
+
+The Azure VM has Docker installed.
+Docker pulls the image and runs a Docker container,
+which is the running instance of that Docker image.
+The application runs inside the Docker container.
+
+──────────────────────────────────────────────
+Deployment on Azure VM:
+
+docker pull latest-image
+docker stop old-container
+docker rm old-container
+docker run new-container
+
+Where:
+- Docker is a containerization platform that builds Docker images and runs containers.
+- A Docker image is a packaged application containing the application code, dependencies, libraries, and runtime.
+- A Docker container is the running instance of a Docker image.
+- Docker Hub is a cloud-based registry that stores and shares Docker images.
+
+──────────────────────────────────────────────
+                 │
+                 ▼
+        VPN Automation Portal
+         Running Successfully
+
+
+=================================
+The CD part starts after the Docker image is built successfully.
+
+The Docker image is pushed to Docker Hub, which acts as a container registry.
+
+From there, the target server, which is an Azure VM,
+pulls the latest Docker image.
+
+Then the old container is stopped and removed if it is already running.
+
+After that, a new Docker container is started using the latest image.
+
+Once the container is up and running, the application becomes live
+and can be accessed through the Azure VM IP address and exposed port.
+
+This CD process makes deployment faster, consistent,
+and reduces manual work.
